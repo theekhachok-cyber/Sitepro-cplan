@@ -374,7 +374,7 @@ tr:hover td{background:#F8FAFE}
       </div>
       <div class="card">
         <div class="card-hd">
-          <div class="card-hd-left"><div class="sec-bar" style="background:var(--orange)"></div><div><div class="card-title">วัสดุคงคลัง — ต้องเติม</div><div class="card-sub">คลังกลาง · อัปเดตล่าสุด 10:45 น.</div></div></div>
+          <div class="card-hd-left"><div class="sec-bar" style="background:var(--orange)"></div><div><div class="card-title">วัสดุคงคลัง — ต้องเติม</div><div class="card-sub" id="stock-update-time">กำลังโหลดจาก Database...</div></div></div>
           <button class="btn btn-sm btn-o" onclick="nav('stock-main','คลังวัสดุ')">จัดการ</button>
         </div>
         <div id="stock-alert-area"></div>
@@ -471,7 +471,7 @@ tr:hover td{background:#F8FAFE}
   <div class="grid4 mb16" id="df-stats"></div>
   <div class="col-6-4">
     <div>
-      <div class="tabs"><button class="tab-btn act" onclick="filterDF('all',this)">ทั้งหมด (8)</button><button class="tab-btn" onclick="filterDF('open',this)">Open (4)</button><button class="tab-btn" onclick="filterDF('fix',this)">กำลังแก้ (3)</button><button class="tab-btn" onclick="filterDF('closed',this)">Closed (1)</button></div>
+      <div class="tabs"><button class="tab-btn act" onclick="filterDF('all',this)" id="df-tab-all">ทั้งหมด (0)</button><button class="tab-btn" onclick="filterDF('open',this)" id="df-tab-open">Open (0)</button><button class="tab-btn" onclick="filterDF('fix',this)" id="df-tab-fix">กำลังแก้ (0)</button><button class="tab-btn" onclick="filterDF('closed',this)" id="df-tab-closed">Closed (0)</button></div>
       <div id="df-list"></div>
     </div>
     <div class="card">
@@ -960,14 +960,7 @@ var PHASES=[
   {n:'P14 เก็บงาน',pct:10,col:'#FF8A00',st:'active'},
   {n:'P15 ส่งมอบ',pct:0,col:'#90A4AE',st:'wait'}
 ];
-var STOCK=[
-  {icon:'🧱',n:'คอนกรีต B25',unit:'ลบ.ม.',qty:22.5,min:10,max:60,lot:'LOT-042',st:'ok'},
-  {icon:'🔩',n:'เหล็ก DB20',unit:'กก.',qty:1850,min:500,max:3000,lot:'LOT-038',st:'ok'},
-  {icon:'🪵',n:'แบบไม้อัด 15 มม.',unit:'แผ่น',qty:8,min:20,max:200,lot:'LOT-031',st:'low'},
-  {icon:'📌',n:'Spacer 40 มม.',unit:'ลูก',qty:0,min:200,max:2000,lot:'—',st:'out'},
-  {icon:'🏠',n:'กระเบื้อง 60×60',unit:'แผ่น',qty:360,min:50,max:500,lot:'LOT-040',st:'ok'},
-  {icon:'🎨',n:'สีทาภายใน TOA',unit:'แกลลอน',qty:12,min:15,max:100,lot:'LOT-029',st:'low'}
-];
+var STOCK=[]; // โหลดจาก Supabase DB เท่านั้น
 var MILESTONES=[
   {n:1,title:'งวด 1 — ฐานราก',amt:'1,250,000',st:'done'},
   {n:2,title:'งวด 2 — ผนัง MEP',amt:'980,000',st:'done'},
@@ -975,16 +968,7 @@ var MILESTONES=[
   {n:4,title:'งวด 4 — สี ไฟฟ้า',amt:'620,000',st:'wait'},
   {n:5,title:'งวด 5 — ส่งมอบ',amt:'400,000',st:'wait'}
 ];
-var DEFECTS=[
-  {id:'D-001',t:'รอยแตกร้าวผนังห้องนอน 1',loc:'ห้องนอน 1',sev:'high',st:'open',by:'ช่างฉาบ'},
-  {id:'D-002',t:'กระเบื้องห้องน้ำ 2 เสียงกลวง',loc:'ห้องน้ำ 2',sev:'high',st:'open',by:'ช่างปู'},
-  {id:'D-003',t:'สีเป็นคลื่นฝ้าเพดาน',loc:'ห้องนั่งเล่น',sev:'med',st:'fix',by:'ช่างสี'},
-  {id:'D-004',t:'ก๊อกน้ำอ่างครัวรั่ว',loc:'ครัว',sev:'high',st:'fix',by:'ช่างประปา'},
-  {id:'D-005',t:'ประตูห้องน้ำปิดไม่สนิท',loc:'ห้องน้ำ 1',sev:'med',st:'closed',by:'ช่างติดตั้ง'},
-  {id:'D-006',t:'โคมไฟห้องนอน 2 กะพริบ',loc:'ห้องนอน 2',sev:'med',st:'open',by:'ช่างไฟ'},
-  {id:'D-007',t:'รั้วข้างบ้านดิ่งเอียง',loc:'ภายนอก',sev:'low',st:'fix',by:'ทีม H'},
-  {id:'D-008',t:'Silicone หน้าต่างแตก',loc:'ภายนอก',sev:'low',st:'open',by:'ช่างติดตั้ง'}
-];
+var DEFECTS=[]; // โหลดจาก Supabase DB เท่านั้น
 var PRS=[
   {id:'PR-001',t:'คอนกรีต B25 Phase 2',amt:'฿138,280',st:'approved',src:'BOQ'},
   {id:'PR-002',t:'เหล็ก DB20 + RB9',amt:'฿108,470',st:'pend',src:'AI'},
@@ -1017,6 +1001,11 @@ var MENU_CFG={
     {label:'รายงาน',items:[
       {icon:'🤖',t:'AI Analyzer',id:'ai'},
       {icon:'🏠',t:'Owner Portal',id:'owner'}
+    ]},
+  {label:'เอกสาร & สัญญา',items:[
+      {icon:'📁',t:'เอกสาร & ไฟล์',id:'files'},
+      {icon:'📄',t:'สัญญา + งวดงาน',id:'contract'},
+      {icon:'📋',t:'BOQ ถอดปริมาณ',id:'boq'}
     ]}
   ],
   eng:[
@@ -1031,6 +1020,9 @@ var MENU_CFG={
     {label:'อนุมัติ',items:[
       {icon:'📄',t:'อนุมัติ PR',id:'proc'},
       {icon:'🏠',t:'Owner Portal',id:'owner'}
+    ]},
+  {label:'เอกสาร',items:[
+      {icon:'📁',t:'เอกสาร & ไฟล์',id:'files'}
     ]}
   ],
   pm:[
@@ -1065,6 +1057,9 @@ var MENU_CFG={
         {icon:'🔄',t:'โอนระหว่างคลัง',id:'stock-main'}
       ]},
       {icon:'🤖',t:'AI → จัดซื้อ',id:'ai'}
+    ]},
+  {label:'เอกสาร',items:[
+      {icon:'📁',t:'เอกสาร & ไฟล์',id:'files'}
     ]}
   ],
   acc:[
@@ -1152,6 +1147,9 @@ function nav(id,label){
   if(id==='proc')renderProc();
   if(id==='owner')renderOwner();
   if(id==='report')renderReport();
+  if(id==='files')setTimeout(initFileManager, 200);
+  if(id==='contract')setTimeout(populateContractProjectSel, 200);
+  if(id==='boq')setTimeout(populateContractProjectSel, 200);
 }
 
 function toggleSB(){document.getElementById('sb').classList.toggle('col');}
@@ -1178,8 +1176,8 @@ function renderDash(){
   var kpis=[
     {n:'87%',l:'ความคืบหน้าเฉลี่ย',icon:'📊',bg:'#E3F2FD',col:'var(--blue)',acc:'var(--blue)',chg:'↑ +5% สัปดาห์นี้',up:true},
     {n:'3',l:'โครงการที่ดำเนินการ',icon:'🏗️',bg:'#FFF3E0',col:'var(--orange)',acc:'var(--orange)',chg:'↑ 1 เปิดใหม่',up:true},
-    {n:'8',l:'Defect ค้างอยู่',icon:'⚠️',bg:'#FFEBEE',col:'var(--danger)',acc:'var(--danger)',chg:'↓ ปิดแล้ว 1 รายการ',up:false},
-    {n:'4',l:'Stock ต่ำกว่า Min',icon:'📦',bg:'#E8F5E9',col:'var(--warn)',acc:'var(--warn)',chg:'↓ ต้องสั่งซื้อด่วน',up:false}
+    {n:DEFECTS.filter(function(d){return d.st!=='closed';}).length.toString(),l:'Defect ค้างอยู่',icon:'⚠️',bg:'#FFEBEE',col:'var(--danger)',acc:'var(--danger)',chg:'อัปเดตจาก DB',up:false},
+    {n:STOCK.filter(function(s){return s.st!=='ok';}).length.toString(),l:'Stock ต่ำกว่า Min',icon:'📦',bg:'#E8F5E9',col:'var(--warn)',acc:'var(--warn)',chg:STOCK.filter(function(s){return s.st!=='ok';}).length?'↓ ต้องสั่งซื้อด่วน':'✅ ปกติ',up:false}
   ];
   document.getElementById('kpi-area').innerHTML=kpis.map(k=>`
     <div class="kpi" onclick="nav('dashboard','Dashboard')">
@@ -1234,7 +1232,8 @@ function renderDash(){
       </div>`).join('')}`;
 
   // Stock alerts
-  var lowSt=STOCK.filter(s=>s.st!=='ok');
+  // Only show stock alerts if there are real items from DB
+  var lowSt = STOCK.filter(function(s){return s.st!=='ok';});
   document.getElementById('stock-alert-area').innerHTML=lowSt.length?lowSt.map(s=>`
     <div class="stock-row">
       <div class="stock-icon-box">${s.icon}</div>
@@ -1248,7 +1247,7 @@ function renderDash(){
         <div style="font-size:10px;color:var(--text3)">${s.unit}</div>
         <span class="badge ${s.st==='out'?'b-red':'b-orange'}" style="margin-top:4px">${s.st==='out'?'หมด':'ต่ำ'}</span>
       </div>
-    </div>`).join(''):'<div class="empty"><div class="empty-icon">✅</div><div class="empty-title">Stock ปกติทั้งหมด</div></div>';
+    </div>`).join(''):'<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px">✅ ไม่มีวัสดุต่ำกว่าค่า Min</div>';
 
   // Activity
   var acts=[
@@ -1349,11 +1348,16 @@ function getGPS(){
 
 // ── DEFECTS ─────────────────────────────────────────────────────────────────
 function renderDefects(){
-  var s={open:4,fix:3,closed:1,all:8};
+  var s={open:DEFECTS.filter(function(d){return d.st==='open';}).length,fix:DEFECTS.filter(function(d){return d.st==='fix';}).length,closed:DEFECTS.filter(function(d){return d.st==='closed';}).length,all:DEFECTS.length};
   document.getElementById('df-stats').innerHTML=[
     {n:s.all,l:'ทั้งหมด',col:'var(--text-h)'},{n:s.open,l:'Open',col:'var(--danger)'},{n:s.fix,l:'กำลังแก้',col:'var(--blue)'},{n:s.closed,l:'ปิดแล้ว',col:'var(--green)'}
   ].map(d=>`<div class="kpi" style="padding:14px"><div class="kpi-num" style="color:${d.col};font-size:26px">${d.n}</div><div class="kpi-lbl">${d.l}</div></div>`).join('');
   var filtered=DEFECTS.filter(d=>dfFilter==='all'||d.st===dfFilter);
+  // Update tab counts
+  var _t=document.getElementById('df-tab-all'); if(_t) _t.textContent='ทั้งหมด ('+DEFECTS.length+')';
+  var _o=document.getElementById('df-tab-open'); if(_o) _o.textContent='Open ('+DEFECTS.filter(function(d){return d.st==='open';}).length+')';
+  var _f=document.getElementById('df-tab-fix'); if(_f) _f.textContent='กำลังแก้ ('+DEFECTS.filter(function(d){return d.st==='fix';}).length+')';
+  var _c=document.getElementById('df-tab-closed'); if(_c) _c.textContent='Closed ('+DEFECTS.filter(function(d){return d.st==='closed';}).length+')';
   document.getElementById('df-list').innerHTML=filtered.map(d=>`
     <div class="df-card ${d.sev}">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
@@ -1646,7 +1650,10 @@ async function loadFromDB() {
       MILESTONES = milestones.map(function(m){return {id:m.id,n:m.milestone_number,title:m.title,amt:Number(m.amount||0).toLocaleString('th-TH'),st:m.status==='approved'?'done':m.status==='pending'?'pend':'wait'};});
     }
     renderDash();
+    if(typeof renderStock==='function') renderStock();
     showToast('✅ โหลดข้อมูลจาก Database สำเร็จ');
+    var el=document.getElementById('stock-update-time');
+    if(el) el.textContent='คลังกลาง · อัปเดต '+new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})+' น.';
   } catch(err) {
     console.error('loadFromDB error:', err);
     showToast('⚠️ ใช้ข้อมูล Demo (ตรวจ Console)', 'warn');
@@ -2016,7 +2023,10 @@ async function loadFromDB() {
       });
     }
     renderDash();
+    if(typeof renderStock==='function') renderStock();
     showToast('✅ โหลดข้อมูลจาก Database สำเร็จ');
+    var el=document.getElementById('stock-update-time');
+    if(el) el.textContent='คลังกลาง · อัปเดต '+new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})+' น.';
     console.log('✅ DB loaded:', {projects:PROJECTS.length, phases:PHASES.length, stock:STOCK.length});
   } catch(err) {
     console.error('loadFromDB error:', err);
@@ -2478,21 +2488,7 @@ function exportBOQ() {
   showToast('✅ Export CSV สำเร็จ');
 }
 
-// Update sidebar menu to include Contract + BOQ
-var _origBuildSidebar = buildSidebar;
-function buildSidebar(role) {
-  _origBuildSidebar(role);
-  // Add Contract + BOQ to menu after build
-  setTimeout(function() {
-    var scroll = document.getElementById('sb-scroll');
-    if(!scroll) return;
-    var addMenu = document.createElement('div');
-    addMenu.innerHTML = '<div class="mn-label">สัญญา & BOQ</div>'
-      + '<a class="mn-item" onclick="nav('contract','สัญญาโครงการ')"><span class="mn-icon">📄</span><span class="mn-txt">สัญญา + งวดงาน</span></a>'
-      + '<a class="mn-item" onclick="nav('boq','BOQ ถอดปริมาณ')"><span class="mn-icon">📋</span><span class="mn-txt">BOQ ถอดปริมาณ</span></a>';
-    scroll.appendChild(addMenu);
-  }, 100);
-}
+// Contract+BOQ menu now integrated in MENU_CFG above
 
 // Load contract data when nav to contract page
 var _origNav = nav;
@@ -2712,31 +2708,12 @@ function initFileManager() {
   loadFiles();
 }
 
-// Update sidebar + nav for files
-var _origBuildSidebarFile = buildSidebar;
-buildSidebar = function(role) {
-  _origBuildSidebarFile(role);
-  setTimeout(function() {
-    var scroll = document.getElementById('sb-scroll');
-    if(!scroll) return;
-    // Check if already added
-    if(scroll.querySelector('[data-file-menu]')) return;
-    var addMenu = document.createElement('div');
-    addMenu.setAttribute('data-file-menu', '1');
-    addMenu.innerHTML = '<div class="mn-label">เอกสาร</div>'
-      + '<a class="mn-item" onclick="nav('files','เอกสารโครงการ')"><span class="mn-icon">📁</span><span class="mn-txt">เอกสาร & ไฟล์</span></a>';
-    scroll.appendChild(addMenu);
-  }, 150);
-};
+// Sidebar file menu now integrated in MENU_CFG above
 
-// Override nav for files page
-var _origNavFile = nav;
-nav = function(id, label) {
-  _origNavFile(id, label);
-  if(id === 'files') {
-    setTimeout(initFileManager, 200);
-  }
-};
+// File manager init on nav
+document.addEventListener('sp-nav', function(e) {
+  if(e.detail === 'files') setTimeout(initFileManager, 200);
+});
 
 </script>
 
