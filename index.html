@@ -1,1 +1,2597 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1.0">
+<title>SitePro — Angjing 365</title>
+<link href="https://fonts.googleapis.com/css2?family=IBM+Plex+Sans+Thai:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --blue:#1565C0;--blue2:#0D47A1;--blue3:#E3F2FD;--blue4:#BBDEFB;
+  --orange:#FF8A00;--orange2:#E65100;--orange3:#FFF3E0;
+  --green:#2E7D32;--green3:#E8F5E9;
+  --danger:#C62828;--danger3:#FFEBEE;
+  --warn:#F57C00;--warn3:#FFF3E0;
+  --text:#37474F;--text2:#546E7A;--text3:#90A4AE;
+  --text-h:#1A237E;--white:#fff;
+  --bg:#F0F4F8;--bg2:#E8EDF2;
+  --border:#DDE3EA;--border2:#C5D0DC;
+  --card:#fff;
+  --sb-w:240px;--sb-wc:60px;--hh:56px;
+  --r:10px;--r2:6px;--r3:16px;
+  --shadow:0 2px 8px rgba(21,101,192,.10);
+  --shadow2:0 4px 20px rgba(21,101,192,.16);
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'IBM Plex Sans Thai',sans-serif;background:var(--bg);color:var(--text);font-size:14px;line-height:1.6;overflow-x:hidden}
 
+/* ── SIDEBAR ── */
+.sb{position:fixed;left:0;top:0;bottom:0;width:var(--sb-w);background:var(--blue2);display:flex;flex-direction:column;z-index:300;transition:width .25s;overflow:hidden}
+.sb.col{width:var(--sb-wc)}
+.sb-head{display:flex;align-items:center;gap:10px;padding:0 16px;height:var(--hh);border-bottom:1px solid rgba(255,255,255,.1);flex-shrink:0}
+.sb-logo-icon{width:36px;height:36px;background:var(--orange);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;flex-shrink:0}
+.sb-logo-txt{font-size:17px;font-weight:700;color:#fff;white-space:nowrap;overflow:hidden;transition:opacity .2s,width .2s;width:160px}
+.sb.col .sb-logo-txt{opacity:0;width:0}
+.sb-scroll{flex:1;overflow-y:auto;overflow-x:hidden;padding:8px 0}
+.sb-scroll::-webkit-scrollbar{width:0}
+
+/* Nested Menu */
+.mn-label{font-size:10px;font-weight:600;color:rgba(255,255,255,.4);letter-spacing:.8px;text-transform:uppercase;padding:14px 18px 4px;white-space:nowrap;overflow:hidden}
+.sb.col .mn-label{opacity:0}
+.mn-item{display:flex;align-items:center;gap:10px;padding:9px 16px;cursor:pointer;color:rgba(255,255,255,.72);font-size:13px;border-left:3px solid transparent;transition:all .15s;position:relative;white-space:nowrap;user-select:none}
+.mn-item:hover{background:rgba(255,255,255,.09);color:#fff}
+.mn-item.act{background:rgba(255,255,255,.14);color:#fff;border-left-color:var(--orange);font-weight:500}
+.mn-item.has-child.open>.mn-arrow{transform:rotate(90deg)}
+.mn-icon{width:22px;height:22px;flex-shrink:0;font-size:16px;display:flex;align-items:center;justify-content:center}
+.mn-txt{flex:1;overflow:hidden;transition:opacity .2s;white-space:nowrap}
+.sb.col .mn-txt{opacity:0;width:0}
+.mn-arrow{font-size:10px;color:rgba(255,255,255,.4);transition:transform .2s;flex-shrink:0}
+.sb.col .mn-arrow{opacity:0}
+.mn-badge{background:var(--orange);color:#fff;font-size:9px;font-weight:700;border-radius:10px;padding:1px 6px;flex-shrink:0}
+.sb.col .mn-badge{display:none}
+
+/* Sub-menu */
+.sub-menu{display:none;padding-left:0;background:rgba(0,0,0,.15)}
+.sub-menu.open{display:block}
+.sub-item{display:flex;align-items:center;gap:10px;padding:8px 16px 8px 44px;cursor:pointer;color:rgba(255,255,255,.6);font-size:12.5px;border-left:3px solid transparent;transition:all .15s;white-space:nowrap}
+.sb.col .sub-item{padding-left:16px}
+.sub-item:hover{background:rgba(255,255,255,.07);color:#fff}
+.sub-item.act{color:var(--orange);border-left-color:var(--orange);font-weight:500;background:rgba(255,165,0,.08)}
+.sb.col .sub-item span{display:none}
+
+/* Deep sub */
+.deep-menu{display:none;background:rgba(0,0,0,.12)}
+.deep-menu.open{display:block}
+.deep-item{display:flex;align-items:center;gap:8px;padding:7px 16px 7px 60px;cursor:pointer;color:rgba(255,255,255,.5);font-size:12px;transition:all .15s;white-space:nowrap}
+.deep-item:hover{color:#fff;background:rgba(255,255,255,.05)}
+.deep-item.act{color:var(--orange);font-weight:500}
+.sb.col .deep-item{padding-left:16px}
+.sb.col .deep-item span{display:none}
+
+/* User footer */
+.sb-foot{padding:12px 14px;border-top:1px solid rgba(255,255,255,.1);flex-shrink:0}
+.sb-user{display:flex;align-items:center;gap:10px}
+.sb-av{width:36px;height:36px;border-radius:50%;background:var(--orange);color:#fff;font-size:11px;font-weight:700;display:flex;align-items:center;justify-content:center;flex-shrink:0}
+.sb-uinfo{overflow:hidden;transition:opacity .2s}
+.sb.col .sb-uinfo{opacity:0;width:0}
+.sb-uname{font-size:12px;font-weight:600;color:#fff;white-space:nowrap}
+.sb-urole{font-size:10px;color:rgba(255,255,255,.5);white-space:nowrap}
+
+/* ── HEADER ── */
+.hdr{position:fixed;top:0;right:0;left:var(--sb-w);height:var(--hh);background:var(--card);border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 20px;z-index:200;gap:12px;transition:left .25s;box-shadow:0 1px 4px rgba(0,0,0,.06)}
+.sb.col~.wrap .hdr{left:var(--sb-wc)}
+.hdr-menu-btn{width:34px;height:34px;border-radius:var(--r2);background:var(--bg);border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:18px;transition:all .15s;flex-shrink:0}
+.hdr-menu-btn:hover{background:var(--blue);color:#fff;border-color:var(--blue)}
+.hdr-bc{flex:1;display:flex;align-items:center;gap:6px;overflow:hidden}
+.hdr-bc-item{font-size:13px;color:var(--text3);white-space:nowrap}
+.hdr-bc-sep{color:var(--border2);font-size:12px}
+.hdr-bc-cur{font-size:14px;font-weight:600;color:var(--text-h);white-space:nowrap}
+.hdr-right{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.role-pick{display:flex;align-items:center;gap:6px;background:var(--bg);border:1px solid var(--border);border-radius:var(--r2);padding:5px 10px;font-size:12px;font-family:'IBM Plex Sans Thai',sans-serif;color:var(--text);cursor:pointer}
+.role-pick select{border:none;background:transparent;font-family:'IBM Plex Sans Thai',sans-serif;font-size:12px;color:var(--text);cursor:pointer;outline:none;font-weight:500}
+.hdr-btn{width:34px;height:34px;border-radius:var(--r2);background:transparent;border:1px solid var(--border);cursor:pointer;display:flex;align-items:center;justify-content:center;color:var(--text2);font-size:15px;position:relative;transition:all .15s}
+.hdr-btn:hover{border-color:var(--blue);color:var(--blue)}
+.hdr-dot{position:absolute;top:7px;right:7px;width:7px;height:7px;background:var(--orange);border-radius:50%;border:2px solid #fff}
+
+/* ── WRAP + MAIN ── */
+.wrap{margin-left:var(--sb-w);padding-top:var(--hh);min-height:100vh;transition:margin-left .25s}
+.sb.col~.wrap{margin-left:var(--sb-wc)}
+.main{padding:20px}
+
+/* ── PAGE ── */
+.page{display:none}.page.act{display:block}
+
+/* ── CARDS ── */
+.card{background:var(--card);border-radius:var(--r3);border:1px solid var(--border);padding:20px;box-shadow:var(--shadow)}
+.card-hd{display:flex;align-items:center;justify-content:space-between;margin-bottom:16px}
+.card-hd-left{display:flex;align-items:center;gap:8px}
+.sec-bar{width:4px;height:18px;border-radius:2px;flex-shrink:0}
+.card-title{font-size:15px;font-weight:600;color:var(--text-h)}
+.card-sub{font-size:12px;color:var(--text3);margin-top:2px}
+.grid2{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+.grid3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:14px}
+.grid4{display:grid;grid-template-columns:repeat(4,1fr);gap:14px}
+.gap16{gap:16px}.mb12{margin-bottom:12px}.mb16{margin-bottom:16px}.mb20{margin-bottom:20px}
+.col-7-3{display:grid;grid-template-columns:7fr 3fr;gap:16px}
+.col-6-4{display:grid;grid-template-columns:6fr 4fr;gap:16px}
+
+/* ── KPI CARDS (Dashboard) ── */
+.kpi{background:var(--card);border-radius:var(--r3);border:1px solid var(--border);padding:18px;box-shadow:var(--shadow);cursor:pointer;transition:all .2s;position:relative;overflow:hidden}
+.kpi:hover{transform:translateY(-2px);box-shadow:var(--shadow2);border-color:var(--blue4)}
+.kpi-accent{position:absolute;bottom:0;left:0;right:0;height:3px;border-radius:0 0 var(--r3) var(--r3)}
+.kpi-top{display:flex;align-items:flex-start;justify-content:space-between;margin-bottom:10px}
+.kpi-icon{width:46px;height:46px;border-radius:var(--r);display:flex;align-items:center;justify-content:center;font-size:22px}
+.kpi-arrow{width:28px;height:28px;border-radius:50%;border:1px solid var(--border);display:flex;align-items:center;justify-content:center;color:var(--text3);font-size:13px}
+.kpi-num{font-size:30px;font-weight:700;line-height:1;margin-bottom:4px}
+.kpi-lbl{font-size:12px;color:var(--text3)}
+.kpi-chg{font-size:11px;font-weight:500;margin-top:6px;display:flex;align-items:center;gap:3px}
+.up{color:var(--green)}.dn{color:var(--danger)}
+
+/* ── PROJECT CARDS ── */
+.proj-card{background:var(--card);border-radius:var(--r3);border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow);transition:all .2s;cursor:pointer}
+.proj-card:hover{transform:translateY(-2px);box-shadow:var(--shadow2)}
+.proj-card-top{background:linear-gradient(135deg,var(--blue2),var(--blue));padding:16px;position:relative}
+.proj-card-top-title{font-size:15px;font-weight:600;color:#fff;margin-bottom:3px}
+.proj-card-top-sub{font-size:12px;color:rgba(255,255,255,.7);display:flex;align-items:center;gap:5px}
+.proj-status-dot{width:8px;height:8px;border-radius:50%;flex-shrink:0}
+.proj-card-body{padding:14px 16px}
+.proj-pbar-wrap{display:flex;align-items:center;gap:10px;margin-bottom:12px}
+.proj-pbar{flex:1;height:8px;background:var(--bg2);border-radius:4px;overflow:hidden}
+.proj-pfill{height:100%;border-radius:4px;background:var(--blue);transition:width .5s}
+.proj-stats-row{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:12px}
+.proj-stat{background:var(--bg);border-radius:var(--r2);padding:8px 10px;text-align:center}
+.proj-stat-num{font-size:15px;font-weight:700;color:var(--text-h)}
+.proj-stat-lbl{font-size:10px;color:var(--text3);margin-top:1px}
+.proj-countdown{display:flex;align-items:center;gap:6px;font-size:12px}
+.countdown-num{font-size:18px;font-weight:700;color:var(--orange)}
+
+/* ── PHASE TIMELINE ── */
+.phase-timeline{display:flex;flex-direction:column;gap:0}
+.ph-row{display:flex;align-items:center;gap:12px;padding:10px 0;border-bottom:1px solid var(--border)}
+.ph-row:last-child{border-bottom:none}
+.ph-num{width:30px;height:30px;border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:700;color:#fff;flex-shrink:0}
+.ph-info{flex:1;min-width:0}
+.ph-name{font-size:13px;font-weight:500;color:var(--text-h);margin-bottom:3px}
+.ph-bar{height:5px;background:var(--bg2);border-radius:3px;overflow:hidden}
+.ph-fill{height:100%;border-radius:3px;transition:width .5s}
+.ph-meta{display:flex;align-items:center;gap:8px;flex-shrink:0}
+.ph-pct{font-size:12px;font-weight:700;min-width:32px;text-align:right}
+.ph-badge{font-size:10px;font-weight:600;padding:2px 8px;border-radius:20px}
+.ph-done{background:var(--green3);color:var(--green)}
+.ph-active{background:var(--orange3);color:var(--orange)}
+.ph-wait{background:var(--bg2);color:var(--text3)}
+
+/* ── MILESTONE PROGRESS ── */
+.ms-steps{display:flex;gap:0;position:relative;margin:8px 0 16px}
+.ms-steps::before{content:'';position:absolute;top:16px;left:16px;right:16px;height:2px;background:var(--border)}
+.ms-step{flex:1;display:flex;flex-direction:column;align-items:center;gap:6px;position:relative;z-index:1}
+.ms-dot{width:32px;height:32px;border-radius:50%;border:2px solid var(--border);background:var(--card);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;transition:all .2s;cursor:pointer}
+.ms-dot.done{background:var(--green);border-color:var(--green);color:#fff}
+.ms-dot.pend{background:var(--blue);border-color:var(--blue);color:#fff;box-shadow:0 0 0 3px var(--blue3)}
+.ms-dot.wait{background:var(--card);border-color:var(--border2);color:var(--text3)}
+.ms-lbl{font-size:10px;color:var(--text3);text-align:center;line-height:1.3;max-width:70px}
+.ms-lbl.done{color:var(--green);font-weight:500}
+.ms-lbl.pend{color:var(--blue);font-weight:500}
+.ms-line-fill{position:absolute;top:14px;left:0;height:4px;background:var(--green);z-index:0;transition:width .5s;border-radius:2px}
+
+/* ── STOCK TABLE ── */
+.stock-row{display:flex;align-items:center;gap:12px;padding:11px 0;border-bottom:1px solid var(--border)}
+.stock-row:last-child{border-bottom:none}
+.stock-icon-box{width:40px;height:40px;border-radius:var(--r2);display:flex;align-items:center;justify-content:center;font-size:20px;flex-shrink:0;background:var(--bg)}
+.stock-name{font-size:13px;font-weight:500;color:var(--text-h);margin-bottom:2px}
+.stock-lot{font-size:11px;color:var(--text3)}
+.stock-bar-wrap{flex:1;display:flex;flex-direction:column;gap:3px}
+.stock-qty-row{display:flex;justify-content:space-between;font-size:11px;color:var(--text3)}
+.stock-bar{height:6px;background:var(--bg2);border-radius:3px;overflow:hidden}
+.stock-fill{height:100%;border-radius:3px;transition:width .5s}
+.stock-qty{font-size:16px;font-weight:700;min-width:50px;text-align:right}
+.stock-unit{font-size:10px;color:var(--text3)}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;font-size:11px;font-weight:600;padding:3px 9px;border-radius:20px}
+.b-blue{background:var(--blue3);color:var(--blue)}
+.b-orange{background:var(--orange3);color:var(--orange)}
+.b-green{background:var(--green3);color:var(--green)}
+.b-red{background:var(--danger3);color:var(--danger)}
+.b-gray{background:var(--bg2);color:var(--text3)}
+
+/* ── CONTENT PANEL (right side) ── */
+.content-panel{background:var(--card);border-radius:var(--r3);border:1px solid var(--border);overflow:hidden;box-shadow:var(--shadow)}
+.panel-hd{background:linear-gradient(135deg,var(--blue2),var(--blue));padding:16px 20px;display:flex;align-items:center;gap:12px}
+.panel-hd-title{font-size:16px;font-weight:600;color:#fff;flex:1}
+.panel-hd-badge{background:rgba(255,255,255,.2);color:#fff;font-size:11px;padding:3px 10px;border-radius:20px;border:1px solid rgba(255,255,255,.3)}
+.panel-body{padding:20px}
+
+/* ── FORMS ── */
+.fgrp{margin-bottom:14px}
+.flbl{font-size:12px;font-weight:600;color:var(--text2);margin-bottom:5px;display:block}
+.finp,.fsel,.fta{width:100%;padding:9px 12px;border:1.5px solid var(--border);border-radius:var(--r2);font-family:'IBM Plex Sans Thai',sans-serif;font-size:13px;color:var(--text);background:var(--card);outline:none;transition:border .15s}
+.finp:focus,.fsel:focus,.fta:focus{border-color:var(--blue);box-shadow:0 0 0 3px rgba(21,101,192,.08)}
+.frow{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.frow3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+.fta{resize:vertical;min-height:80px}
+.fsel{appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='10' viewBox='0 0 10 10'%3E%3Cpath fill='%2390A4AE' d='M5 7L0 2h10z'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center}
+
+/* ── BUTTONS ── */
+.btn{display:inline-flex;align-items:center;gap:6px;padding:9px 18px;border-radius:var(--r2);font-family:'IBM Plex Sans Thai',sans-serif;font-size:13px;font-weight:500;cursor:pointer;border:none;transition:all .15s;text-decoration:none}
+.btn-p{background:var(--blue);color:#fff}.btn-p:hover{background:var(--blue2)}
+.btn-s{background:var(--orange);color:#fff}.btn-s:hover{background:var(--orange2)}
+.btn-o{background:transparent;color:var(--blue);border:1.5px solid var(--blue)}.btn-o:hover{background:var(--blue);color:#fff}
+.btn-g{background:var(--green);color:#fff}.btn-g:hover{background:#1B5E20}
+.btn-ghost{background:var(--bg);border:1px solid var(--border);color:var(--text2)}.btn-ghost:hover{border-color:var(--blue);color:var(--blue)}
+.btn-sm{padding:5px 12px;font-size:12px}
+.btn-full{width:100%;justify-content:center}
+.btn-danger{background:var(--danger);color:#fff}
+
+/* ── TABLE ── */
+.tbl-wrap{overflow-x:auto}
+table{width:100%;border-collapse:collapse;font-size:13px}
+thead tr{background:var(--bg)}
+th{padding:10px 12px;text-align:left;font-weight:600;color:var(--text2);border-bottom:2px solid var(--border);font-size:11px;text-transform:uppercase;letter-spacing:.4px;white-space:nowrap}
+td{padding:11px 12px;border-bottom:1px solid var(--border);color:var(--text)}
+tr:last-child td{border-bottom:none}
+tr:hover td{background:#F8FAFE}
+
+/* ── PROGRESS ── */
+.pbar-row{display:flex;align-items:center;gap:10px}
+.pbar{flex:1;height:7px;background:var(--bg2);border-radius:4px;overflow:hidden}
+.pfill{height:100%;border-radius:4px;transition:width .5s}
+.ppct{font-size:12px;font-weight:700;min-width:34px;text-align:right}
+
+/* ── QC ── */
+.qc-item{display:flex;align-items:flex-start;gap:12px;padding:11px 0;border-bottom:1px solid var(--border);cursor:pointer}
+.qc-item:last-child{border-bottom:none}
+.qc-box{width:22px;height:22px;border-radius:5px;border:2px solid var(--border2);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s;margin-top:1px}
+.qc-box.on{background:var(--blue);border-color:var(--blue);color:#fff}
+.qc-txt{flex:1}.qc-name{font-size:13px;font-weight:500;color:var(--text-h)}.qc-spec{font-size:11px;color:var(--text3)}
+
+/* ── NOTIF ── */
+.notif{display:flex;align-items:flex-start;gap:12px;padding:12px 16px;border-radius:var(--r);border-left:4px solid;margin-bottom:12px}
+.ni-blue{background:var(--blue3);border-color:var(--blue)}.ni-orange{background:var(--orange3);border-color:var(--orange)}.ni-green{background:var(--green3);border-color:var(--green)}.ni-red{background:var(--danger3);border-color:var(--danger)}
+.ni-icon{font-size:18px;flex-shrink:0}.ni-title{font-size:13px;font-weight:600}.ni-sub{font-size:12px;opacity:.8;margin-top:2px}
+
+/* ── APPROVAL FLOW ── */
+.ap-flow{display:flex;flex-direction:column;gap:8px}
+.ap-step{display:flex;align-items:center;gap:12px;padding:12px 14px;border-radius:var(--r);border:1px solid var(--border);background:var(--card);transition:all .15s}
+.ap-step.done{background:var(--green3);border-color:#A5D6A7}
+.ap-step.cur{background:var(--blue3);border-color:var(--blue4);box-shadow:0 0 0 2px rgba(21,101,192,.15)}
+.ap-av{width:36px;height:36px;border-radius:50%;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#fff;flex-shrink:0}
+.ap-info{flex:1}.ap-name{font-size:13px;font-weight:500;color:var(--text-h)}.ap-role{font-size:11px;color:var(--text3)}
+.ap-btn-row{display:flex;gap:6px}
+
+/* ── DEFECT ── */
+.df-card{background:var(--card);border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:8px;border-left:4px solid var(--border);transition:all .15s;cursor:pointer}
+.df-card:hover{box-shadow:var(--shadow);border-color:var(--border2)}
+.df-card.high{border-left-color:var(--danger)}.df-card.med{border-left-color:var(--warn)}.df-card.low{border-left-color:var(--blue)}
+
+/* ── SECTION DIVIDER ── */
+.divider{border:none;border-top:1px solid var(--border);margin:20px 0}
+
+/* ── TABS (horizontal) ── */
+.tabs{display:flex;gap:2px;background:var(--bg);border-radius:var(--r);padding:4px;margin-bottom:16px;overflow-x:auto}
+.tabs::-webkit-scrollbar{display:none}
+.tab-btn{padding:8px 16px;border-radius:8px;font-family:'IBM Plex Sans Thai',sans-serif;font-size:12px;font-weight:500;color:var(--text3);cursor:pointer;border:none;background:transparent;white-space:nowrap;transition:all .15s}
+.tab-btn.act{background:var(--card);color:var(--blue);box-shadow:0 1px 4px rgba(0,0,0,.08)}
+
+/* ── EMPTY STATE ── */
+.empty{text-align:center;padding:40px;color:var(--text3)}
+.empty-icon{font-size:48px;margin-bottom:12px}
+.empty-title{font-size:15px;font-weight:500;color:var(--text2);margin-bottom:6px}
+.empty-sub{font-size:13px}
+
+/* ── BOTTOM NAV (mobile) ── */
+.bot-nav{display:none;position:fixed;bottom:0;left:0;right:0;background:var(--card);border-top:1px solid var(--border);padding:6px 0 env(safe-area-inset-bottom);z-index:300;box-shadow:0 -2px 10px rgba(0,0,0,.08)}
+.bot-nav-items{display:flex;justify-content:space-around}
+.bot-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:2px;padding:6px;cursor:pointer;color:var(--text3);font-size:10px;transition:all .15s}
+.bot-item.act{color:var(--blue)}
+.bot-icon{font-size:20px;position:relative}
+.bot-badge{position:absolute;top:-4px;right:-7px;background:var(--orange);color:#fff;font-size:8px;font-weight:700;border-radius:8px;padding:1px 4px;border:1.5px solid #fff}
+
+/* ── RESPONSIVE ── */
+@media(max-width:1200px){.grid4{grid-template-columns:1fr 1fr}.col-7-3{grid-template-columns:1fr}}
+@media(max-width:1024px){
+  :root{--sb-w:60px}
+  .sb-logo-txt,.mn-txt,.mn-arrow,.mn-badge,.sb-uinfo,.mn-label{opacity:0;width:0;overflow:hidden}
+  .sub-item{padding-left:14px}.sub-item span{display:none}
+  .deep-item{padding-left:14px}.deep-item span{display:none}
+  .col-6-4{grid-template-columns:1fr}
+}
+@media(max-width:768px){
+  .sb{display:none}.hdr{left:0 !important}.wrap{margin-left:0 !important;padding-bottom:64px}
+  .bot-nav{display:block}
+  .grid2,.grid3,.grid4,.col-7-3,.col-6-4{grid-template-columns:1fr}
+  .frow,.frow3{grid-template-columns:1fr}
+  .main{padding:12px}
+  .ms-lbl{display:none}
+}
+@media(max-width:480px){.kpi-num{font-size:24px}.kpi-icon{width:38px;height:38px;font-size:18px}}
+</style>
+</head>
+<body>
+
+<!-- ══════ SIDEBAR ══════ -->
+<aside class="sb" id="sb">
+  <div class="sb-head">
+    <div class="sb-logo-icon">🏗️</div>
+    <div class="sb-logo-txt">SitePro</div>
+  </div>
+  <div class="sb-scroll" id="sb-scroll"></div>
+  <div class="sb-foot">
+    <div class="sb-user">
+      <div class="sb-av" id="sb-av">CEO</div>
+      <div class="sb-uinfo">
+        <div class="sb-uname" id="sb-name">ประพัฒน์ รุ่งเรือง</div>
+        <div class="sb-urole" id="sb-role">CEO · Full Access</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- ══════ HEADER ══════ -->
+<div class="wrap">
+<header class="hdr">
+  <button class="hdr-menu-btn" onclick="toggleSB()">☰</button>
+  <div class="hdr-bc">
+    <span class="hdr-bc-item" id="bc-parent">Dashboard</span>
+    <span class="hdr-bc-sep" id="bc-sep" style="display:none">›</span>
+    <span class="hdr-bc-cur" id="bc-cur" style="display:none"></span>
+  </div>
+  <div class="hdr-right">
+    <div class="role-pick">
+      <span>👤</span>
+      <select onchange="switchRole(this.value)">
+        <option value="ceo">CEO</option>
+        <option value="eng">วิศวกร</option>
+        <option value="pm">ผู้จัดการโครงการ</option>
+        <option value="foreman">หัวหน้าช่าง</option>
+        <option value="proc">จัดซื้อ</option>
+        <option value="acc">บัญชี</option>
+        <option value="owner">Owner</option>
+      </select>
+    </div>
+    <button class="hdr-btn" onclick="alert('แจ้งเตือน 5 รายการ')">🔔<span class="hdr-dot"></span></button>
+    <button class="hdr-btn">👤</button>
+  </div>
+</header>
+
+<!-- ══════ PAGES ══════ -->
+<main class="main">
+
+<!-- ─── DASHBOARD ─── -->
+<div class="page act" id="page-dashboard">
+  <!-- KPI Row -->
+  <div class="grid4 mb20" id="kpi-area"></div>
+
+  <!-- Projects + Milestone -->
+  <div class="col-7-3 mb16">
+    <div>
+      <div class="card mb16">
+        <div class="card-hd">
+          <div class="card-hd-left"><div class="sec-bar" style="background:var(--blue)"></div><div><div class="card-title">โครงการทั้งหมด</div><div class="card-sub">3 โครงการดำเนินการอยู่</div></div></div>
+          <button class="btn btn-sm btn-o" onclick="nav('projects','สถานะโครงการ')">ดูทั้งหมด</button>
+        </div>
+        <div class="grid3" id="proj-cards"></div>
+      </div>
+      <div class="card">
+        <div class="card-hd">
+          <div class="card-hd-left"><div class="sec-bar" style="background:var(--orange)"></div><div><div class="card-title">วัสดุคงคลัง — ต้องเติม</div><div class="card-sub" id="stock-update-time">กำลังโหลดจาก Database...</div></div></div>
+          <button class="btn btn-sm btn-o" onclick="nav('stock-main','คลังวัสดุ')">จัดการ</button>
+        </div>
+        <div id="stock-alert-area"></div>
+      </div>
+    </div>
+    <div>
+      <div class="card mb16">
+        <div class="card-hd"><div class="card-hd-left"><div class="sec-bar" style="background:var(--green)"></div><div><div class="card-title">งวดงาน</div></div></div></div>
+        <div id="ms-dash"></div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-left"><div class="sec-bar" style="background:var(--blue)"></div><div><div class="card-title">กิจกรรมล่าสุด</div></div></div></div>
+        <div id="activity-area"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── PROJECTS ─── -->
+<div class="page" id="page-projects">
+  <div class="tabs mb16">
+    <button class="tab-btn act" onclick="setTab(this,'all')">ทั้งหมด</button>
+    <button class="tab-btn" onclick="setTab(this,'active')">กำลังดำเนินการ</button>
+    <button class="tab-btn" onclick="setTab(this,'done')">เสร็จแล้ว</button>
+  </div>
+  <div class="grid3" id="proj-all-cards"></div>
+</div>
+
+<!-- ─── PHASE LIST ─── -->
+<div class="page" id="page-phases">
+  <div class="col-6-4">
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-left"><div class="sec-bar" style="background:var(--blue)"></div><div class="card-title">ทุก Phase — พาร์ค วิลล์ A</div></div></div>
+      <div id="phase-full-list"></div>
+    </div>
+    <div>
+      <div class="content-panel mb16">
+        <div class="panel-hd"><div class="panel-hd-title">P12 ไฟฟ้า Final</div><span class="panel-hd-badge">กำลังทำ</span></div>
+        <div class="panel-body">
+          <div class="pbar-row mb12"><div class="pbar"><div class="pfill" style="width:80%;background:var(--orange)"></div></div><div class="ppct" style="color:var(--orange)">80%</div></div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:14px">
+            <div style="background:var(--bg);border-radius:var(--r2);padding:10px"><div style="font-size:11px;color:var(--text3)">เริ่ม</div><div style="font-size:13px;font-weight:600">5 พ.ค. 69</div></div>
+            <div style="background:var(--bg);border-radius:var(--r2);padding:10px"><div style="font-size:11px;color:var(--text3)">ครบกำหนด</div><div style="font-size:13px;font-weight:600;color:var(--orange)">20 พ.ค. 69</div></div>
+          </div>
+          <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:10px">QC Checklist</div>
+          <div id="phase-qc"></div>
+          <div class="ap-flow" style="margin-top:14px" id="phase-ap"></div>
+          <div style="margin-top:14px;display:flex;gap:8px">
+            <button class="btn btn-p btn-full" onclick="alert('✅ ส่ง Report')">📤 ส่ง Report</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── REPORT ─── -->
+<div class="page" id="page-report">
+  <div class="col-6-4">
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-left"><div class="sec-bar" style="background:var(--blue)"></div><div class="card-title">ส่งรายงานประจำวัน</div></div></div>
+      <div class="frow mb12">
+        <div class="fgrp"><label class="flbl">Phase / งาน</label><select class="fsel"><option>P12 งานไฟฟ้า Final</option><option>P13 งานภายนอก</option><option>P14 เก็บงาน</option></select></div>
+        <div class="fgrp"><label class="flbl">วันที่</label><input type="date" class="finp" id="r-date"></div>
+      </div>
+      <div class="fgrp"><label class="flbl">สรุปงานวันนี้</label><textarea class="fta" placeholder="งานที่ดำเนินการ ปัญหาที่พบ และแผนวันถัดไป..."></textarea></div>
+      <div class="frow3 mb12">
+        <div class="fgrp"><label class="flbl">คนงาน</label><input type="number" class="finp" value="5"></div>
+        <div class="fgrp"><label class="flbl">ความคืบหน้า (%)</label><input type="number" class="finp" value="75" min="0" max="100"></div>
+        <div class="fgrp"><label class="flbl">อุณหภูมิ (°C)</label><input type="number" class="finp" value="32"></div>
+      </div>
+      <div style="background:var(--bg);border-radius:var(--r);padding:12px;display:flex;align-items:center;gap:10px;margin-bottom:14px">
+        <span style="font-size:13px;color:var(--text3)">📍 GPS:</span>
+        <span id="gps-v" style="font-size:13px;color:var(--blue);flex:1">กดเพื่อระบุตำแหน่ง</span>
+        <button class="btn btn-sm btn-p" onclick="getGPS()">ระบุ GPS</button>
+      </div>
+      <button class="btn btn-p btn-full" onclick="alert('✅ ส่ง Report สำเร็จ!')">📤 ส่ง Report ให้วิศวกรตรวจ</button>
+    </div>
+    <div>
+      <div class="card mb16">
+        <div class="card-hd"><div class="card-hd-left"><div class="sec-bar" style="background:var(--green)"></div><div class="card-title">QC Checklist</div></div></div>
+        <div id="report-qc"></div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-left"><div class="sec-bar" style="background:var(--orange)"></div><div class="card-title">Report ที่ผ่านมา</div></div></div>
+        <div id="report-hist"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── DEFECTS ─── -->
+<div class="page" id="page-defects">
+  <div class="grid4 mb16" id="df-stats"></div>
+  <div class="col-6-4">
+    <div>
+      <div class="tabs"><button class="tab-btn act" onclick="filterDF('all',this)" id="df-tab-all">ทั้งหมด (0)</button><button class="tab-btn" onclick="filterDF('open',this)" id="df-tab-open">Open (0)</button><button class="tab-btn" onclick="filterDF('fix',this)" id="df-tab-fix">กำลังแก้ (0)</button><button class="tab-btn" onclick="filterDF('closed',this)" id="df-tab-closed">Closed (0)</button></div>
+      <div id="df-list"></div>
+    </div>
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-left"><div class="sec-bar" style="background:var(--danger)"></div><div class="card-title">เพิ่ม Defect</div></div></div>
+      <div class="fgrp"><label class="flbl">รายละเอียดปัญหา</label><input type="text" class="finp" id="ndt" placeholder="ระบุปัญหา..."></div>
+      <div class="frow mb12">
+        <div class="fgrp"><label class="flbl">ตำแหน่ง</label><select class="fsel" id="ndl"><option>ห้องนอน 1</option><option>ห้องนอน 2</option><option>ห้องนั่งเล่น</option><option>ครัว</option><option>ห้องน้ำ</option><option>ภายนอก</option></select></div>
+        <div class="fgrp"><label class="flbl">ความเร่งด่วน</label><select class="fsel" id="nds"><option value="high">🔴 สูง</option><option value="med" selected>🟡 กลาง</option><option value="low">🔵 ต่ำ</option></select></div>
+      </div>
+      <div class="frow mb16">
+        <div class="fgrp"><label class="flbl">Category</label><select class="fsel"><option>งานสี</option><option>งานฉาบ</option><option>งานพื้น</option><option>งานไฟฟ้า</option><option>งานประปา</option></select></div>
+        <div class="fgrp"><label class="flbl">มอบหมายให้</label><select class="fsel"><option>ช่างสี</option><option>ช่างฉาบ</option><option>ช่างไฟฟ้า</option><option>ช่างประปา</option></select></div>
+      </div>
+      <button class="btn btn-p btn-full" onclick="addDF()">+ เพิ่ม Defect</button>
+    </div>
+  </div>
+</div>
+
+<!-- ─── PROCUREMENT ─── -->
+<div class="page" id="page-proc">
+  <div class="notif ni-blue mb16"><div class="ni-icon">🤖</div><div style="flex:1"><div class="ni-title">AI Analyzer พบรายการขาด 2 รายการ</div><div class="ni-sub">Spacer 220 ลูก · แบบไม้อัด 30 แผ่น</div></div><button class="btn btn-sm btn-p" onclick="importAI()">นำเข้า PR</button></div>
+  <div class="col-6-4">
+    <div class="card">
+      <div class="card-hd">
+        <div class="card-hd-left"><div class="sec-bar" style="background:var(--blue)"></div><div class="card-title">ใบขอซื้อ (PR)</div></div>
+        <button class="btn btn-sm btn-s" onclick="toggleAddPR()">+ เพิ่ม PR</button>
+      </div>
+      <div id="pr-form-wrap" style="display:none;background:var(--bg);border-radius:var(--r);padding:14px;margin-bottom:14px">
+        <div class="frow mb12">
+          <div class="fgrp"><label class="flbl">วัสดุ</label><input class="finp" id="pr-mat" placeholder="ชื่อวัสดุ"></div>
+          <div class="fgrp"><label class="flbl">Phase</label><select class="fsel"><option>P12</option><option>P13</option><option>P14</option></select></div>
+        </div>
+        <div class="frow mb12">
+          <div class="fgrp"><label class="flbl">จำนวน</label><input class="finp" id="pr-qty" type="number" placeholder="0"></div>
+          <div class="fgrp"><label class="flbl">หน่วย</label><input class="finp" id="pr-unit" placeholder="ลบ.ม."></div>
+        </div>
+        <button class="btn btn-p btn-full" onclick="addPR()">+ สร้าง PR</button>
+      </div>
+      <div id="pr-list"></div>
+    </div>
+    <div>
+      <div class="card mb16">
+        <div class="card-hd"><div class="card-hd-left"><div class="sec-bar" style="background:var(--green)"></div><div class="card-title">เปรียบเทียบราคา</div></div></div>
+        <div style="font-size:12px;color:var(--text2);font-weight:500;margin-bottom:10px">คอนกรีต B25 · 50 ลบ.ม.</div>
+        <div id="quote-list"></div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-left"><div class="sec-bar" style="background:var(--orange)"></div><div class="card-title">Vendor</div></div></div>
+        <div id="vendor-list"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── STOCK ─── -->
+<div class="page" id="page-stock-main">
+  <div class="col-6-4">
+    <div>
+      <div class="card mb16">
+        <div class="card-hd">
+          <div class="card-hd-left"><div class="sec-bar" style="background:var(--blue)"></div><div class="card-title">คลังวัสดุ</div></div>
+          <div style="display:flex;gap:6px">
+            <button class="btn btn-sm btn-p">คลังกลาง</button>
+            <button class="btn btn-sm btn-ghost">หน้างาน A</button>
+            <button class="btn btn-sm btn-ghost">หน้างาน B</button>
+          </div>
+        </div>
+        <div id="stock-full"></div>
+      </div>
+    </div>
+    <div>
+      <div class="card mb16">
+        <div class="card-hd"><div class="card-hd-left"><div class="sec-bar" style="background:var(--orange)"></div><div class="card-title">รับเข้า / เบิกจ่าย</div></div></div>
+        <div class="tabs mb12"><button class="tab-btn act" onclick="setTxn('in',this)">📦 รับเข้า</button><button class="tab-btn" onclick="setTxn('out',this)">📤 เบิก</button><button class="tab-btn" onclick="setTxn('move',this)">🔄 โอน</button></div>
+        <div class="fgrp"><label class="flbl">วัสดุ</label><select class="fsel" id="tx-mat"><option>คอนกรีต B25</option><option>เหล็ก DB20</option><option>แบบไม้อัด</option><option>กระเบื้อง 60×60</option></select></div>
+        <div class="frow mb12">
+          <div class="fgrp"><label class="flbl">จำนวน</label><input class="finp" id="tx-qty" type="number" placeholder="0"></div>
+          <div class="fgrp"><label class="flbl">Lot No.</label><input class="finp" id="tx-lot" placeholder="LOT-001"></div>
+        </div>
+        <button class="btn btn-p btn-full" onclick="doTxn()"><span id="tx-lbl">📦 บันทึกรับเข้า</span></button>
+      </div>
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-left"><div class="sec-bar" style="background:var(--danger)"></div><div class="card-title">⚠️ แจ้งเตือน Stock ต่ำ</div></div></div>
+        <div id="stock-warn"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── AI ─── -->
+<div class="page" id="page-ai">
+  <div class="col-6-4">
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-left"><div class="sec-bar" style="background:var(--blue)"></div><div class="card-title">AI Document Analyzer</div></div></div>
+      <div id="ai-zone" onclick="simUpload()" style="border:2px dashed var(--border2);border-radius:var(--r3);padding:40px 20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:16px" onmouseenter="this.style.borderColor='var(--blue)';this.style.background='var(--blue3)'" onmouseleave="this.style.borderColor='var(--border2)';this.style.background='transparent'">
+        <div style="font-size:48px;margin-bottom:12px">📄</div>
+        <div style="font-size:15px;font-weight:600;color:var(--text-h);margin-bottom:6px">คลิกหรือลากไฟล์</div>
+        <div style="font-size:12px;color:var(--text3)">PDF · DWG · BOQ Excel · สูงสุด 50 MB</div>
+      </div>
+      <div id="ai-chip" style="display:none"></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:16px">
+        <label style="display:flex;align-items:center;gap:8px;padding:10px;background:var(--bg);border-radius:var(--r2);cursor:pointer;font-size:13px"><input type="checkbox" checked style="accent-color:var(--blue)"> ขนาด/ระยะ</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:10px;background:var(--bg);border-radius:var(--r2);cursor:pointer;font-size:13px"><input type="checkbox" checked style="accent-color:var(--blue)"> องศา/Slope</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:10px;background:var(--bg);border-radius:var(--r2);cursor:pointer;font-size:13px"><input type="checkbox" checked style="accent-color:var(--blue)"> ปริมาณ BOQ</label>
+        <label style="display:flex;align-items:center;gap:8px;padding:10px;background:var(--bg);border-radius:var(--r2);cursor:pointer;font-size:13px"><input type="checkbox" style="accent-color:var(--blue)"> วัสดุ Spec</label>
+      </div>
+      <button class="btn btn-p btn-full" id="ai-btn" disabled onclick="runAI()">🤖 วิเคราะห์ด้วย AI</button>
+      <div id="ai-prog" style="display:none;margin-top:16px"></div>
+    </div>
+    <div id="ai-result-panel">
+      <div class="card" style="border:2px dashed var(--border);text-align:center;padding:40px"><div style="font-size:40px;margin-bottom:12px">🤖</div><div style="font-size:14px;font-weight:500;color:var(--text3)">ผลวิเคราะห์จะแสดงที่นี่</div></div>
+    </div>
+  </div>
+</div>
+
+<!-- ─── OWNER PORTAL ─── -->
+<div class="page" id="page-owner">
+  <div style="background:linear-gradient(135deg,var(--blue2),var(--blue));border-radius:var(--r3);padding:20px;margin-bottom:20px;display:flex;align-items:center;gap:16px;box-shadow:var(--shadow2)">
+    <div style="width:52px;height:52px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;font-size:26px;border:2px solid rgba(255,255,255,.4)">🏠</div>
+    <div style="flex:1"><div style="font-size:16px;font-weight:600;color:#fff">คุณ วิชัย เจ้าของ</div><div style="font-size:12px;color:rgba(255,255,255,.7);margin-top:2px">Owner · View Only · พาร์ค วิลล์ A</div></div>
+    <span style="background:rgba(255,255,255,.2);color:#fff;font-size:12px;padding:5px 14px;border-radius:20px;border:1px solid rgba(255,255,255,.3)">View Only</span>
+  </div>
+  <div class="grid3 mb20" id="owner-kpi"></div>
+  <div class="col-6-4">
+    <div class="card">
+      <div class="card-hd"><div class="card-hd-left"><div class="sec-bar" style="background:var(--blue)"></div><div class="card-title">ความคืบหน้า Phase</div></div></div>
+      <div id="owner-phases"></div>
+    </div>
+    <div>
+      <div class="card mb16">
+        <div class="card-hd"><div class="card-hd-left"><div class="sec-bar" style="background:var(--orange)"></div><div class="card-title">อนุมัติงวดงาน</div></div></div>
+        <div class="notif ni-orange mb12"><div class="ni-icon">⚠️</div><div><div class="ni-title">การอนุมัติถือเป็นหลักฐาน</div><div class="ni-sub">บันทึก IP + เวลา + Device อัตโนมัติ</div></div></div>
+        <div id="ms-owner"></div>
+      </div>
+      <div class="card">
+        <div class="card-hd"><div class="card-hd-left"><div class="sec-bar" style="background:var(--green)"></div><div class="card-title">Timeline</div></div></div>
+        <div id="owner-timeline"></div>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     CONTRACT MODULE — หน้าสัญญา + งวดงาน
+══════════════════════════════════════════ -->
+<div class="page" id="page-contract">
+  <div class="grid2">
+    <!-- LEFT: รายการสัญญา -->
+    <div>
+      <div class="card mb16">
+        <div class="card-hd">
+          <div class="card-hd-left">
+            <div class="sec-bar" style="background:var(--blue)"></div>
+            <div><div class="card-title">สัญญาโครงการ</div><div class="card-sub">เลือกโครงการเพื่อดูสัญญา</div></div>
+          </div>
+          <button class="btn btn-sm btn-s" onclick="showContractForm()">+ สร้างสัญญา</button>
+        </div>
+        <!-- Project Selector -->
+        <div class="fgrp mb16">
+          <label class="flbl">เลือกโครงการ</label>
+          <select class="fsel" id="contract-proj-sel" onchange="loadContractByProject(this.value)">
+            <option value="">— เลือกโครงการ —</option>
+          </select>
+        </div>
+        <div id="contract-list">
+          <div class="empty"><div class="empty-icon">📄</div><div class="empty-title">ยังไม่มีสัญญา</div><div class="empty-sub">กดปุ่ม "สร้างสัญญา" เพื่อเพิ่ม</div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: งวดงานตามสัญญา -->
+    <div>
+      <div class="card mb16">
+        <div class="card-hd">
+          <div class="card-hd-left">
+            <div class="sec-bar" style="background:var(--orange)"></div>
+            <div><div class="card-title">งวดงานตามสัญญา</div><div class="card-sub" id="contract-milestone-sub">เลือกสัญญาเพื่อดูงวดงาน</div></div>
+          </div>
+          <button class="btn btn-sm btn-p" id="btn-add-milestone" style="display:none" onclick="showMilestoneForm()">+ เพิ่มงวด</button>
+        </div>
+        <div id="contract-milestones">
+          <div class="empty"><div class="empty-icon">💰</div><div class="empty-title">เลือกสัญญาก่อน</div></div>
+        </div>
+      </div>
+
+      <!-- Summary -->
+      <div class="card" id="contract-summary" style="display:none">
+        <div class="card-title" style="margin-bottom:14px">สรุปมูลค่าสัญญา</div>
+        <div id="contract-summary-content"></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Contract Form Modal -->
+  <div id="contract-form-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:5000;align-items:center;justify-content:center;overflow-y:auto">
+    <div style="background:#fff;border-radius:16px;padding:28px;width:min(560px,94vw);margin:20px auto;box-shadow:0 20px 60px rgba(0,0,0,.2)">
+      <div style="font-size:17px;font-weight:700;color:var(--text-h);margin-bottom:20px;display:flex;align-items:center;justify-content:space-between">
+        📄 สร้างสัญญาโครงการ
+        <button onclick="hideContractForm()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3)">✕</button>
+      </div>
+      <div class="fgrp">
+        <label class="flbl">โครงการ</label>
+        <select class="fsel" id="cf-project"></select>
+      </div>
+      <div class="form-row">
+        <div class="fgrp"><label class="flbl">เลขที่สัญญา</label><input class="finp" id="cf-number" placeholder="เช่น สัญญา 001/2569"></div>
+        <div class="fgrp"><label class="flbl">วันที่ทำสัญญา</label><input type="date" class="finp" id="cf-date"></div>
+      </div>
+      <div class="form-row">
+        <div class="fgrp"><label class="flbl">ชื่อผู้รับเหมา</label><input class="finp" id="cf-contractor" placeholder="บจก./ห้าง/บุคคล"></div>
+        <div class="fgrp"><label class="flbl">ชื่อเจ้าของงาน</label><input class="finp" id="cf-owner" placeholder="ชื่อลูกค้า"></div>
+      </div>
+      <div class="form-row">
+        <div class="fgrp"><label class="flbl">มูลค่าสัญญารวม (บาท)</label><input type="number" class="finp" id="cf-value" placeholder="0"></div>
+        <div class="fgrp"><label class="flbl">ระยะประกัน (เดือน)</label><input type="number" class="finp" id="cf-warranty" value="12"></div>
+      </div>
+      <div class="fgrp"><label class="flbl">หมายเหตุ / เงื่อนไขพิเศษ</label><textarea class="fta" id="cf-notes" placeholder="รายละเอียดเพิ่มเติม..."></textarea></div>
+
+      <!-- Milestone section in contract form -->
+      <div style="background:var(--bg);border-radius:var(--r);padding:14px;margin-bottom:16px">
+        <div style="font-size:13px;font-weight:600;color:var(--text-h);margin-bottom:10px">งวดงานตามสัญญา</div>
+        <div id="cf-milestones-list"></div>
+        <button onclick="addMilestoneRow()" class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px;justify-content:center">
+          + เพิ่มงวดงาน
+        </button>
+      </div>
+      <button class="btn btn-p btn-full" onclick="saveContract()">💾 บันทึกสัญญา</button>
+    </div>
+  </div>
+</div>
+
+<!-- ══════════════════════════════════════════
+     BOQ MODULE — ถอดปริมาณวัสดุ
+══════════════════════════════════════════ -->
+<div class="page" id="page-boq">
+  <!-- Project + Phase selector -->
+  <div class="card mb16">
+    <div class="card-hd">
+      <div class="card-hd-left">
+        <div class="sec-bar" style="background:var(--blue)"></div>
+        <div><div class="card-title">BOQ — ถอดปริมาณวัสดุ</div><div class="card-sub">เลือกโครงการและ Phase เพื่อกรอก BOQ</div></div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-sm btn-ghost" onclick="exportBOQ()">⬇️ Export Excel</button>
+        <button class="btn btn-sm btn-s" onclick="showBOQForm()">+ เพิ่มรายการ</button>
+      </div>
+    </div>
+    <div class="frow">
+      <div class="fgrp">
+        <label class="flbl">โครงการ</label>
+        <select class="fsel" id="boq-proj-sel" onchange="loadBOQ()">
+          <option value="">— เลือกโครงการ —</option>
+        </select>
+      </div>
+      <div class="fgrp">
+        <label class="flbl">Phase / หมวดงาน</label>
+        <select class="fsel" id="boq-phase-sel" onchange="loadBOQ()">
+          <option value="">— ทุก Phase —</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- BOQ Summary Bar -->
+    <div id="boq-summary-bar" style="display:none;background:var(--blue3);border-radius:var(--r);padding:12px 16px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:4px">
+      <div style="text-align:center"><div style="font-size:11px;color:var(--text3)">รายการทั้งหมด</div><div style="font-size:18px;font-weight:700;color:var(--blue)" id="boq-count">0</div></div>
+      <div style="text-align:center"><div style="font-size:11px;color:var(--text3)">มูลค่าวัสดุรวม</div><div style="font-size:14px;font-weight:700;color:var(--blue)" id="boq-total">฿0</div></div>
+      <div style="text-align:center"><div style="font-size:11px;color:var(--text3)">ส่งจัดซื้อแล้ว</div><div style="font-size:18px;font-weight:700;color:var(--green)" id="boq-sent">0</div></div>
+      <div style="text-align:center"><div style="font-size:11px;color:var(--text3)">รอดำเนินการ</div><div style="font-size:18px;font-weight:700;color:var(--orange)" id="boq-pending">0</div></div>
+    </div>
+  </div>
+
+  <!-- BOQ Table -->
+  <div class="card">
+    <div id="boq-table-wrap">
+      <div class="empty"><div class="empty-icon">📋</div><div class="empty-title">เลือกโครงการเพื่อดู BOQ</div></div>
+    </div>
+  </div>
+
+  <!-- BOQ Form Modal -->
+  <div id="boq-form-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:5000;align-items:center;justify-content:center;overflow-y:auto">
+    <div style="background:#fff;border-radius:16px;padding:28px;width:min(600px,94vw);margin:20px auto;box-shadow:0 20px 60px rgba(0,0,0,.2)">
+      <div style="font-size:17px;font-weight:700;color:var(--text-h);margin-bottom:20px;display:flex;align-items:center;justify-content:space-between">
+        📋 เพิ่มรายการ BOQ
+        <button onclick="hideBOQForm()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3)">✕</button>
+      </div>
+      <div class="form-row">
+        <div class="fgrp"><label class="flbl">โครงการ</label><select class="fsel" id="bq-proj"></select></div>
+        <div class="fgrp"><label class="flbl">Phase</label><select class="fsel" id="bq-phase"><option value="">— เลือก Phase —</option></select></div>
+      </div>
+      <div class="form-row">
+        <div class="fgrp"><label class="flbl">หมวดงาน</label>
+          <select class="fsel" id="bq-cat">
+            <option>งานโครงสร้าง</option><option>งานสถาปัตย์</option>
+            <option>งานระบบไฟฟ้า</option><option>งานระบบประปา</option>
+            <option>งานหลังคา</option><option>งานพื้น-ผนัง</option>
+            <option>งานประตู-หน้าต่าง</option><option>งานสี</option><option>อื่น ๆ</option>
+          </select>
+        </div>
+        <div class="fgrp"><label class="flbl">รหัสรายการ</label><input class="finp" id="bq-num" placeholder="เช่น S-001"></div>
+      </div>
+      <div class="fgrp"><label class="flbl">รายละเอียดงาน / วัสดุ</label><input class="finp" id="bq-desc" placeholder="เช่น คอนกรีต B25 เทฐานราก F1"></div>
+      <div class="fgrp"><label class="flbl">Spec / มาตรฐาน</label><input class="finp" id="bq-spec" placeholder="เช่น มอก. 213-2560"></div>
+      <div class="form-row">
+        <div class="fgrp"><label class="flbl">หน่วย</label>
+          <select class="fsel" id="bq-unit">
+            <option>ลบ.ม.</option><option>ตร.ม.</option><option>ล.ม.</option>
+            <option>กก.</option><option>ตัน</option><option>แผ่น</option>
+            <option>ถุง</option><option>ต้น</option><option>ชุด</option>
+            <option>ชิ้น</option><option>ใบ</option><option>เมตร</option><option>อื่น ๆ</option>
+          </select>
+        </div>
+        <div class="fgrp"><label class="flbl">ปริมาณ</label><input type="number" class="finp" id="bq-qty" placeholder="0" oninput="calcBOQTotal()"></div>
+      </div>
+      <div class="form-row">
+        <div class="fgrp"><label class="flbl">ราคาต่อหน่วย (บาท)</label><input type="number" class="finp" id="bq-price" placeholder="0" oninput="calcBOQTotal()"></div>
+        <div class="fgrp">
+          <label class="flbl">มูลค่ารวม</label>
+          <div style="background:var(--blue3);border-radius:var(--r2);padding:9px 12px;font-size:16px;font-weight:700;color:var(--blue)" id="bq-total-display">฿ 0</div>
+        </div>
+      </div>
+      <div style="display:flex;gap:8px;margin-top:4px">
+        <button class="btn btn-p" style="flex:1;justify-content:center" onclick="saveBOQItem()">💾 บันทึก</button>
+        <button class="btn btn-s" style="flex:1;justify-content:center" onclick="saveBOQAndSendPR()">📤 บันทึก + ส่งจัดซื้อ</button>
+      </div>
+    </div>
+  </div>
+</div>
+
+
+<!-- ══════════════════════════════════════════
+     FILE MANAGER — อัปโหลดเอกสาร
+══════════════════════════════════════════ -->
+<div class="page" id="page-files">
+  <div class="grid2">
+    <!-- LEFT: อัปโหลด -->
+    <div>
+      <div class="card mb16">
+        <div class="card-hd">
+          <div class="card-hd-left">
+            <div class="sec-bar" style="background:var(--blue)"></div>
+            <div><div class="card-title">อัปโหลดเอกสาร</div><div class="card-sub">PDF · รูปภาพ · Excel · Word</div></div>
+          </div>
+        </div>
+
+        <!-- Project Selector -->
+        <div class="fgrp mb12">
+          <label class="flbl">โครงการ</label>
+          <select class="fsel" id="file-proj-sel">
+            <option value="">— เลือกโครงการ —</option>
+          </select>
+        </div>
+
+        <!-- Category -->
+        <div class="fgrp mb12">
+          <label class="flbl">ประเภทเอกสาร</label>
+          <select class="fsel" id="file-category">
+            <option value="contract">📄 สัญญา</option>
+            <option value="boq">📋 BOQ / ถอดปริมาณ</option>
+            <option value="drawing">📐 แบบก่อสร้าง</option>
+            <option value="photo">📸 รูปถ่ายหน้างาน</option>
+            <option value="report">📊 รายงาน</option>
+            <option value="invoice">💰 ใบแจ้งหนี้ / ใบเสร็จ</option>
+            <option value="permit">🏛️ ใบอนุญาต</option>
+            <option value="other">📁 อื่น ๆ</option>
+          </select>
+        </div>
+
+        <!-- Description -->
+        <div class="fgrp mb16">
+          <label class="flbl">คำอธิบาย (ไม่บังคับ)</label>
+          <input class="finp" id="file-desc" placeholder="เช่น สัญญาจ้างก่อสร้างบ้านคุณนิด">
+        </div>
+
+        <!-- Drop Zone -->
+        <div id="file-dropzone"
+          style="border:2px dashed var(--border2);border-radius:var(--r3);padding:36px 20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:14px"
+          onclick="document.getElementById('file-input').click()"
+          ondragover="event.preventDefault();this.style.borderColor='var(--blue)';this.style.background='var(--blue3)'"
+          ondragleave="this.style.borderColor='var(--border2)';this.style.background='transparent'"
+          ondrop="handleFileDrop(event)">
+          <div style="font-size:44px;margin-bottom:10px">📁</div>
+          <div style="font-size:15px;font-weight:600;color:var(--text-h);margin-bottom:6px">คลิกหรือลากไฟล์มาวาง</div>
+          <div style="font-size:12px;color:var(--text3)">PDF · PNG · JPG · XLSX · DOCX · สูงสุด 50 MB</div>
+        </div>
+        <input type="file" id="file-input" multiple accept=".pdf,.png,.jpg,.jpeg,.xlsx,.xls,.docx,.doc" style="display:none" onchange="handleFileSelect(this.files)">
+
+        <!-- File Queue -->
+        <div id="file-queue" style="display:none;margin-bottom:14px">
+          <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px">ไฟล์ที่เลือก</div>
+          <div id="file-queue-list"></div>
+        </div>
+
+        <!-- Upload Button -->
+        <button id="btn-upload" class="btn btn-p btn-full" onclick="uploadFiles()" style="display:none">
+          📤 อัปโหลดทั้งหมด
+        </button>
+
+        <!-- Progress -->
+        <div id="upload-progress" style="display:none;margin-top:12px">
+          <div class="pbar-row">
+            <div class="pbar" style="height:8px"><div class="pfill" id="upload-prog-fill" style="width:0%;background:var(--blue)"></div></div>
+            <div class="ppct" id="upload-prog-pct">0%</div>
+          </div>
+          <div style="font-size:12px;color:var(--text3);margin-top:4px" id="upload-prog-text">กำลังอัปโหลด...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: รายการเอกสาร -->
+    <div>
+      <div class="card">
+        <div class="card-hd">
+          <div class="card-hd-left">
+            <div class="sec-bar" style="background:var(--orange)"></div>
+            <div><div class="card-title">เอกสารทั้งหมด</div></div>
+          </div>
+          <select class="fsel" id="file-filter-cat" onchange="loadFiles()" style="width:auto;font-size:12px;padding:5px 10px">
+            <option value="">ทุกประเภท</option>
+            <option value="contract">📄 สัญญา</option>
+            <option value="boq">📋 BOQ</option>
+            <option value="drawing">📐 แบบ</option>
+            <option value="photo">📸 รูปถ่าย</option>
+            <option value="report">📊 รายงาน</option>
+            <option value="invoice">💰 ใบแจ้งหนี้</option>
+            <option value="permit">🏛️ ใบอนุญาต</option>
+          </select>
+        </div>
+
+        <!-- Filter by project -->
+        <div class="fgrp mb14">
+          <select class="fsel" id="file-filter-proj" onchange="loadFiles()">
+            <option value="">ทุกโครงการ</option>
+          </select>
+        </div>
+
+        <div id="file-list">
+          <div class="empty"><div class="empty-icon">📁</div><div class="empty-title">ยังไม่มีเอกสาร</div><div class="empty-sub">อัปโหลดเอกสารจากด้านซ้าย</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+</main>
+
+<!-- BOTTOM NAV (mobile) -->
+<div class="bot-nav">
+  <div class="bot-nav-items">
+    <div class="bot-item act" onclick="nav('dashboard','Dashboard');botAct(this)"><div class="bot-icon">📊</div><span>Dashboard</span></div>
+    <div class="bot-item" onclick="nav('phases','Phase');botAct(this)"><div class="bot-icon">🗂️</div><span>Phases</span></div>
+    <div class="bot-item" onclick="nav('report','Report');botAct(this)"><div class="bot-icon">📋<span class="bot-badge">3</span></div><span>Report</span></div>
+    <div class="bot-item" onclick="nav('defects','Defects');botAct(this)"><div class="bot-icon">⚠️<span class="bot-badge">8</span></div><span>Defects</span></div>
+    <div class="bot-item" onclick="nav('stock-main','คลัง');botAct(this)"><div class="bot-icon">📦</div><span>คลัง</span></div>
+  </div>
+</div>
+</div>
+
+<script>
+// ── DATA ──────────────────────────────────────────────────────────────────
+var ROLES={
+  ceo:{name:'ประพัฒน์ รุ่งเรือง',role:'CEO · Full Access',code:'CEO',menu:'ceo'},
+  eng:{name:'สมศักดิ์ วิชาการ',role:'วิศวกรควบคุมงาน',code:'วก.',menu:'eng'},
+  pm:{name:'สมหญิง วางแผน',role:'ผู้จัดการโครงการ',code:'PM',menu:'pm'},
+  foreman:{name:'สมชาย ชำนาญ',role:'หัวหน้าช่าง',code:'หช.',menu:'foreman'},
+  proc:{name:'มาลี จัดหา',role:'เจ้าหน้าที่จัดซื้อ',code:'จซ.',menu:'proc'},
+  acc:{name:'สุดา การเงิน',role:'บัญชี/การเงิน',code:'บช.',menu:'acc'},
+  owner:{name:'วิชัย เจ้าของ',role:'Owner · View Only',code:'OWN',menu:'owner'}
+};
+var currentRole='ceo';
+
+var PROJECTS=[
+  {id:'A',name:'พาร์ค วิลล์ A',loc:'กรุงเทพฯ',pct:87,phase:'P12 ไฟฟ้า Final',days:28,budget:6,used:4.25,st:'active',milestone:3},
+  {id:'B',name:'บ้านสวนทอง B',loc:'เชียงใหม่',pct:55,phase:'P8 พื้น',days:62,budget:4.5,used:2.1,st:'active',milestone:2},
+  {id:'C',name:'วิลล่า ริมน้ำ C',loc:'ภูเก็ต',pct:20,phase:'P3 หลังคา',days:140,budget:8,used:1.2,st:'active',milestone:1}
+];
+var PHASES=[
+  {n:'P1 ฐานราก',pct:100,col:'#1565C0',st:'done'},{n:'P2 โครงสร้าง',pct:100,col:'#1565C0',st:'done'},
+  {n:'P3 หลังคา',pct:100,col:'#1565C0',st:'done'},{n:'P4 ผนัง',pct:100,col:'#1565C0',st:'done'},
+  {n:'P5 MEP',pct:100,col:'#1565C0',st:'done'},{n:'P6 ฉาบ',pct:100,col:'#1565C0',st:'done'},
+  {n:'P7 ฝ้า',pct:100,col:'#1565C0',st:'done'},{n:'P8 พื้น',pct:100,col:'#1565C0',st:'done'},
+  {n:'P9 ประตู',pct:100,col:'#1565C0',st:'done'},{n:'P10 สี',pct:100,col:'#1565C0',st:'done'},
+  {n:'P11 สุขภัณฑ์',pct:100,col:'#1565C0',st:'done'},
+  {n:'P12 ไฟฟ้า Final',pct:80,col:'#FF8A00',st:'active'},
+  {n:'P13 ภายนอก',pct:45,col:'#FF8A00',st:'active'},
+  {n:'P14 เก็บงาน',pct:10,col:'#FF8A00',st:'active'},
+  {n:'P15 ส่งมอบ',pct:0,col:'#90A4AE',st:'wait'}
+];
+var STOCK=[]; // โหลดจาก Supabase DB เท่านั้น
+var MILESTONES=[
+  {n:1,title:'งวด 1 — ฐานราก',amt:'1,250,000',st:'done'},
+  {n:2,title:'งวด 2 — ผนัง MEP',amt:'980,000',st:'done'},
+  {n:3,title:'งวด 3 — ฝ้า พื้น',amt:'750,000',st:'pend'},
+  {n:4,title:'งวด 4 — สี ไฟฟ้า',amt:'620,000',st:'wait'},
+  {n:5,title:'งวด 5 — ส่งมอบ',amt:'400,000',st:'wait'}
+];
+var DEFECTS=[]; // โหลดจาก Supabase DB เท่านั้น
+var PRS=[
+  {id:'PR-001',t:'คอนกรีต B25 Phase 2',amt:'฿138,280',st:'approved',src:'BOQ'},
+  {id:'PR-002',t:'เหล็ก DB20 + RB9',amt:'฿108,470',st:'pend',src:'AI'},
+  {id:'PR-003',t:'กระเบื้อง 60×60',amt:'฿43,000',st:'po',src:'BOQ'}
+];
+var QC_ITEMS=['ตรวจ Cover คอนกรีตครบ','ขนาดและระยะตามแบบ','เหล็กปลอกถูกต้อง','ไม่มีสิ่งปนเปื้อน'];
+var dfFilter='all';
+var txnMode='in';
+var addPROpen=false;
+var aiFile=false;
+
+// ── NESTED MENU CONFIG ─────────────────────────────────────────────────────
+var MENU_CFG={
+  ceo:[
+    {label:'ภาพรวม',items:[
+      {icon:'📊',t:'Dashboard',id:'dashboard'},
+      {icon:'🏗️',t:'โครงการทั้งหมด',id:'projects'}
+    ]},
+    {label:'บริหารงาน',items:[
+      {icon:'🗂️',t:'Phase & งาน',id:'phases',sub:[
+        {icon:'📋',t:'รายงานประจำวัน',id:'report'},
+        {icon:'⚠️',t:'Defect & Snag',id:'defects',badge:'8'}
+      ]},
+      {icon:'🛒',t:'จัดซื้อ & คลัง',id:'proc',sub:[
+        {icon:'📄',t:'ใบขอซื้อ PR/PO',id:'proc'},
+        {icon:'📦',t:'คลังวัสดุ',id:'stock-main'},
+        {icon:'👥',t:'Vendor & Quote',id:'proc'}
+      ]}
+    ]},
+    {label:'รายงาน',items:[
+      {icon:'🤖',t:'AI Analyzer',id:'ai'},
+      {icon:'🏠',t:'Owner Portal',id:'owner'}
+    ]},
+  {label:'เอกสาร & สัญญา',items:[
+      {icon:'📁',t:'เอกสาร & ไฟล์',id:'files'},
+      {icon:'📄',t:'สัญญา + งวดงาน',id:'contract'},
+      {icon:'📋',t:'BOQ ถอดปริมาณ',id:'boq'}
+    ]}
+  ],
+  eng:[
+    {label:'ภาพรวม',items:[{icon:'📊',t:'Dashboard',id:'dashboard'}]},
+    {label:'ตรวจงาน',items:[
+      {icon:'🗂️',t:'Phase QC',id:'phases',sub:[
+        {icon:'✅',t:'QC Checklist',id:'phases'},
+        {icon:'⚠️',t:'Defect Recheck',id:'defects',badge:'3'}
+      ]},
+      {icon:'🤖',t:'AI Analyzer',id:'ai'}
+    ]},
+    {label:'อนุมัติ',items:[
+      {icon:'📄',t:'อนุมัติ PR',id:'proc'},
+      {icon:'🏠',t:'Owner Portal',id:'owner'}
+    ]},
+  {label:'เอกสาร',items:[
+      {icon:'📁',t:'เอกสาร & ไฟล์',id:'files'}
+    ]}
+  ],
+  pm:[
+    {label:'ภาพรวม',items:[{icon:'📊',t:'Dashboard',id:'dashboard'},{icon:'🏗️',t:'โครงการ',id:'projects'}]},
+    {label:'บริหาร',items:[
+      {icon:'🗂️',t:'Phase Plan',id:'phases'},
+      {icon:'⚠️',t:'Defect',id:'defects',badge:'8'},
+      {icon:'📋',t:'Daily Report',id:'report'}
+    ]}
+  ],
+  foreman:[
+    {label:'ภาพรวม',items:[{icon:'📊',t:'Dashboard',id:'dashboard'}]},
+    {label:'งานวันนี้',items:[
+      {icon:'🗂️',t:'Phase ที่รับผิดชอบ',id:'phases'},
+      {icon:'📋',t:'ส่ง Daily Report',id:'report'},
+      {icon:'⚠️',t:'Defect ที่รับ',id:'defects',badge:'3'}
+    ]}
+  ],
+  proc:[
+    {label:'ภาพรวม',items:[{icon:'📊',t:'Dashboard',id:'dashboard'}]},
+    {label:'จัดซื้อ',items:[
+      {icon:'📄',t:'PR / PO',id:'proc',sub:[
+        {icon:'➕',t:'สร้าง PR ใหม่',id:'proc'},
+        {icon:'🔄',t:'ติดตาม PO',id:'proc'}
+      ]},
+      {icon:'👥',t:'Vendor & Quote',id:'proc'}
+    ]},
+    {label:'คลัง',items:[
+      {icon:'📦',t:'รายการวัสดุ',id:'stock-main',sub:[
+        {icon:'📥',t:'รับวัสดุเข้า',id:'stock-main'},
+        {icon:'📤',t:'เบิกวัสดุ',id:'stock-main'},
+        {icon:'🔄',t:'โอนระหว่างคลัง',id:'stock-main'}
+      ]},
+      {icon:'🤖',t:'AI → จัดซื้อ',id:'ai'}
+    ]},
+  {label:'เอกสาร',items:[
+      {icon:'📁',t:'เอกสาร & ไฟล์',id:'files'}
+    ]}
+  ],
+  acc:[
+    {label:'ภาพรวม',items:[{icon:'📊',t:'Dashboard',id:'dashboard'}]},
+    {label:'การเงิน',items:[
+      {icon:'💰',t:'งวดงาน',id:'owner'},
+      {icon:'📄',t:'อนุมัติ PO',id:'proc'}
+    ]}
+  ],
+  owner:[
+    {label:'',items:[
+      {icon:'📊',t:'Dashboard',id:'dashboard'},
+      {icon:'🏠',t:'Owner Portal',id:'owner'}
+    ]}
+  ]
+};
+
+// ── BUILD SIDEBAR ──────────────────────────────────────────────────────────
+function buildSidebar(role){
+  var cfg=MENU_CFG[role]||MENU_CFG.ceo;
+  var html='';
+  cfg.forEach(function(section){
+    if(section.label)html+='<div class="mn-label">'+section.label+'</div>';
+    section.items.forEach(function(item){
+      var hasSub=item.sub&&item.sub.length>0;
+      html+='<div class="mn-item'+(hasSub?' has-child':'')+'" onclick="'+(hasSub?'toggleSub(this)':'nav(\''+item.id+'\',\''+item.t+'\')')+'">'
+        +'<div class="mn-icon">'+item.icon+'</div>'
+        +'<span class="mn-txt">'+item.t+'</span>'
+        +(item.badge?'<span class="mn-badge">'+item.badge+'</span>':'')
+        +(hasSub?'<span class="mn-arrow">›</span>':'')
+        +'</div>';
+      if(hasSub){
+        html+='<div class="sub-menu">';
+        item.sub.forEach(function(sub){
+          var hasDeep=sub.deep&&sub.deep.length>0;
+          html+='<div class="sub-item'+(hasDeep?' has-child':'')+'" onclick="'+(hasDeep?'toggleDeep(this)':'nav(\''+sub.id+'\',\''+item.t+' › '+sub.t+'\')')+'">'
+            +'<span style="font-size:14px">'+sub.icon+'</span><span>'+sub.t+'</span>'
+            +(sub.badge?'<span class="mn-badge" style="margin-left:auto">'+sub.badge+'</span>':'')
+            +'</div>';
+          if(hasDeep){
+            html+='<div class="deep-menu">';
+            sub.deep.forEach(function(d){html+='<div class="deep-item" onclick="nav(\''+d.id+'\',\''+d.t+'\')"><span>'+d.icon+'</span><span>'+d.t+'</span></div>';});
+            html+='</div>';
+          }
+        });
+        html+='</div>';
+      }
+    });
+  });
+  document.getElementById('sb-scroll').innerHTML=html;
+}
+
+function toggleSub(el){
+  var sm=el.nextElementSibling;
+  if(!sm||!sm.classList.contains('sub-menu'))return;
+  sm.classList.toggle('open');
+  el.classList.toggle('open');
+}
+function toggleDeep(el){
+  var dm=el.nextElementSibling;
+  if(!dm||!dm.classList.contains('deep-menu'))return;
+  dm.classList.toggle('open');
+}
+
+// ── NAVIGATION ─────────────────────────────────────────────────────────────
+
+
+function toggleSB(){document.getElementById('sb').classList.toggle('col');}
+function botAct(el){document.querySelectorAll('.bot-item').forEach(b=>b.classList.remove('act'));el.classList.add('act');}
+function setTab(el,v){document.querySelectorAll('.tabs .tab-btn').forEach(b=>b.classList.remove('act'));el.classList.add('act');}
+function filterTab(el){document.querySelectorAll('.tabs .tab-btn').forEach(b=>b.classList.remove('act'));el.classList.add('act');}
+
+// ── ROLE SWITCH ─────────────────────────────────────────────────────────────
+function switchRole(r){
+  currentRole=r;
+  var d=ROLES[r];
+  document.getElementById('sb-av').textContent=d.code;
+  document.getElementById('sb-name').textContent=d.name;
+  document.getElementById('sb-role').textContent=d.role;
+  buildSidebar(d.menu);
+  renderDash();
+  // Owner: redirect to portal
+  if(r==='owner')nav('owner','Owner Portal');
+}
+
+// ── DASHBOARD ──────────────────────────────────────────────────────────────
+function renderDash(){
+  // KPI
+  var kpis=[
+    {n:'87%',l:'ความคืบหน้าเฉลี่ย',icon:'📊',bg:'#E3F2FD',col:'var(--blue)',acc:'var(--blue)',chg:'↑ +5% สัปดาห์นี้',up:true},
+    {n:'3',l:'โครงการที่ดำเนินการ',icon:'🏗️',bg:'#FFF3E0',col:'var(--orange)',acc:'var(--orange)',chg:'↑ 1 เปิดใหม่',up:true},
+    {n:DEFECTS.filter(function(d){return d.st!=='closed';}).length.toString(),l:'Defect ค้างอยู่',icon:'⚠️',bg:'#FFEBEE',col:'var(--danger)',acc:'var(--danger)',chg:'อัปเดตจาก DB',up:false},
+    {n:STOCK.filter(function(s){return s.st!=='ok';}).length.toString(),l:'Stock ต่ำกว่า Min',icon:'📦',bg:'#E8F5E9',col:'var(--warn)',acc:'var(--warn)',chg:STOCK.filter(function(s){return s.st!=='ok';}).length?'↓ ต้องสั่งซื้อด่วน':'✅ ปกติ',up:false}
+  ];
+  document.getElementById('kpi-area').innerHTML=kpis.map(k=>`
+    <div class="kpi" onclick="nav('dashboard','Dashboard')">
+      <div class="kpi-accent" style="background:${k.acc}"></div>
+      <div class="kpi-top">
+        <div class="kpi-icon" style="background:${k.bg}">${k.icon}</div>
+        <div class="kpi-arrow">›</div>
+      </div>
+      <div class="kpi-num" style="color:${k.col}">${k.n}</div>
+      <div class="kpi-lbl">${k.l}</div>
+      <div class="kpi-chg ${k.up?'up':'dn'}">${k.chg}</div>
+    </div>`).join('');
+
+  // Project cards
+  document.getElementById('proj-cards').innerHTML=PROJECTS.map(p=>`
+    <div class="proj-card" onclick="nav('projects','โครงการ')">
+      <div class="proj-card-top">
+        <div class="proj-card-top-title">${p.name}</div>
+        <div class="proj-card-top-sub"><div class="proj-status-dot" style="background:#76FF03"></div>📍 ${p.loc}</div>
+      </div>
+      <div class="proj-card-body">
+        <div class="proj-pbar-wrap">
+          <div class="proj-pbar"><div class="proj-pfill" style="width:${p.pct}%;background:${p.pct>70?'var(--blue)':'var(--orange)'}"></div></div>
+          <span style="font-size:13px;font-weight:700;color:${p.pct>70?'var(--blue)':'var(--orange)'}">${p.pct}%</span>
+        </div>
+        <div class="proj-stats-row">
+          <div class="proj-stat"><div class="proj-stat-num" style="color:var(--orange)">${p.days}</div><div class="proj-stat-lbl">วันที่เหลือ</div></div>
+          <div class="proj-stat"><div class="proj-stat-num" style="color:var(--blue)">${p.milestone}/5</div><div class="proj-stat-lbl">งวดงาน</div></div>
+          <div class="proj-stat"><div class="proj-stat-num" style="color:var(--green)">${Math.round(p.used/p.budget*100)}%</div><div class="proj-stat-lbl">ใช้งบ</div></div>
+        </div>
+        <div class="proj-countdown"><span class="countdown-num">${p.days}</span><span style="font-size:12px;color:var(--text3)">วันที่เหลือ · ${p.phase}</span></div>
+      </div>
+    </div>`).join('');
+
+  // Milestones
+  var ms=MILESTONES;
+  var doneCount=ms.filter(m=>m.st==='done').length;
+  var fillPct=Math.round(doneCount/(ms.length-1)*100);
+  document.getElementById('ms-dash').innerHTML=`
+    <div class="ms-steps">
+      <div class="ms-line-fill" style="width:${fillPct}%"></div>
+      ${ms.map(m=>`
+        <div class="ms-step">
+          <div class="ms-dot ${m.st}" onclick="ms.st=m.st==='done'?'wait':m.st==='pend'?'done':'pend';renderDash()">${m.st==='done'?'✓':m.n}</div>
+          <div class="ms-lbl ${m.st}">งวด ${m.n}</div>
+        </div>`).join('')}
+    </div>
+    ${ms.filter(m=>m.st==='pend').map(m=>`
+      <div style="background:var(--blue3);border-radius:var(--r);padding:12px 14px;display:flex;align-items:center;gap:10px">
+        <div style="flex:1"><div style="font-size:13px;font-weight:500;color:var(--text-h)">${m.title}</div><div style="font-size:13px;font-weight:700;color:var(--blue)">฿ ${m.amt}</div></div>
+        <button class="btn btn-sm btn-p" onclick="approveMSdash()">อนุมัติ</button>
+      </div>`).join('')}`;
+
+  // Stock alerts
+  // Only show stock alerts if there are real items from DB
+  var lowSt = STOCK.filter(function(s){return s.st!=='ok';});
+  document.getElementById('stock-alert-area').innerHTML=lowSt.length?lowSt.map(s=>`
+    <div class="stock-row">
+      <div class="stock-icon-box">${s.icon}</div>
+      <div style="flex:1">
+        <div class="stock-name">${s.n}</div>
+        <div class="stock-bar mt4" style="margin-top:6px"><div class="stock-fill" style="width:${Math.round(s.qty/s.max*100)}%;background:${s.st==='out'?'var(--danger)':'var(--warn)'}"></div></div>
+        <div style="display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-top:3px"><span>Min: ${s.min} ${s.unit}</span><span>คงเหลือ ${s.qty}</span></div>
+      </div>
+      <div style="text-align:right">
+        <div style="font-size:18px;font-weight:700;color:${s.st==='out'?'var(--danger)':'var(--warn)'}">${s.qty}</div>
+        <div style="font-size:10px;color:var(--text3)">${s.unit}</div>
+        <span class="badge ${s.st==='out'?'b-red':'b-orange'}" style="margin-top:4px">${s.st==='out'?'หมด':'ต่ำ'}</span>
+      </div>
+    </div>`).join(''):'<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px">✅ ไม่มีวัสดุต่ำกว่าค่า Min</div>';
+
+  // Activity
+  var acts=[
+    {av:'👷',bg:'#E3F2FD',msg:'วิศวกรอนุมัติ QC P12 ห้องนอน 1',t:'10 นาที',tag:'QC',tc:'b-blue'},
+    {av:'🛒',bg:'#FFF3E0',msg:'จัดซื้อสร้าง PR-003 กระเบื้อง',t:'35 นาที',tag:'PR',tc:'b-orange'},
+    {av:'🔨',bg:'#E8F5E9',msg:'หัวหน้าช่างรายงาน P13 ถนน 70%',t:'1 ชม.',tag:'Report',tc:'b-green'},
+    {av:'🏠',bg:'#F3E5F5',msg:'Owner อนุมัติงวดที่ 2',t:'2 ชม.',tag:'งวด',tc:'b-blue'}
+  ];
+  document.getElementById('activity-area').innerHTML=acts.map(a=>`
+    <div style="display:flex;align-items:flex-start;gap:10px;padding:10px 0;border-bottom:1px solid var(--border)">
+      <div style="width:32px;height:32px;border-radius:50%;background:${a.bg};display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0">${a.av}</div>
+      <div style="flex:1"><div style="font-size:13px">${a.msg}</div><div style="font-size:11px;color:var(--text3);margin-top:2px">${a.t}ที่แล้ว</div></div>
+      <span class="badge ${a.tc}">${a.tag}</span>
+    </div>`).join('');
+}
+
+function approveMSdash(){if(!confirm('ยืนยันอนุมัติ?'))return;var m=MILESTONES.find(x=>x.st==='pend');if(m){m.st='done';renderDash();alert('✅ อนุมัติสำเร็จ');}}
+
+// ── PROJECTS ───────────────────────────────────────────────────────────────
+function renderProjects(){
+  document.getElementById('proj-all-cards').innerHTML=PROJECTS.map(p=>`
+    <div class="proj-card" onclick="nav('phases','Phase › '+this.querySelector('.proj-card-top-title').textContent)">
+      <div class="proj-card-top">
+        <div class="proj-card-top-title">${p.name}</div>
+        <div class="proj-card-top-sub"><div class="proj-status-dot" style="background:#76FF03"></div>📍 ${p.loc} · กำลังดำเนินการ</div>
+      </div>
+      <div class="proj-card-body">
+        <div class="proj-pbar-wrap mb12"><div class="proj-pbar"><div class="proj-pfill" style="width:${p.pct}%;background:${p.pct>70?'var(--blue)':'var(--orange)'}"></div></div><span style="font-size:13px;font-weight:700;color:var(--blue)">${p.pct}%</span></div>
+        <div class="proj-stats-row">
+          <div class="proj-stat"><div class="proj-stat-num" style="color:var(--orange)">${p.days}</div><div class="proj-stat-lbl">วันที่เหลือ</div></div>
+          <div class="proj-stat"><div class="proj-stat-num" style="color:var(--blue)">${p.milestone}/5</div><div class="proj-stat-lbl">งวดงาน</div></div>
+          <div class="proj-stat"><div class="proj-stat-num" style="color:var(--green)">฿${p.used}M</div><div class="proj-stat-lbl">ใช้แล้ว</div></div>
+        </div>
+        <div style="display:flex;align-items:center;justify-content:space-between;margin-top:10px">
+          <span style="font-size:12px;color:var(--text3)">${p.phase}</span>
+          <button class="btn btn-sm btn-o" onclick="event.stopPropagation();nav('phases','Phase')">ดู Phase →</button>
+        </div>
+      </div>
+    </div>`).join('');
+}
+
+// ── PHASES ─────────────────────────────────────────────────────────────────
+function renderPhases(){
+  document.getElementById('phase-full-list').innerHTML=PHASES.map((p,i)=>`
+    <div class="ph-row" onclick="nav('phases','Phase › '+p.n)" style="cursor:pointer">
+      <div class="ph-num" style="background:${p.st==='done'?'var(--green)':p.st==='active'?'var(--orange)':'var(--text3)'}">P${i+1}</div>
+      <div class="ph-info">
+        <div class="ph-name">${p.n}</div>
+        <div class="ph-bar"><div class="ph-fill" style="width:${p.pct}%;background:${p.col}"></div></div>
+      </div>
+      <div class="ph-meta">
+        <div class="ph-pct" style="color:${p.col}">${p.pct}%</div>
+        <span class="ph-badge ${p.st==='done'?'ph-done':p.st==='active'?'ph-active':'ph-wait'}">${p.st==='done'?'✓ เสร็จ':p.st==='active'?'กำลังทำ':'รอ'}</span>
+      </div>
+    </div>`).join('');
+  // QC + Approval Flow
+  document.getElementById('phase-qc').innerHTML=QC_ITEMS.map(q=>`
+    <div class="qc-item" onclick="toggleQC(this)">
+      <div class="qc-box"><span style="display:none;font-size:11px;color:#fff">✓</span></div>
+      <div class="qc-txt"><div class="qc-name">${q}</div></div>
+      <span class="badge b-gray">รอตรวจ</span>
+    </div>`).join('');
+  document.getElementById('phase-ap').innerHTML=`
+    <div class="ap-step done"><div class="ap-av" style="background:var(--green)">หช</div><div class="ap-info"><div class="ap-name">หัวหน้าช่าง</div><div class="ap-role">ส่ง Report แล้ว</div></div><span class="badge b-green">เสร็จ ✓</span></div>
+    <div class="ap-step cur"><div class="ap-av" style="background:var(--blue)">วก</div><div class="ap-info"><div class="ap-name">วิศวกร</div><div class="ap-role">รอตรวจ QC</div></div><div class="ap-btn-row"><button class="btn btn-sm btn-g" onclick="alert('✅ อนุมัติ')">อนุมัติ</button><button class="btn btn-sm btn-danger" onclick="alert('ส่งกลับ')">ส่งกลับ</button></div></div>
+    <div class="ap-step"><div class="ap-av" style="background:var(--text3)">CEO</div><div class="ap-info"><div class="ap-name">CEO</div><div class="ap-role">รอ</div></div><span class="badge b-gray">รอ</span></div>`;
+}
+function toggleQC(row){
+  var box=row.querySelector('.qc-box'),chk=box.querySelector('span'),badge=row.querySelector('.badge');
+  box.classList.toggle('on');chk.style.display=box.classList.contains('on')?'':'none';
+  badge.className='badge '+(box.classList.contains('on')?'b-green':'b-gray');
+  badge.textContent=box.classList.contains('on')?'ผ่าน ✓':'รอตรวจ';
+}
+
+// ── REPORT ─────────────────────────────────────────────────────────────────
+function renderReport(){
+  document.getElementById('r-date').value=new Date().toISOString().split('T')[0];
+  document.getElementById('report-qc').innerHTML=QC_ITEMS.map(q=>`
+    <div class="qc-item" onclick="toggleQC(this)">
+      <div class="qc-box"><span style="display:none;font-size:11px;color:#fff">✓</span></div>
+      <div class="qc-txt"><div class="qc-name">${q}</div></div>
+      <span class="badge b-gray">รอตรวจ</span>
+    </div>`).join('');
+  document.getElementById('report-hist').innerHTML=[
+    {ph:'P12',d:'24 มิ.ย.',st:'approved',by:'วก.สมศักดิ์'},
+    {ph:'P13',d:'23 มิ.ย.',st:'approved',by:'วก.สมศักดิ์'},
+    {ph:'P12',d:'22 มิ.ย.',st:'pend',by:'รอตรวจ'}
+  ].map(r=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border-radius:var(--r2);margin-bottom:8px">
+      <span class="badge ${r.st==='approved'?'b-green':'b-orange'}">${r.ph} ${r.st==='approved'?'✓':''}</span>
+      <div style="flex:1;font-size:13px">${r.d} — ${r.by}</div>
+    </div>`).join('');
+}
+function getGPS(){
+  if(navigator.geolocation)navigator.geolocation.getCurrentPosition(p=>{document.getElementById('gps-v').textContent=p.coords.latitude.toFixed(4)+'° N, '+p.coords.longitude.toFixed(4)+'° E ✓';},()=>{document.getElementById('gps-v').textContent='13.7563° N, 100.5018° E';});
+  else document.getElementById('gps-v').textContent='13.7563° N, 100.5018° E';
+}
+
+// ── DEFECTS ─────────────────────────────────────────────────────────────────
+function renderDefects(){
+  var s={open:DEFECTS.filter(function(d){return d.st==='open';}).length,fix:DEFECTS.filter(function(d){return d.st==='fix';}).length,closed:DEFECTS.filter(function(d){return d.st==='closed';}).length,all:DEFECTS.length};
+  document.getElementById('df-stats').innerHTML=[
+    {n:s.all,l:'ทั้งหมด',col:'var(--text-h)'},{n:s.open,l:'Open',col:'var(--danger)'},{n:s.fix,l:'กำลังแก้',col:'var(--blue)'},{n:s.closed,l:'ปิดแล้ว',col:'var(--green)'}
+  ].map(d=>`<div class="kpi" style="padding:14px"><div class="kpi-num" style="color:${d.col};font-size:26px">${d.n}</div><div class="kpi-lbl">${d.l}</div></div>`).join('');
+  var filtered=DEFECTS.filter(d=>dfFilter==='all'||d.st===dfFilter);
+  // Update tab counts
+  var _t=document.getElementById('df-tab-all'); if(_t) _t.textContent='ทั้งหมด ('+DEFECTS.length+')';
+  var _o=document.getElementById('df-tab-open'); if(_o) _o.textContent='Open ('+DEFECTS.filter(function(d){return d.st==='open';}).length+')';
+  var _f=document.getElementById('df-tab-fix'); if(_f) _f.textContent='กำลังแก้ ('+DEFECTS.filter(function(d){return d.st==='fix';}).length+')';
+  var _c=document.getElementById('df-tab-closed'); if(_c) _c.textContent='Closed ('+DEFECTS.filter(function(d){return d.st==='closed';}).length+')';
+  document.getElementById('df-list').innerHTML=filtered.map(d=>`
+    <div class="df-card ${d.sev}">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
+        <span style="font-size:11px;font-weight:600;color:var(--text3);min-width:50px">${d.id}</span>
+        <div style="flex:1"><div style="font-size:13px;font-weight:500;color:var(--text-h)">${d.t}</div><div style="font-size:11px;color:var(--text3);margin-top:2px">📍 ${d.loc} · ${d.by}</div></div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <span class="badge ${d.sev==='high'?'b-red':d.sev==='med'?'b-orange':'b-blue'}">${d.sev==='high'?'🔴 High':d.sev==='med'?'🟡 Med':'🔵 Low'}</span>
+          <span class="badge ${d.st==='closed'?'b-green':d.st==='fix'?'b-blue':'b-red'}">${d.st==='closed'?'✓ Closed':d.st==='fix'?'กำลังแก้':'Open'}</span>
+        </div>
+      </div>
+      <div style="display:flex;gap:6px">
+        <button class="btn btn-sm btn-p" onclick="advDF('${d.id}')">→ ขั้นต่อไป</button>
+        <button class="btn btn-sm btn-ghost">ดูรายละเอียด</button>
+      </div>
+    </div>`).join('')||'<div class="empty"><div class="empty-icon">✅</div><div class="empty-title">ไม่มีรายการ</div></div>';
+}
+function filterDF(f,el){dfFilter=f;document.querySelectorAll('#page-defects .tab-btn').forEach(b=>b.classList.remove('act'));if(el)el.classList.add('act');renderDefects();}
+function advDF(id){var d=DEFECTS.find(x=>x.id===id);if(!d)return;var o=['open','fix','recheck','closed'];var i=o.indexOf(d.st);d.st=o[Math.min(i+1,o.length-1)];renderDefects();}
+
+
+// ── PROCUREMENT ─────────────────────────────────────────────────────────────
+function renderProc(){
+  var stCls={draft:'b-gray',pend:'b-orange',approved:'b-green',po:'b-blue'};
+  var stLbl={draft:'Draft',pend:'รออนุมัติ',approved:'อนุมัติ ✓',po:'PO แล้ว'};
+  document.getElementById('pr-list').innerHTML=PRS.map(p=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--bg);border-radius:var(--r);margin-bottom:8px;border:1px solid var(--border)">
+      <span class="badge ${p.src==='AI'?'b-blue':'b-green'}" style="font-size:9px">${p.src}</span>
+      <div style="flex:1"><div style="font-size:13px;font-weight:500">${p.id} — ${p.t}</div><div style="font-size:12px;color:var(--text3);margin-top:2px">${p.amt}</div></div>
+      <span class="badge ${stCls[p.st]}">${stLbl[p.st]}</span>
+      <button class="btn btn-sm btn-o" onclick="advPR('${p.id}')">→</button>
+    </div>`).join('');
+  // Quotation
+  var quotes=[
+    {v:'บจก.วัสดุก่อสร้างไทย',u:'฿2,750',tot:'฿137,500',d:'3 วัน',best:true},
+    {v:'SCG Trading',u:'฿2,850',tot:'฿142,500',d:'5 วัน',best:false},
+    {v:'คอนกรีตภาคกลาง',u:'฿2,800',tot:'฿140,000',d:'4 วัน',best:false}
+  ];
+  document.getElementById('quote-list').innerHTML=quotes.map(q=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:11px;background:${q.best?'var(--blue3)':'var(--bg)'};border-radius:var(--r2);margin-bottom:8px;border:1px solid ${q.best?'var(--blue4)':'var(--border)'}">
+      <div style="flex:1"><div style="font-size:13px;font-weight:${q.best?'600':'400'};color:var(--text-h)">${q.v}${q.best?'<br><span class="badge b-green" style="font-size:9px;margin-top:3px">ราคาดีสุด</span>':''}</div></div>
+      <div style="text-align:right"><div style="font-size:14px;font-weight:700;color:${q.best?'var(--green)':'var(--text)'}">${q.u}</div><div style="font-size:11px;color:var(--text3)">${q.d}</div></div>
+      <button class="btn btn-sm ${q.best?'btn-p':'btn-o'}" onclick="alert('${q.best?'✅ อนุมัติ PO':'เลือก '+q.v}')">${q.best?'อนุมัติ PO':'เลือก'}</button>
+    </div>`).join('');
+  // Vendors
+  document.getElementById('vendor-list').innerHTML=[
+    {icon:'🏢',n:'บจก.วัสดุก่อสร้างไทย',cats:'คอนกรีต · เหล็ก',score:'4.8'},
+    {icon:'🏭',n:'SCG Trading',cats:'ปูน · กระเบื้อง',score:'4.5'},
+    {icon:'⚡',n:'MEP Supply จำกัด',cats:'ไฟฟ้า · ประปา',score:'4.3'}
+  ].map(v=>`
+    <div style="display:flex;align-items:center;gap:10px;padding:11px;background:var(--bg);border-radius:var(--r2);margin-bottom:8px;border:1px solid var(--border)">
+      <div style="width:40px;height:40px;border-radius:var(--r2);background:var(--card);display:flex;align-items:center;justify-content:center;font-size:20px">${v.icon}</div>
+      <div style="flex:1"><div style="font-size:13px;font-weight:500;color:var(--text-h)">${v.n}</div><div style="font-size:11px;color:var(--text3)">${v.cats}</div></div>
+      <div style="text-align:right"><div style="font-size:14px;font-weight:700;color:var(--orange)">⭐ ${v.score}</div></div>
+    </div>`).join('');
+}
+function advPR(id){var p=PRS.find(x=>x.id===id);if(!p)return;var o=['draft','pend','approved','po'];var i=o.indexOf(p.st);p.st=o[Math.min(i+1,o.length-1)];renderProc();}
+function toggleAddPR(){addPROpen=!addPROpen;document.getElementById('pr-form-wrap').style.display=addPROpen?'block':'none';}
+function addPR(){var mat=document.getElementById('pr-mat').value.trim();if(!mat){alert('กรุณากรอกวัสดุ');return;}PRS.push({id:'PR-00'+(PRS.length+1),t:mat,amt:'฿ —',st:'draft',src:'BOQ'});document.getElementById('pr-mat').value='';renderProc();toggleAddPR();}
+function importAI(){PRS.push({id:'PR-00'+(PRS.length+1),t:'Spacer 220 ลูก + แบบไม้อัด 30 แผ่น',amt:'฿10,160',st:'draft',src:'AI'});renderProc();alert('✅ นำเข้า PR จาก AI สำเร็จ');}
+
+// ── STOCK ───────────────────────────────────────────────────────────────────
+function renderStock(){
+  var html=STOCK.map(s=>{
+    var pct=Math.round(s.qty/s.max*100);
+    var col=s.st==='ok'?'var(--green)':s.st==='low'?'var(--warn)':'var(--danger)';
+    return `<div class="stock-row">
+      <div class="stock-icon-box">${s.icon}</div>
+      <div style="flex:1;min-width:0">
+        <div class="stock-name">${s.n}</div>
+        <div class="stock-lot">Lot: ${s.lot} · Min:${s.min} / Max:${s.max} ${s.unit}</div>
+        <div style="margin-top:6px">
+          <div class="stock-bar"><div class="stock-fill" style="width:${pct}%;background:${col}"></div></div>
+          <div class="stock-qty-row"><span>0</span><span>Max ${s.max}</span></div>
+        </div>
+      </div>
+      <div class="stock-qty-wrap" style="text-align:right">
+        <div class="stock-qty" style="color:${col}">${s.qty}</div>
+        <div class="stock-unit">${s.unit}</div>
+        <span class="badge ${s.st==='ok'?'b-green':s.st==='low'?'b-orange':'b-red'}" style="margin-top:5px">${s.st==='ok'?'ปกติ':s.st==='low'?'⚠ ต่ำ':'🔴 หมด'}</span>
+      </div>
+    </div>`;
+  }).join('');
+  document.getElementById('stock-full').innerHTML=html;
+  var warn=STOCK.filter(s=>s.st!=='ok');
+  document.getElementById('stock-warn').innerHTML=warn.length?warn.map(s=>`
+    <div class="notif ${s.st==='out'?'ni-red':'ni-orange'}" style="margin-bottom:8px">
+      <div class="ni-icon">${s.icon}</div>
+      <div style="flex:1"><div class="ni-title">${s.n}</div><div class="ni-sub">${s.qty} ${s.unit} — ${s.st==='out'?'หมดสต๊อก':'ต่ำกว่า Min'}</div></div>
+      <button class="btn btn-sm btn-p" onclick="nav('proc','จัดซื้อ')">+ PR</button>
+    </div>`).join(''):'<div class="empty" style="padding:20px"><div class="empty-icon">✅</div><div class="empty-title">ปกติทั้งหมด</div></div>';
+}
+function setTxn(m,el){txnMode=m;document.querySelectorAll('#page-stock-main .tab-btn').forEach(b=>b.classList.remove('act'));if(el)el.classList.add('act');document.getElementById('tx-lbl').textContent={in:'📦 บันทึกรับเข้า',out:'📤 บันทึกเบิก',move:'🔄 บันทึกโอน'}[m];}
+
+
+// ── AI ANALYZER ──────────────────────────────────────────────────────────────
+var aiSteps=['อ่านและแยกหน้าเอกสาร','วิเคราะห์ขนาดและระยะ','ตรวจสอบองศา/Slope','ถอดปริมาณ BOQ','เปรียบเทียบมาตรฐาน','สร้างรายงาน'];
+function simUpload(){
+  aiFile=true;
+  document.getElementById('ai-zone').innerHTML='<div style="font-size:48px;margin-bottom:12px">✅</div><div style="font-size:15px;font-weight:600;color:var(--green)">อัปโหลดสำเร็จ</div>';
+  document.getElementById('ai-chip').style.display='block';
+  document.getElementById('ai-chip').innerHTML=`<div style="display:flex;align-items:center;gap:10px;padding:12px;background:var(--blue3);border-radius:var(--r);border:1px solid var(--blue4);margin-bottom:12px"><span style="font-size:22px">📑</span><div style="flex:1"><div style="font-size:13px;font-weight:500;color:var(--blue)">แบบก่อสร้าง_Phase1-3.pdf</div><div style="font-size:11px;color:var(--text3)">PDF · 4.2 MB · 48 หน้า</div></div><button class="btn btn-sm btn-ghost" onclick="resetAI()">✕</button></div>`;
+  document.getElementById('ai-btn').disabled=false;
+}
+function resetAI(){aiFile=false;document.getElementById('ai-zone').innerHTML='<div style="font-size:48px;margin-bottom:12px">📄</div><div style="font-size:15px;font-weight:600;color:var(--text-h);margin-bottom:6px">คลิกหรือลากไฟล์</div><div style="font-size:12px;color:var(--text3)">PDF · DWG · BOQ Excel · สูงสุด 50 MB</div>';document.getElementById('ai-chip').style.display='none';document.getElementById('ai-btn').disabled=true;document.getElementById('ai-prog').style.display='none';document.getElementById('ai-result-panel').innerHTML='<div class="card" style="border:2px dashed var(--border);text-align:center;padding:40px"><div style="font-size:40px;margin-bottom:12px">🤖</div><div style="font-size:14px;font-weight:500;color:var(--text3)">ผลวิเคราะห์จะแสดงที่นี่</div></div>';}
+function runAI(){
+  if(!aiFile)return;
+  document.getElementById('ai-btn').disabled=true;document.getElementById('ai-btn').textContent='⏳ กำลังวิเคราะห์...';
+  document.getElementById('ai-prog').style.display='block';
+  document.getElementById('ai-prog').innerHTML='<div style="font-size:13px;font-weight:500;color:var(--blue);margin-bottom:12px">🤖 AI กำลังวิเคราะห์...</div>'+aiSteps.map((s,i)=>`<div style="display:flex;align-items:center;gap:10px;padding:9px 0;border-bottom:1px solid var(--border)"><span style="font-size:16px;width:24px">${['📖','📏','📐','📋','🔍','📊'][i]}</span><span style="flex:0 0 180px;font-size:12px">${s}</span><div style="flex:1;height:5px;background:var(--bg2);border-radius:3px;overflow:hidden"><div id="ap${i}" style="height:100%;width:0%;background:var(--blue);border-radius:3px;transition:width .5s"></div></div><span id="at${i}" style="font-size:11px;min-width:28px;text-align:right;color:var(--text3)">0%</span></div>`).join('');
+  var done=0;
+  function step(){if(done>=aiSteps.length){setTimeout(showAIResult,300);return;}var i=done++;var prog=0;var iv=setInterval(()=>{prog+=Math.random()*18+5;if(prog>=100){prog=100;clearInterval(iv);setTimeout(step,150);}document.getElementById('ap'+i).style.width=Math.min(prog,100)+'%';document.getElementById('at'+i).textContent=Math.min(Math.floor(prog),100)+'%';},80);}
+  step();
+}
+function showAIResult(){
+  document.getElementById('ai-prog').style.display='none';document.getElementById('ai-btn').disabled=false;document.getElementById('ai-btn').textContent='🤖 วิเคราะห์อีกครั้ง';
+  document.getElementById('ai-result-panel').innerHTML=`
+    <div>
+      <div class="grid4 mb16">${[{n:'22',l:'รายการ',c:'var(--blue)'},{n:'17',l:'ผ่าน ✓',c:'var(--green)'},{n:'3',l:'ระวัง',c:'var(--warn)'},{n:'2',l:'ไม่ผ่าน',c:'var(--danger)'}].map(d=>`<div class="kpi" style="padding:14px"><div class="kpi-num" style="color:${d.c};font-size:24px">${d.n}</div><div class="kpi-lbl">${d.l}</div></div>`).join('')}</div>
+      <div class="notif ni-green mb12"><div class="ni-icon">✅</div><div><div class="ni-title">โครงสร้างหลักถูกต้องตามแบบ ±2%</div></div></div>
+      <div class="notif ni-orange mb12"><div class="ni-icon">⚠️</div><div><div class="ni-title">Cover คอนกรีตบางจุดน้อยกว่าแบบ 3 ซม.</div></div></div>
+      <div class="notif ni-red mb16"><div class="ni-icon">❌</div><div><div class="ni-title">แบบไม้อัด 12 มม. ไม่ตรง Spec 15 มม.</div></div></div>
+      <div class="card mb16">
+        <div class="card-hd"><div class="card-title">ผลเปรียบเทียบ — ขนาด/ระยะ</div></div>
+        <div class="tbl-wrap"><table><thead><tr><th>รายการ</th><th>แบบ</th><th>จริง</th><th>ผล</th></tr></thead><tbody>
+          <tr><td>ความกว้างเสา C1</td><td>35 ซม.</td><td>35.2</td><td><span class="badge b-green">✓ ผ่าน</span></td></tr>
+          <tr><td>Cover คอนกรีต</td><td>40 มม.</td><td>37</td><td><span class="badge b-orange">⚠ ระวัง</span></td></tr>
+          <tr><td>แบบไม้อัด</td><td>15 มม.</td><td>12</td><td><span class="badge b-red">✗ ไม่ผ่าน</span></td></tr>
+        </tbody></table></div>
+      </div>
+      <div style="display:flex;gap:8px">
+        <button class="btn btn-p" onclick="importAI();nav('proc','จัดซื้อ')">📤 ส่งจัดซื้อ</button>
+        <button class="btn btn-o" onclick="alert('📄 Export PDF')">⬇️ Export PDF</button>
+      </div>
+    </div>`;
+}
+
+// ── OWNER ────────────────────────────────────────────────────────────────────
+function renderOwner(){
+  document.getElementById('owner-kpi').innerHTML=[
+    {n:'87%',l:'ความคืบหน้า',col:'var(--orange)'},{n:'28 วัน',l:'เหลืออีก',col:'var(--blue)'},{n:'2/5',l:'งวดอนุมัติ',col:'var(--green)'}
+  ].map(k=>`<div class="kpi"><div class="kpi-num" style="color:${k.col}">${k.n}</div><div class="kpi-lbl">${k.l}</div></div>`).join('');
+  document.getElementById('owner-phases').innerHTML=PHASES.map((p,i)=>`
+    <div class="ph-row">
+      <div class="ph-num" style="background:${p.st==='done'?'var(--green)':p.st==='active'?'var(--orange)':'var(--text3)'}">P${i+1}</div>
+      <div class="ph-info"><div class="ph-name">${p.n}</div><div class="ph-bar"><div class="ph-fill" style="width:${p.pct}%;background:${p.col}"></div></div></div>
+      <div class="ph-meta"><div class="ph-pct" style="color:${p.col}">${p.pct}%</div></div>
+    </div>`).join('');
+  document.getElementById('ms-owner').innerHTML=MILESTONES.map((m,i)=>{
+    var done=m.st==='done',pend=m.st==='pend';
+    return `<div style="border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:8px">
+      <div style="display:flex;align-items:center;gap:12px;padding:12px 14px;cursor:pointer;background:${done?'var(--green3)':pend?'var(--blue3)':'var(--bg)'}" onclick="this.nextElementSibling.classList.toggle('ms-body')">
+        <div style="width:30px;height:30px;border-radius:50%;background:${done?'var(--green)':pend?'var(--blue)':'var(--text3)'};color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700">${done?'✓':m.n}</div>
+        <div style="flex:1"><div style="font-size:13px;font-weight:500">${m.title}</div><div style="font-size:13px;font-weight:700;color:${pend?'var(--blue)':'var(--text3)'};margin-top:2px">฿ ${m.amt}</div></div>
+        <span class="badge ${done?'b-green':pend?'b-blue':'b-gray'}">${done?'✓ อนุมัติ':pend?'⏳ รออนุมัติ':'รอ'}</span>
+      </div>
+      ${pend?`<div style="padding:14px;border-top:1px solid var(--border)">
+        <div style="display:flex;gap:8px">
+          <button class="btn btn-g" onclick="ownerApprove(${i})">✅ อนุมัติงวดงาน</button>
+          <button class="btn btn-ghost" style="color:var(--danger);border-color:var(--danger)">✕ ขอแก้ไข</button>
+        </div>
+        <div style="font-size:11px;color:var(--text3);margin-top:8px">📍 บันทึก IP + เวลา + Device เป็นหลักฐาน</div>
+      </div>`:''}
+    </div>`;
+  }).join('');
+  document.getElementById('owner-timeline').innerHTML=[
+    {t:'เริ่มโครงการ',s:'ม.ค. 2568',done:true},{t:'P1-P6 เสร็จ',s:'ก.ค. 2568',done:true},
+    {t:'P7-P11 เสร็จ',s:'ก.พ. 2569',done:true},{t:'P12-P13 กำลังทำ',s:'มิ.ย. 2569',done:false},
+    {t:'ส่งมอบ',s:'ส.ค. 2569',done:false}
+  ].map((t,i,a)=>`
+    <div style="display:flex;gap:12px;margin-bottom:${i<a.length-1?'0':'0'}">
+      <div style="display:flex;flex-direction:column;align-items:center;width:24px">
+        <div style="width:12px;height:12px;border-radius:50%;background:${t.done?'var(--green)':'var(--border2)'};border:2px solid ${t.done?'var(--green)':'var(--border2)'};margin-top:3px;flex-shrink:0"></div>
+        ${i<a.length-1?`<div style="width:2px;flex:1;background:${t.done?'var(--green3)':'var(--border)'};min-height:24px;margin:3px 0"></div>`:''}
+      </div>
+      <div style="padding-bottom:16px">
+        <div style="font-size:13px;font-weight:${t.done?'500':'400'};color:${t.done?'var(--text-h)':'var(--text3)'}">${t.t}</div>
+        <div style="font-size:11px;color:var(--text3)">${t.s}</div>
+      </div>
+    </div>`).join('');
+}
+
+
+// ── INIT ─────────────────────────────────────────────────────────────────────
+buildSidebar('ceo');
+renderDash();
+renderReport();
+
+// ══════════════════════════════════════════
+// SUPABASE — Real Database Connection
+// ══════════════════════════════════════════
+const SB_URL = 'https://kdfbllrobnfdvelbotwh.supabase.co';
+const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtkZmJsbHJvYm5mZHZlbGJvdHdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0MzI3NjgsImV4cCI6MjA5ODAwODc2OH0.j70WO4TVFqOibQs5y6tfiZN5ZJoipoeiSJt0ZDVnE-4';
+
+async function sbFetch(table, opts) {
+  opts = opts || {};
+  var select = opts.select || '*';
+  var filter = opts.filter || '';
+  var order  = opts.order  || '';
+  var limit  = opts.limit  || 200;
+  var url = SB_URL + '/rest/v1/' + table + '?select=' + select;
+  if(filter) url += '&' + filter;
+  if(order)  url += '&order=' + order;
+  url += '&limit=' + limit;
+  try {
+    var res = await fetch(url, { headers: {'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY} });
+    return res.ok ? await res.json() : null;
+  } catch(e) { console.error('sbFetch',e); return null; }
+}
+async function sbInsert(table, data) {
+  try {
+    var res = await fetch(SB_URL + '/rest/v1/' + table, {
+      method: 'POST',
+      headers: {'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'},
+      body: JSON.stringify(data)
+    });
+    var txt = await res.text(); return txt ? JSON.parse(txt) : null;
+  } catch(e) { return null; }
+}
+async function sbPatch(table, id, data) {
+  try {
+    var res = await fetch(SB_URL + '/rest/v1/' + table + '?id=eq.' + id, {
+      method: 'PATCH',
+      headers: {'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'},
+      body: JSON.stringify(data)
+    });
+    var txt = await res.text(); return txt ? JSON.parse(txt) : null;
+  } catch(e) { return null; }
+}
+
+function showToast(msg, type) {
+  var t = document.getElementById('sp-toast');
+  if(!t){ t=document.createElement('div'); t.id='sp-toast';
+    t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:9999;font-family:IBM Plex Sans Thai,sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:opacity .4s;white-space:nowrap';
+    document.body.appendChild(t); }
+  t.style.background = type==='error'?'#C62828':type==='warn'?'#E65100':'#2E7D32';
+  t.style.color='#fff'; t.style.opacity='1'; t.textContent=msg;
+  setTimeout(function(){ t.style.opacity='0'; }, 3000);
+}
+
+function showLoading(show) {
+  var el = document.getElementById('sp-load');
+  if(show && !el){
+    el=document.createElement('div'); el.id='sp-load';
+    el.innerHTML='<div id="sp-spinner" style="width:36px;height:36px;border:3px solid #E3F2FD;border-top-color:#1565C0;border-radius:50%;margin:0 auto 10px"></div><div style="font-size:13px;color:#1565C0;font-family:IBM Plex Sans Thai,sans-serif">กำลังโหลดจากฐานข้อมูล...</div>';
+    el.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:14px;padding:28px 36px;text-align:center;z-index:9998;box-shadow:0 8px 32px rgba(0,0,0,.15)';
+    var st=document.createElement('style'); st.textContent='@keyframes spspin{to{transform:rotate(360deg)}} #sp-spinner{animation:spspin .7s linear infinite}';
+    document.head.appendChild(st); document.body.appendChild(el);
+  } else if(!show && el) el.remove();
+}
+
+
+
+// Override addDF to save to DB
+var _origAddDF = typeof addDF === 'function' ? addDF : null;
+
+
+// Override doTxn to save to DB
+var _origDoTxn = typeof doTxn === 'function' ? doTxn : null;
+
+
+// Auto load when page ready
+document.addEventListener('DOMContentLoaded', function(){ setTimeout(loadFromDB, 400); });
+
+</script>
+
+<!-- ══════════════════════════════════════════
+     LOGIN MODAL
+══════════════════════════════════════════ -->
+<div id="login-overlay" style="display:none;position:fixed;inset:0;background:rgba(10,20,40,.85);z-index:10000;align-items:center;justify-content:center;backdrop-filter:blur(4px)">
+  <div style="background:#fff;border-radius:20px;padding:36px;width:min(420px,90vw);box-shadow:0 20px 60px rgba(0,0,0,.3)">
+    <div style="text-align:center;margin-bottom:28px">
+      <div style="width:56px;height:56px;background:#FF8A00;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 12px">🏗️</div>
+      <div style="font-size:22px;font-weight:700;color:#1A237E;font-family:IBM Plex Sans Thai,sans-serif">SitePro</div>
+      <div style="font-size:13px;color:#90A4AE;margin-top:4px;font-family:IBM Plex Sans Thai,sans-serif">Angjing 365 Construction</div>
+    </div>
+    <div style="margin-bottom:14px">
+      <div style="font-size:12px;font-weight:600;color:#546E7A;margin-bottom:5px;font-family:IBM Plex Sans Thai,sans-serif">Email</div>
+      <input id="login-email" type="email" placeholder="email@angjing365.com"
+        style="width:100%;padding:11px 14px;border:1.5px solid #DDE3EA;border-radius:8px;font-size:14px;font-family:IBM Plex Sans Thai,sans-serif;outline:none;transition:border .15s"
+        onfocus="this.style.borderColor='#1565C0'" onblur="this.style.borderColor='#DDE3EA'">
+    </div>
+    <div style="margin-bottom:20px">
+      <div style="font-size:12px;font-weight:600;color:#546E7A;margin-bottom:5px;font-family:IBM Plex Sans Thai,sans-serif">รหัสผ่าน</div>
+      <input id="login-pass" type="password" placeholder="••••••••"
+        style="width:100%;padding:11px 14px;border:1.5px solid #DDE3EA;border-radius:8px;font-size:14px;font-family:IBM Plex Sans Thai,sans-serif;outline:none;transition:border .15s"
+        onfocus="this.style.borderColor='#1565C0'" onblur="this.style.borderColor='#DDE3EA'"
+        onkeydown="if(event.key==='Enter')doLogin()">
+    </div>
+    <button onclick="doLogin()" style="width:100%;padding:12px;background:#1565C0;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;transition:background .15s" onmouseover="this.style.background='#0D47A1'" onmouseout="this.style.background='#1565C0'">
+      เข้าสู่ระบบ
+    </button>
+    <div style="margin-top:16px;background:#F0F4F8;border-radius:10px;padding:12px">
+      <div style="font-size:11px;font-weight:600;color:#90A4AE;margin-bottom:8px;font-family:IBM Plex Sans Thai,sans-serif">Demo Accounts</div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <button onclick="quickLogin('ceo@angjing365.com')" style="padding:5px 8px;background:#E3F2FD;border:1px solid #BBDEFB;border-radius:6px;font-size:11px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#1565C0;font-weight:500">👑 CEO</button>
+        <button onclick="quickLogin('engineer@angjing365.com')" style="padding:5px 8px;background:#E8F5E9;border:1px solid #A5D6A7;border-radius:6px;font-size:11px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#2E7D32;font-weight:500">👷 วิศวกร</button>
+        <button onclick="quickLogin('foreman@angjing365.com')" style="padding:5px 8px;background:#FFF3E0;border:1px solid #FFCC80;border-radius:6px;font-size:11px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#E65100;font-weight:500">🔨 หัวหน้าช่าง</button>
+        <button onclick="quickLogin('procurement@angjing365.com')" style="padding:5px 8px;background:#F3E5F5;border:1px solid #CE93D8;border-radius:6px;font-size:11px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#6A1B9A;font-weight:500">🛒 จัดซื้อ</button>
+        <button onclick="quickLogin('owner@angjing365.com')" style="padding:5px 8px;background:#E8F5E9;border:1px solid #A5D6A7;border-radius:6px;font-size:11px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#1B5E20;font-weight:500;grid-column:span 2">🏠 Owner</button>
+      </div>
+      <div style="font-size:10px;color:#B0BEC5;margin-top:6px;text-align:center;font-family:IBM Plex Sans Thai,sans-serif">รหัสผ่าน Demo: sitepro2569</div>
+    </div>
+    <div id="login-error" style="display:none;margin-top:10px;padding:8px 12px;background:#FFEBEE;border-radius:6px;font-size:12px;color:#C62828;text-align:center;font-family:IBM Plex Sans Thai,sans-serif"></div>
+  </div>
+</div>
+
+<!-- LINE NOTIFY MODAL -->
+<div id="line-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center">
+  <div style="background:#fff;border-radius:16px;padding:24px;width:min(380px,90vw);box-shadow:0 8px 32px rgba(0,0,0,.2)">
+    <div style="font-size:16px;font-weight:600;color:#1A237E;margin-bottom:16px;font-family:IBM Plex Sans Thai,sans-serif">📲 LINE Notify</div>
+    <div id="line-msg" style="background:#F0F4F8;border-radius:8px;padding:12px;font-size:13px;color:#37474F;margin-bottom:16px;font-family:IBM Plex Sans Thai,sans-serif;line-height:1.6"></div>
+    <div style="display:flex;gap:8px">
+      <button onclick="sendLineNotify()" style="flex:1;padding:10px;background:#06C755;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif">ส่ง LINE</button>
+      <button onclick="document.getElementById('line-modal').style.display='none'" style="padding:10px 16px;background:#F0F4F8;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif">ยกเลิก</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// LOGIN SYSTEM
+// ══════════════════════════════════════════
+var DEMO_USERS = {
+  'ceo@angjing365.com':         {role:'ceo',      name:'ประพัฒน์ รุ่งเรือง', pass:'sitepro2569'},
+  'engineer@angjing365.com':    {role:'eng',       name:'สมศักดิ์ วิชาการ',   pass:'sitepro2569'},
+  'foreman@angjing365.com':     {role:'foreman',   name:'สมชาย ชำนาญ',       pass:'sitepro2569'},
+  'procurement@angjing365.com': {role:'proc',      name:'มาลี จัดหา',         pass:'sitepro2569'},
+  'owner@angjing365.com':       {role:'owner',     name:'วิชัย เจ้าของ',      pass:'sitepro2569'}
+};
+
+var currentUser = null;
+
+function showLoginModal() {
+  var el = document.getElementById('login-overlay');
+  if(el) { el.style.display = 'flex'; }
+}
+function hideLoginModal() {
+  var el = document.getElementById('login-overlay');
+  if(el) el.style.display = 'none';
+}
+
+function quickLogin(email) {
+  document.getElementById('login-email').value = email;
+  document.getElementById('login-pass').value = 'sitepro2569';
+  doLogin();
+}
+
+function doLogin() {
+  var email = document.getElementById('login-email').value.trim().toLowerCase();
+  var pass  = document.getElementById('login-pass').value;
+  var errEl = document.getElementById('login-error');
+  
+  var user = DEMO_USERS[email];
+  if(!user || user.pass !== pass) {
+    errEl.style.display = 'block';
+    errEl.textContent = 'Email หรือรหัสผ่านไม่ถูกต้อง';
+    return;
+  }
+  
+  currentUser = {email: email, name: user.name, role: user.role};
+  localStorage.setItem('sp_user', JSON.stringify(currentUser));
+  
+  hideLoginModal();
+  applyUserRole(user.role, user.name);
+  showToast('✅ ยินดีต้อนรับ ' + user.name);
+  // Navigate to dashboard
+  setTimeout(function() {
+    nav('dashboard', 'Dashboard');
+    renderDash();
+  }, 200);
+}
+
+function applyUserRole(role, name) {
+  // Update sidebar user info
+  var av = document.getElementById('sb-av');
+  var nm = document.getElementById('sb-name');
+  var rl = document.getElementById('sb-role');
+  var roleNames = {ceo:'CEO',eng:'วิศวกร',foreman:'หัวหน้าช่าง',proc:'จัดซื้อ',owner:'Owner'};
+  if(av) av.textContent = roleNames[role] || role;
+  if(nm) nm.textContent = name;
+  if(rl) rl.textContent = (roleNames[role]||role) + ' · ' + 'Angjing 365';
+  
+  // Switch role selector
+  var sel = document.querySelector('.role-pick select');
+  if(sel) { sel.value = role; switchRole(role); }
+  
+  // Update header logout button
+  var hBtn = document.querySelector('.hdr-btn:last-child');
+  if(hBtn) {
+    hBtn.title = 'ออกจากระบบ: ' + name;
+    hBtn.onclick = function() { if(confirm('ออกจากระบบ?')) logoutUser(); };
+  }
+  
+  // Rebuild sidebar for role
+  buildSidebar(role);
+}
+
+function logoutUser() {
+  currentUser = null;
+  localStorage.removeItem('sp_user');
+  showLoginModal();
+}
+
+// ── CHECK LOGIN ON LOAD ───────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  var saved = localStorage.getItem('sp_user');
+  if(saved) {
+    try {
+      currentUser = JSON.parse(saved);
+      applyUserRole(currentUser.role, currentUser.name);
+      setTimeout(function(){ nav('dashboard','Dashboard'); renderDash(); }, 300);
+    } catch(e) {
+      localStorage.removeItem('sp_user');
+      setTimeout(showLoginModal, 600);
+    }
+  } else {
+    setTimeout(showLoginModal, 600);
+  }
+});
+
+// ══════════════════════════════════════════
+// LINE NOTIFY (Simulation)
+// ══════════════════════════════════════════
+var lineNotifyMsg = '';
+
+function triggerLineNotify(msg, recipients) {
+  lineNotifyMsg = msg;
+  document.getElementById('line-msg').innerHTML = 
+    '<strong>📤 ส่งถึง:</strong> ' + (recipients||'ทีมงาน') + '<br><br>' +
+    '<strong>ข้อความ:</strong><br>' + msg;
+  document.getElementById('line-modal').style.display = 'flex';
+}
+
+function sendLineNotify() {
+  document.getElementById('line-modal').style.display = 'none';
+  showToast('✅ ส่ง LINE Notify สำเร็จ');
+  // In production: call Supabase Edge Function to send LINE
+}
+
+// ══════════════════════════════════════════
+// FIX DATE DISPLAY — Thai Buddhist Year
+// ══════════════════════════════════════════
+function formatDateThai(dateStr) {
+  if(!dateStr) return '—';
+  var d = new Date(dateStr);
+  if(isNaN(d)) return '—';
+  var months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  return d.getDate() + ' ' + months[d.getMonth()] + ' ' + (d.getFullYear() + 543);
+}
+
+function daysLeftFromISO(dateStr) {
+  if(!dateStr) return 0;
+  var end = new Date(dateStr);
+  var today = new Date();
+  today.setHours(0,0,0,0);
+  var diff = Math.ceil((end - today) / 86400000);
+  return Math.max(0, diff);
+}
+
+// ══════════════════════════════════════════
+// SUPABASE ADMIN FUNCTIONS
+// ══════════════════════════════════════════
+
+// Save daily report
+async function submitReport() {
+  if(!currentUser) { showToast('⚠️ กรุณาเข้าสู่ระบบก่อน','warn'); return; }
+  var summary = document.querySelector('#page-report textarea');
+  var proj = PROJECTS[0];
+  var ph = PHASES.find(function(p){return p.st==='active';});
+  
+  var data = {
+    project_id: proj ? proj.id : null,
+    phase_id:   ph ? ph.id : null,
+    report_date: new Date().toISOString().split('T')[0],
+    summary:     summary ? summary.value : '',
+    workers_count: parseInt(document.querySelector('#page-report input[type=number]')?.value||0),
+    progress_pct:  parseInt(document.querySelectorAll('#page-report input[type=number]')[1]?.value||0),
+    approval_status: 'pending'
+  };
+  
+  var r = await sbInsert('daily_reports', data);
+  if(r) {
+    showToast('✅ ส่ง Report สำเร็จ');
+    triggerLineNotify(
+      '📋 Daily Report ใหม่
+โครงการ: ' + (proj?proj.name:'—') + '
+วันที่: ' + formatDateThai(data.report_date) + '
+โดย: ' + currentUser.name,
+      'วิศวกร'
+    );
+  } else {
+    showToast('❌ บันทึกไม่สำเร็จ','error');
+  }
+}
+
+// ══════════════════════════════════════════
+// IMPROVED loadFromDB — fix dates
+// ══════════════════════════════════════════
+var _origLoadFromDB = loadFromDB;
+async function loadFromDB() {
+  showLoading(true);
+  try {
+    var results = await Promise.all([
+      sbFetch('projects',    {order:'name'}),
+      sbFetch('phases',      {order:'phase_number'}),
+      sbFetch('stock_items', {order:'name'}),
+      sbFetch('defects',     {order:'created_at.desc'}),
+      sbFetch('milestones',  {order:'milestone_number'})
+    ]);
+    var projects=results[0], phases=results[1], stock=results[2], defects=results[3], milestones=results[4];
+
+    if(projects && projects.length) {
+      PROJECTS = projects.map(function(p) {
+        var pp = (phases||[]).filter(function(ph){return ph.project_id===p.id;});
+        var pct = pp.length ? Math.round(pp.reduce(function(s,ph){return s+(ph.progress_pct||0);},0)/pp.length) : 0;
+        var aph = pp.find(function(ph){return ph.status==='active';});
+        var msd = (milestones||[]).filter(function(m){return m.project_id===p.id&&m.status==='approved';}).length;
+        return {
+          id: p.id,
+          name: p.name,
+          loc: p.address||'—',
+          pct: pct,
+          phase: aph ? aph.name : '—',
+          days: daysLeftFromISO(p.end_date_planned),
+          daysStr: daysLeftFromISO(p.end_date_planned) + ' วัน',
+          endDate: formatDateThai(p.end_date_planned),
+          budget: Number(p.budget_total||0)/1000000,
+          used: Number(p.budget_used||0)/1000000,
+          st: p.status,
+          milestone: msd
+        };
+      });
+    }
+    if(phases && phases.length) {
+      PHASES = phases.map(function(p){
+        return {id:p.id,n:p.name,pct:p.progress_pct||0,col:p.color_hex||'#1565C0',
+          st:p.status==='done'?'done':p.status==='active'?'active':'wait',
+          project_id:p.project_id,
+          startDate: formatDateThai(p.start_date),
+          endDate: formatDateThai(p.end_date_planned)};
+      });
+    }
+    if(stock && stock.length) {
+      STOCK = stock.map(function(s){
+        return {id:s.id,icon:s.icon||'📦',n:s.name,unit:s.unit,
+          qty:Number(s.qty_current||0),min:Number(s.qty_min||0),max:Number(s.qty_max||100),
+          lot:s.lot_number||'—',st:s.status||'ok'};
+      });
+    }
+    if(defects && defects.length) {
+      DEFECTS = defects.map(function(d){
+        return {id:d.id,t:d.title,loc:d.location||'—',
+          sev:d.severity==='high'?'high':d.severity==='medium'?'med':'low',
+          st:d.status==='open'?'open':d.status==='fixing'?'fix':d.status==='closed'?'closed':'fix',
+          by:'—', date: formatDateThai(d.created_at)};
+      });
+    }
+    if(milestones && milestones.length) {
+      MILESTONES = milestones.map(function(m){
+        return {id:m.id,n:m.milestone_number,title:m.title,
+          amt:'฿' + Number(m.amount||0).toLocaleString('th-TH'),
+          st:m.status==='approved'?'done':m.status==='pending'?'pend':'wait',
+          approvedAt: m.owner_approved_at ? formatDateThai(m.owner_approved_at) : null};
+      });
+    }
+    renderDash();
+    if(typeof renderStock==='function') renderStock();
+    showToast('✅ โหลดข้อมูลจาก Database สำเร็จ');
+    var el=document.getElementById('stock-update-time');
+    if(el) el.textContent='คลังกลาง · อัปเดต '+new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})+' น.';
+    console.log('✅ DB loaded:', {projects:PROJECTS.length, phases:PHASES.length, stock:STOCK.length});
+  } catch(err) {
+    console.error('loadFromDB error:', err);
+    showToast('⚠️ ใช้ข้อมูล Demo', 'warn');
+  }
+  showLoading(false);
+}
+
+// Re-override ownerApprove with LINE notify
+function ownerApprove(i) {
+  if(!confirm('ยืนยันอนุมัติ ' + MILESTONES[i].title + '?')) return;
+  var ms = MILESTONES[i];
+  if(ms.id) {
+    sbPatch('milestones', ms.id, {
+      status: 'approved',
+      owner_approved_at: new Date().toISOString(),
+      owner_device: navigator.userAgent.substring(0,200)
+    }).then(function(r) {
+      if(r) {
+        showToast('✅ อนุมัติงวดงานสำเร็จ · บันทึกหลักฐานแล้ว');
+        triggerLineNotify(
+          '💰 Owner อนุมัติงวดงานแล้ว\n' + ms.title + '\nจำนวน: ' + ms.amt + '\nเวลา: ' + new Date().toLocaleString('th-TH'),
+          'CEO + บัญชี'
+        );
+        loadFromDB();
+      } else showToast('❌ บันทึกไม่สำเร็จ','error');
+    });
+  }
+}
+
+// Override addDF with LINE notify
+function addDF() {
+  var t = document.getElementById('ndt');
+  if(!t || !t.value.trim()){ alert('กรุณาระบุรายละเอียด'); return; }
+  var proj = PROJECTS[0];
+  var data = {
+    title: t.value.trim(),
+    location: document.getElementById('ndl') ? document.getElementById('ndl').value : '—',
+    severity: document.getElementById('nds') ? 
+      (document.getElementById('nds').value==='high'?'high':document.getElementById('nds').value==='med'?'medium':'low') : 'medium',
+    status: 'open',
+    project_id: proj ? proj.id : null
+  };
+  sbInsert('defects', data).then(function(r) {
+    if(r) {
+      showToast('✅ บันทึก Defect สำเร็จ');
+      triggerLineNotify(
+        '⚠️ Defect ใหม่\n' + data.title + '\nตำแหน่ง: ' + data.location + '\nระดับ: ' + data.severity,
+        'วิศวกร + หัวหน้าช่าง'
+      );
+      t.value='';
+      loadFromDB();
+    } else showToast('❌ บันทึกไม่สำเร็จ','error');
+  });
+}
+
+// Override doTxn with DB save
+function doTxn() {
+  var qty = parseFloat(document.getElementById('tx-qty').value)||0;
+  if(!qty){ alert('กรุณากรอกจำนวน'); return; }
+  var matName = document.getElementById('tx-mat').value;
+  var item = STOCK.find(function(s){return s.n.includes(matName.split(' ')[0]);});
+  if(!item){ showToast('ไม่พบวัสดุ','error'); return; }
+  var newQty = item.qty;
+  if(txnMode==='in') newQty += qty;
+  else {
+    if(item.qty < qty){ showToast('❌ จำนวนไม่เพียงพอ','error'); return; }
+    newQty -= qty;
+  }
+  var newSt = newQty===0?'out':newQty<item.min?'low':'ok';
+  var lotVal = document.getElementById('tx-lot') ? document.getElementById('tx-lot').value : item.lot;
+  
+  sbPatch('stock_items', item.id, {qty_current:newQty, status:newSt, lot_number:lotVal||item.lot}).then(function(r) {
+    if(r) {
+      showToast('✅ บันทึก Stock สำเร็จ');
+      document.getElementById('tx-qty').value='';
+      if(newSt==='low'||newSt==='out') {
+        triggerLineNotify(
+          '📦 แจ้งเตือน Stock ' + (newSt==='out'?'หมด':'ต่ำ') + '\n' + item.n + '\nคงเหลือ: ' + newQty + ' ' + item.unit + '\nMin: ' + item.min,
+          'จัดซื้อ + CEO'
+        );
+      }
+      loadFromDB();
+    } else showToast('❌ บันทึกไม่สำเร็จ','error');
+  });
+}
+
+// ══════════════════════════════════════════
+// CONTRACT MODULE — JavaScript
+// ══════════════════════════════════════════
+var currentContractId = null;
+var cfMilestoneRows = [];
+
+function showContractForm() {
+  populateContractProjectSel();
+  cfMilestoneRows = [];
+  renderCFMilestones();
+  document.getElementById('cf-date').value = new Date().toISOString().split('T')[0];
+  var modal = document.getElementById('contract-form-modal');
+  modal.style.display = 'flex';
+}
+function hideContractForm() {
+  document.getElementById('contract-form-modal').style.display = 'none';
+}
+
+function populateContractProjectSel() {
+  var sels = ['contract-proj-sel','cf-project','boq-proj-sel','bq-proj'];
+  sels.forEach(function(selId) {
+    var sel = document.getElementById(selId);
+    if(!sel) return;
+    var cur = sel.value;
+    sel.innerHTML = '<option value="">— เลือกโครงการ —</option>';
+    PROJECTS.forEach(function(p) {
+      var opt = document.createElement('option');
+      opt.value = p.id; opt.textContent = p.name;
+      sel.appendChild(opt);
+    });
+    if(cur) sel.value = cur;
+  });
+}
+
+function addMilestoneRow() {
+  cfMilestoneRows.push({title:'', conditions:'', amount:0, pct:0});
+  renderCFMilestones();
+}
+
+function renderCFMilestones() {
+  var con = document.getElementById('cf-milestones-list');
+  if(!con) return;
+  if(!cfMilestoneRows.length) {
+    con.innerHTML = '<div style="text-align:center;color:var(--text3);font-size:12px;padding:10px">กด "+ เพิ่มงวดงาน" ด้านล่าง</div>';
+    return;
+  }
+  con.innerHTML = cfMilestoneRows.map(function(r, i) {
+    return '<div style="background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:10px;margin-bottom:8px">'
+      + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">'
+      + '<span style="font-size:12px;font-weight:600;color:var(--blue);min-width:50px">งวดที่ '+(i+1)+'</span>'
+      + '<input class="finp" style="flex:1" placeholder="ชื่องวด เช่น งานฐานราก" value="'+r.title+'" oninput="cfMilestoneRows['+i+'].title=this.value">'
+      + '<button onclick="cfMilestoneRows.splice('+i+',1);renderCFMilestones()" style="background:none;border:none;color:var(--danger);font-size:16px;cursor:pointer">✕</button>'
+      + '</div>'
+      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
+      + '<div><div class="flbl">มูลค่า (บาท)</div><input type="number" class="finp" placeholder="0" value="'+r.amount+'" oninput="cfMilestoneRows['+i+'].amount=parseFloat(this.value)||0;calcMilestonePct()"></div>'
+      + '<div><div class="flbl">% ของสัญญา</div><input type="number" class="finp" id="cfmpct'+i+'" placeholder="0" value="'+r.pct+'" readonly style="background:var(--bg)"></div>'
+      + '</div>'
+      + '<div style="margin-top:8px"><div class="flbl">เงื่อนไขการเบิกงวด</div><input class="finp" placeholder="เช่น เมื่อฐานรากแล้วเสร็จ 100%" value="'+r.conditions+'" oninput="cfMilestoneRows['+i+'].conditions=this.value"></div>'
+      + '</div>';
+  }).join('');
+  calcMilestonePct();
+}
+
+function calcMilestonePct() {
+  var totalVal = parseFloat(document.getElementById('cf-value').value)||0;
+  if(!totalVal) return;
+  cfMilestoneRows.forEach(function(r, i) {
+    var el = document.getElementById('cfmpct'+i);
+    if(el) { r.pct = totalVal ? Math.round(r.amount/totalVal*1000)/10 : 0; el.value = r.pct; }
+  });
+}
+
+async function saveContract() {
+  var projId = document.getElementById('cf-project').value;
+  var num    = document.getElementById('cf-number').value.trim();
+  var val    = parseFloat(document.getElementById('cf-value').value)||0;
+  if(!projId || !num) { alert('กรุณาเลือกโครงการและใส่เลขที่สัญญา'); return; }
+  if(!cfMilestoneRows.length) { alert('กรุณาเพิ่มงวดงานอย่างน้อย 1 งวด'); return; }
+
+  var contractData = {
+    project_id: projId,
+    contract_number: num,
+    contract_date: document.getElementById('cf-date').value,
+    contractor_name: document.getElementById('cf-contractor').value,
+    owner_name: document.getElementById('cf-owner').value,
+    total_value: val,
+    warranty_months: parseInt(document.getElementById('cf-warranty').value)||12,
+    notes: document.getElementById('cf-notes').value,
+    status: 'active'
+  };
+
+  var r = await sbInsert('contracts', contractData);
+  if(!r || !r[0]) { showToast('❌ บันทึกสัญญาไม่สำเร็จ','error'); return; }
+  var contractId = r[0].id;
+
+  // Insert milestones
+  var msData = cfMilestoneRows.map(function(ms, i) {
+    return {
+      contract_id: contractId,
+      project_id: projId,
+      milestone_number: i+1,
+      title: ms.title,
+      conditions: ms.conditions,
+      amount: ms.amount,
+      pct_of_total: ms.pct,
+      status: 'wait'
+    };
+  });
+
+  for(var i=0; i<msData.length; i++) {
+    await sbInsert('contract_milestones', msData[i]);
+  }
+
+  showToast('✅ บันทึกสัญญาและงวดงานสำเร็จ');
+  hideContractForm();
+  loadContractByProject(projId);
+}
+
+async function loadContractByProject(projId) {
+  if(!projId) { document.getElementById('contract-list').innerHTML='<div class="empty"><div class="empty-icon">📄</div><div class="empty-title">เลือกโครงการ</div></div>'; return; }
+  var contracts = await sbFetch('contracts', {filter:'project_id=eq.'+projId, order:'created_at.desc'});
+  if(!contracts || !contracts.length) {
+    document.getElementById('contract-list').innerHTML='<div class="empty"><div class="empty-icon">📄</div><div class="empty-title">ยังไม่มีสัญญา</div><div class="empty-sub">กด + สร้างสัญญา</div></div>';
+    return;
+  }
+  document.getElementById('contract-list').innerHTML = contracts.map(function(c) {
+    return '<div style="border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:8px;cursor:pointer;transition:all .15s" onclick="selectContract(''+c.id+'',''+c.contract_number+'')" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'">'
+      + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'
+      + '<div style="font-size:14px;font-weight:600;color:var(--text-h)">'+c.contract_number+'</div>'
+      + '<span class="badge b-green">Active</span></div>'
+      + '<div style="font-size:12px;color:var(--text3)">มูลค่ารวม: <strong style="color:var(--blue)">฿'+Number(c.total_value||0).toLocaleString('th-TH')+'</strong></div>'
+      + '<div style="font-size:12px;color:var(--text3)">ผู้รับเหมา: '+c.contractor_name+'  ·  เจ้าของงาน: '+c.owner_name+'</div>'
+      + '</div>';
+  }).join('');
+}
+
+async function selectContract(id, num) {
+  currentContractId = id;
+  document.getElementById('contract-milestone-sub').textContent = 'สัญญา: ' + num;
+  document.getElementById('btn-add-milestone').style.display = 'block';
+
+  var ms = await sbFetch('contract_milestones', {filter:'contract_id=eq.'+id, order:'milestone_number'});
+  if(!ms || !ms.length) {
+    document.getElementById('contract-milestones').innerHTML='<div class="empty"><div class="empty-title">ยังไม่มีงวดงาน</div></div>';
+    return;
+  }
+
+  var totalAmt = ms.reduce(function(s,m){return s+Number(m.amount||0);},0);
+  var approvedAmt = ms.filter(function(m){return m.status==='approved';}).reduce(function(s,m){return s+Number(m.amount||0);},0);
+
+  document.getElementById('contract-milestones').innerHTML = ms.map(function(m,i) {
+    var isDone = m.status==='approved';
+    var isPend = m.status==='pending';
+    var bg = isDone?'var(--green3)':isPend?'var(--blue3)':'var(--bg)';
+    var bc = isDone?'#A5D6A7':isPend?'var(--blue4)':'var(--border)';
+    return '<div style="border:1px solid '+bc+';border-radius:var(--r);padding:12px 14px;margin-bottom:8px;background:'+bg+'">'
+      + '<div style="display:flex;align-items:center;gap:10px">'
+      + '<div style="width:30px;height:30px;border-radius:50%;background:'+(isDone?'var(--green)':isPend?'var(--blue)':'var(--text3)')+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">'+(isDone?'✓':m.milestone_number)+'</div>'
+      + '<div style="flex:1"><div style="font-size:13px;font-weight:500">'+m.title+'</div>'
+      + '<div style="font-size:12px;color:var(--text3)">'+(m.conditions||'')+'</div></div>'
+      + '<div style="text-align:right">'
+      + '<div style="font-size:14px;font-weight:700;color:'+(isDone?'var(--green)':'var(--blue)')+'">฿'+Number(m.amount||0).toLocaleString('th-TH')+'</div>'
+      + '<div style="font-size:10px;color:var(--text3)">'+m.pct_of_total+'%</div></div></div>'
+      + (isPend && !isDone ? '<div style="margin-top:10px;display:flex;gap:6px"><button class="btn btn-g btn-sm btn-full" onclick="approveContractMilestone(''+m.id+'')">✅ อนุมัติงวดนี้</button></div>' : '')
+      + '</div>';
+  }).join('');
+
+  // Summary
+  document.getElementById('contract-summary').style.display = 'block';
+  var pct = totalAmt ? Math.round(approvedAmt/totalAmt*100) : 0;
+  document.getElementById('contract-summary-content').innerHTML =
+    '<div class="pbar-row mb12"><div class="pbar" style="height:10px"><div class="pfill" style="width:'+pct+'%;background:var(--green)"></div></div><div class="ppct" style="color:var(--green)">'+pct+'%</div></div>'
+    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
+    + '<div style="background:var(--bg);border-radius:var(--r2);padding:12px;text-align:center"><div style="font-size:11px;color:var(--text3)">เบิกแล้ว</div><div style="font-size:16px;font-weight:700;color:var(--green)">฿'+approvedAmt.toLocaleString('th-TH')+'</div></div>'
+    + '<div style="background:var(--bg);border-radius:var(--r2);padding:12px;text-align:center"><div style="font-size:11px;color:var(--text3)">คงเหลือ</div><div style="font-size:16px;font-weight:700;color:var(--orange)">฿'+(totalAmt-approvedAmt).toLocaleString('th-TH')+'</div></div>'
+    + '</div>';
+}
+
+async function approveContractMilestone(id) {
+  if(!confirm('ยืนยันอนุมัติงวดงานนี้?')) return;
+  var r = await sbPatch('contract_milestones', id, {
+    status:'approved',
+    owner_approved_at: new Date().toISOString(),
+    owner_device: navigator.userAgent.substring(0,200)
+  });
+  if(r) { showToast('✅ อนุมัติงวดงานสำเร็จ'); selectContract(currentContractId,''); }
+  else showToast('❌ บันทึกไม่สำเร็จ','error');
+}
+
+// ══════════════════════════════════════════
+// BOQ MODULE — JavaScript
+// ══════════════════════════════════════════
+var boqItems = [];
+
+function showBOQForm() {
+  populateContractProjectSel();
+  document.getElementById('boq-form-modal').style.display = 'flex';
+  var projId = document.getElementById('boq-proj-sel').value;
+  if(projId) document.getElementById('bq-proj').value = projId;
+  loadBOQPhases(projId);
+}
+function hideBOQForm() {
+  document.getElementById('boq-form-modal').style.display = 'none';
+}
+
+function loadBOQPhases(projId) {
+  var sel = document.getElementById('bq-phase');
+  if(!sel) return;
+  sel.innerHTML = '<option value="">— เลือก Phase —</option>';
+  PHASES.filter(function(p){return !projId || p.project_id===projId;}).forEach(function(p) {
+    var opt = document.createElement('option');
+    opt.value = p.id; opt.textContent = p.n;
+    sel.appendChild(opt);
+  });
+  var sel2 = document.getElementById('boq-phase-sel');
+  if(sel2) {
+    sel2.innerHTML = '<option value="">— ทุก Phase —</option>';
+    PHASES.filter(function(p){return !projId || p.project_id===projId;}).forEach(function(p) {
+      var opt = document.createElement('option');
+      opt.value = p.id; opt.textContent = p.n;
+      sel2.appendChild(opt);
+    });
+  }
+}
+
+function calcBOQTotal() {
+  var qty = parseFloat(document.getElementById('bq-qty').value)||0;
+  var price = parseFloat(document.getElementById('bq-price').value)||0;
+  var total = qty * price;
+  document.getElementById('bq-total-display').textContent = '฿ ' + total.toLocaleString('th-TH',{minimumFractionDigits:2});
+}
+
+async function saveBOQItem(sendPR) {
+  var projId = document.getElementById('bq-proj').value;
+  var desc = document.getElementById('bq-desc').value.trim();
+  if(!projId || !desc) { alert('กรุณาเลือกโครงการและใส่รายละเอียด'); return; }
+  var qty = parseFloat(document.getElementById('bq-qty').value)||0;
+  var price = parseFloat(document.getElementById('bq-price').value)||0;
+  var data = {
+    project_id: projId,
+    phase_id: document.getElementById('bq-phase').value || null,
+    item_number: document.getElementById('bq-num').value,
+    description: desc,
+    spec: document.getElementById('bq-spec').value,
+    unit: document.getElementById('bq-unit').value,
+    quantity: qty,
+    unit_price: price,
+    material_name: desc,
+    source: 'manual',
+    status: sendPR ? 'sent_pr' : 'pending'
+  };
+  var r = await sbInsert('boq_items', data);
+  if(r) {
+    showToast('✅ บันทึก BOQ สำเร็จ' + (sendPR?' + ส่งจัดซื้อ':''));
+    if(sendPR) {
+      // Also create PR
+      await sbInsert('purchase_requests', {
+        project_id: projId,
+        phase_id: data.phase_id,
+        title: desc + ' (จาก BOQ)',
+        source: 'boq',
+        items: JSON.stringify([{material:desc, qty:qty, unit:data.unit, unit_price:price}]),
+        total_amount: qty*price,
+        status: 'draft'
+      });
+    }
+    hideBOQForm();
+    loadBOQ();
+  } else showToast('❌ บันทึกไม่สำเร็จ','error');
+}
+
+function saveBOQAndSendPR() { saveBOQItem(true); }
+
+async function loadBOQ() {
+  var projId = document.getElementById('boq-proj-sel').value;
+  var phaseId = document.getElementById('boq-phase-sel').value;
+  if(!projId) {
+    document.getElementById('boq-table-wrap').innerHTML='<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">เลือกโครงการเพื่อดู BOQ</div></div>';
+    return;
+  }
+  loadBOQPhases(projId);
+  var filter = 'project_id=eq.'+projId;
+  if(phaseId) filter += '&phase_id=eq.'+phaseId;
+  var items = await sbFetch('boq_items', {filter:filter, order:'created_at'});
+  boqItems = items || [];
+
+  var total = boqItems.reduce(function(s,i){return s+(i.quantity*i.unit_price);},0);
+  var sent = boqItems.filter(function(i){return i.status==='sent_pr';}).length;
+  var pending = boqItems.filter(function(i){return i.status==='pending';}).length;
+
+  document.getElementById('boq-count').textContent = boqItems.length;
+  document.getElementById('boq-total').textContent = '฿'+total.toLocaleString('th-TH',{minimumFractionDigits:0});
+  document.getElementById('boq-sent').textContent = sent;
+  document.getElementById('boq-pending').textContent = pending;
+  document.getElementById('boq-summary-bar').style.display = boqItems.length ? 'grid' : 'none';
+
+  if(!boqItems.length) {
+    document.getElementById('boq-table-wrap').innerHTML='<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">ยังไม่มีรายการ BOQ</div><div class="empty-sub">กด "+ เพิ่มรายการ" ด้านบน</div></div>';
+    return;
+  }
+
+  var html = '<div class="tbl-wrap"><table><thead><tr>'
+    + '<th>รหัส</th><th>รายละเอียด</th><th>Phase</th><th>หน่วย</th><th style="text-align:right">ปริมาณ</th><th style="text-align:right">ราคา/หน่วย</th><th style="text-align:right">มูลค่ารวม</th><th>สถานะ</th><th></th>'
+    + '</tr></thead><tbody>';
+
+  boqItems.forEach(function(item) {
+    var ph = PHASES.find(function(p){return p.id===item.phase_id;});
+    var rowTotal = item.quantity * item.unit_price;
+    var stBadge = item.status==='sent_pr' ? '<span class="badge b-green">ส่งจัดซื้อ</span>' : '<span class="badge b-gray">รอ</span>';
+    html += '<tr>'
+      + '<td style="font-size:11px;color:var(--text3)">'+(item.item_number||'—')+'</td>'
+      + '<td><div style="font-size:13px;font-weight:500">'+item.description+'</div><div style="font-size:11px;color:var(--text3)">'+(item.spec||'')+'</div></td>'
+      + '<td style="font-size:12px">'+(ph?ph.n:'—')+'</td>'
+      + '<td style="font-size:12px">'+item.unit+'</td>'
+      + '<td style="text-align:right;font-weight:500">'+Number(item.quantity).toLocaleString('th-TH')+'</td>'
+      + '<td style="text-align:right">฿'+Number(item.unit_price).toLocaleString('th-TH')+'</td>'
+      + '<td style="text-align:right;font-weight:700;color:var(--blue)">฿'+rowTotal.toLocaleString('th-TH',{minimumFractionDigits:0})+'</td>'
+      + '<td>'+stBadge+'</td>'
+      + '<td><button class="btn btn-sm btn-ghost" onclick="sendBOQtoPR(''+item.id+'')">📤 จัดซื้อ</button></td>'
+      + '</tr>';
+  });
+
+  // Total row
+  html += '<tr style="background:var(--blue3);font-weight:700">'
+    + '<td colspan="6" style="text-align:right;padding:12px;color:var(--blue)">มูลค่า BOQ รวมทั้งหมด</td>'
+    + '<td style="text-align:right;color:var(--blue);font-size:15px">฿'+total.toLocaleString('th-TH',{minimumFractionDigits:0})+'</td>'
+    + '<td colspan="2"></td></tr>';
+
+  html += '</tbody></table></div>';
+  document.getElementById('boq-table-wrap').innerHTML = html;
+}
+
+async function sendBOQtoPR(itemId) {
+  var item = boqItems.find(function(i){return i.id===itemId;});
+  if(!item) return;
+  if(!confirm('ส่ง "'+item.description+'" ไปหมวดจัดซื้อ?')) return;
+  var r1 = await sbPatch('boq_items', itemId, {status:'sent_pr'});
+  var r2 = await sbInsert('purchase_requests', {
+    project_id: item.project_id,
+    phase_id: item.phase_id,
+    title: item.description + ' (จาก BOQ)',
+    source: 'boq',
+    items: JSON.stringify([{material:item.description, qty:item.quantity, unit:item.unit, unit_price:item.unit_price}]),
+    total_amount: item.quantity * item.unit_price,
+    status: 'draft'
+  });
+  if(r1 && r2) { showToast('✅ ส่งจัดซื้อสำเร็จ'); loadBOQ(); }
+  else showToast('❌ บันทึกไม่สำเร็จ','error');
+}
+
+function exportBOQ() {
+  if(!boqItems.length) { showToast('ไม่มีข้อมูล BOQ','warn'); return; }
+  var csv = 'รหัส,รายละเอียด,Spec,Phase,หน่วย,ปริมาณ,ราคา/หน่วย,มูลค่ารวม,สถานะ\n';
+  boqItems.forEach(function(item) {
+    var ph = PHASES.find(function(p){return p.id===item.phase_id;});
+    csv += [
+      item.item_number||'',
+      '"'+item.description+'"',
+      '"'+(item.spec||'')+'"',
+      ph?ph.n:'—',
+      item.unit,
+      item.quantity,
+      item.unit_price,
+      item.quantity*item.unit_price,
+      item.status==='sent_pr'?'ส่งจัดซื้อแล้ว':'รอดำเนินการ'
+    ].join(',') + '\n';
+  });
+  var blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
+  var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
+  a.download = 'BOQ_SitePro_'+new Date().toLocaleDateString('th-TH')+'.csv';
+  a.click();
+  showToast('✅ Export CSV สำเร็จ');
+}
+
+// Contract+BOQ menu now integrated in MENU_CFG above
+
+// Load contract data when nav to contract page
+var _origNav = nav;
+function nav(id, label) {
+  _origNav(id, label);
+  if(id === 'contract') {
+    setTimeout(function() {
+      populateContractProjectSel();
+    }, 100);
+  }
+  if(id === 'boq') {
+    setTimeout(function() {
+      populateContractProjectSel();
+    }, 100);
+  }
+}
+
+
+// ══════════════════════════════════════════
+// FILE MANAGER — Upload to Supabase Storage
+// ══════════════════════════════════════════
+var SB_STORAGE_URL = 'https://kdfbllrobnfdvelbotwh.supabase.co/storage/v1';
+var SB_BUCKET = 'sitepro-files';
+var pendingFiles = [];
+
+var FILE_ICONS = {
+  contract: '📄', boq: '📋', drawing: '📐',
+  photo: '📸', report: '📊', invoice: '💰',
+  permit: '🏛️', other: '📁'
+};
+var FILE_LABELS = {
+  contract: 'สัญญา', boq: 'BOQ', drawing: 'แบบก่อสร้าง',
+  photo: 'รูปถ่าย', report: 'รายงาน', invoice: 'ใบแจ้งหนี้',
+  permit: 'ใบอนุญาต', other: 'อื่น ๆ'
+};
+
+function handleFileDrop(e) {
+  e.preventDefault();
+  document.getElementById('file-dropzone').style.borderColor = 'var(--border2)';
+  document.getElementById('file-dropzone').style.background = 'transparent';
+  handleFileSelect(e.dataTransfer.files);
+}
+
+function handleFileSelect(files) {
+  if(!files || !files.length) return;
+  pendingFiles = Array.from(files);
+  renderFileQueue();
+}
+
+function renderFileQueue() {
+  if(!pendingFiles.length) {
+    document.getElementById('file-queue').style.display = 'none';
+    document.getElementById('btn-upload').style.display = 'none';
+    return;
+  }
+  document.getElementById('file-queue').style.display = 'block';
+  document.getElementById('btn-upload').style.display = 'flex';
+  document.getElementById('file-queue-list').innerHTML = pendingFiles.map(function(f, i) {
+    var ext = f.name.split('.').pop().toLowerCase();
+    var icon = ['pdf'].includes(ext) ? '📄' : ['png','jpg','jpeg'].includes(ext) ? '🖼️' : ['xlsx','xls'].includes(ext) ? '📊' : ['docx','doc'].includes(ext) ? '📝' : '📁';
+    var size = f.size > 1024*1024 ? (f.size/1024/1024).toFixed(1)+' MB' : (f.size/1024).toFixed(0)+' KB';
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border-radius:var(--r2);margin-bottom:6px">'
+      + '<span style="font-size:22px">'+icon+'</span>'
+      + '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+f.name+'</div>'
+      + '<div style="font-size:11px;color:var(--text3)">'+size+'</div></div>'
+      + '<button onclick="pendingFiles.splice('+i+',1);renderFileQueue()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:16px">✕</button>'
+      + '</div>';
+  }).join('');
+}
+
+async function uploadFiles() {
+  var projId = document.getElementById('file-proj-sel').value;
+  if(!projId) { showToast('⚠️ กรุณาเลือกโครงการก่อน','warn'); return; }
+  if(!pendingFiles.length) { showToast('⚠️ กรุณาเลือกไฟล์ก่อน','warn'); return; }
+
+  var category = document.getElementById('file-category').value;
+  var desc = document.getElementById('file-desc').value;
+  var btn = document.getElementById('btn-upload');
+  btn.disabled = true; btn.textContent = '⏳ กำลังอัปโหลด...';
+  document.getElementById('upload-progress').style.display = 'block';
+
+  var successCount = 0;
+  for(var i = 0; i < pendingFiles.length; i++) {
+    var file = pendingFiles[i];
+    var pct = Math.round((i / pendingFiles.length) * 100);
+    document.getElementById('upload-prog-fill').style.width = pct + '%';
+    document.getElementById('upload-prog-pct').textContent = pct + '%';
+    document.getElementById('upload-prog-text').textContent = 'กำลังอัปโหลด: ' + file.name;
+
+    try {
+      // Create unique file path
+      var timestamp = Date.now();
+      var safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      var filePath = projId + '/' + category + '/' + timestamp + '_' + safeName;
+
+      // Upload to Supabase Storage
+      var uploadRes = await fetch(SB_STORAGE_URL + '/object/' + SB_BUCKET + '/' + filePath, {
+        method: 'POST',
+        headers: {
+          'apikey': SB_KEY,
+          'Authorization': 'Bearer ' + SB_KEY,
+          'Content-Type': file.type || 'application/octet-stream',
+          'x-upsert': 'true'
+        },
+        body: file
+      });
+
+      if(uploadRes.ok) {
+        var fileUrl = SB_URL + '/storage/v1/object/public/' + SB_BUCKET + '/' + filePath;
+
+        // Save to database
+        await sbInsert('project_files', {
+          project_id: projId,
+          file_name: file.name,
+          file_path: filePath,
+          file_url: fileUrl,
+          file_type: file.type,
+          file_size: file.size,
+          category: category,
+          description: desc,
+          uploaded_by: currentUser ? currentUser.id : null
+        });
+        successCount++;
+      }
+    } catch(err) {
+      console.error('Upload error:', err);
+    }
+  }
+
+  document.getElementById('upload-prog-fill').style.width = '100%';
+  document.getElementById('upload-prog-pct').textContent = '100%';
+
+  setTimeout(function() {
+    document.getElementById('upload-progress').style.display = 'none';
+    btn.disabled = false;
+    btn.innerHTML = '📤 อัปโหลดทั้งหมด';
+    pendingFiles = [];
+    renderFileQueue();
+    document.getElementById('file-desc').value = '';
+    showToast('✅ อัปโหลดสำเร็จ ' + successCount + '/' + (successCount + (pendingFiles.length - successCount)) + ' ไฟล์');
+    loadFiles();
+  }, 500);
+}
+
+async function loadFiles() {
+  var projId = document.getElementById('file-filter-proj') ? document.getElementById('file-filter-proj').value : '';
+  var cat = document.getElementById('file-filter-cat') ? document.getElementById('file-filter-cat').value : '';
+
+  var filter = '';
+  if(projId) filter += 'project_id=eq.' + projId;
+  if(cat) filter += (filter?'&':'') + 'category=eq.' + cat;
+
+  var files = await sbFetch('project_files', {filter: filter, order: 'created_at.desc', limit: 100});
+  if(!files || !files.length) {
+    document.getElementById('file-list').innerHTML = '<div class="empty"><div class="empty-icon">📁</div><div class="empty-title">ยังไม่มีเอกสาร</div></div>';
+    return;
+  }
+
+  document.getElementById('file-list').innerHTML = files.map(function(f) {
+    var ext = f.file_name.split('.').pop().toLowerCase();
+    var icon = ['pdf'].includes(ext) ? '📄' : ['png','jpg','jpeg'].includes(ext) ? '🖼️' : ['xlsx','xls'].includes(ext) ? '📊' : ['docx','doc'].includes(ext) ? '📝' : '📁';
+    var size = f.file_size > 1024*1024 ? (f.file_size/1024/1024).toFixed(1)+' MB' : f.file_size ? (f.file_size/1024).toFixed(0)+' KB' : '—';
+    var proj = PROJECTS.find(function(p){return p.id===f.project_id;});
+    var catIcon = FILE_ICONS[f.category] || '📁';
+    var catLabel = FILE_LABELS[f.category] || 'อื่น ๆ';
+    var date = f.created_at ? formatDateThai(f.created_at) : '—';
+
+    return '<div style="display:flex;align-items:flex-start;gap:12px;padding:12px;border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;transition:all .15s" onmouseover="this.style.borderColor='var(--blue)'" onmouseleave="this.style.borderColor='var(--border)'">'
+      + '<div style="font-size:28px;flex-shrink:0">'+icon+'</div>'
+      + '<div style="flex:1;min-width:0">'
+      + '<div style="font-size:13px;font-weight:500;color:var(--text-h);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+f.file_name+'</div>'
+      + '<div style="font-size:11px;color:var(--text3);margin-top:3px">'
+      + catIcon+' '+catLabel
+      + (proj?' · '+proj.name:'')
+      + ' · '+size+' · '+date
+      + (f.description?' · <em>'+f.description+'</em>':'')
+      + '</div></div>'
+      + '<div style="display:flex;gap:6px;flex-shrink:0">'
+      + '<a href="'+f.file_url+'" target="_blank" class="btn btn-sm btn-p">👁️ ดู</a>'
+      + '<a href="'+f.file_url+'" download="'+f.file_name+'" class="btn btn-sm btn-ghost">⬇️</a>'
+      + '<button onclick="deleteFile(''+f.id+'',''+f.file_path+'')" class="btn btn-sm btn-ghost" style="color:var(--danger)">🗑️</button>'
+      + '</div></div>';
+  }).join('');
+}
+
+async function deleteFile(id, path) {
+  if(!confirm('ลบไฟล์นี้?')) return;
+  // Delete from storage
+  await fetch(SB_STORAGE_URL + '/object/' + SB_BUCKET + '/' + path, {
+    method: 'DELETE',
+    headers: {'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY}
+  });
+  // Delete from DB
+  await fetch(SB_URL + '/rest/v1/project_files?id=eq.' + id, {
+    method: 'DELETE',
+    headers: {'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY}
+  });
+  showToast('✅ ลบไฟล์สำเร็จ');
+  loadFiles();
+}
+
+// Init file manager
+function initFileManager() {
+  // Populate project selectors
+  var sels = ['file-proj-sel', 'file-filter-proj'];
+  sels.forEach(function(id) {
+    var sel = document.getElementById(id);
+    if(!sel) return;
+    var first = sel.innerHTML;
+    sel.innerHTML = first;
+    PROJECTS.forEach(function(p) {
+      var opt = document.createElement('option');
+      opt.value = p.id; opt.textContent = p.name;
+      sel.appendChild(opt);
+    });
+  });
+  loadFiles();
+}
+
+// Sidebar file menu now integrated in MENU_CFG above
+
+// File manager init on nav
+document.addEventListener('sp-nav', function(e) {
+  if(e.detail === 'files') setTimeout(initFileManager, 200);
+});
+
+</script>
+
+</body>
+</html>
