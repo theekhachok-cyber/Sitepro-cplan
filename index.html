@@ -374,7 +374,7 @@ tr:hover td{background:#F8FAFE}
       </div>
       <div class="card">
         <div class="card-hd">
-          <div class="card-hd-left"><div class="sec-bar" style="background:var(--orange)"></div><div><div class="card-title">วัสดุคงคลัง — ต้องเติม</div><div class="card-sub" id="stock-update-time">กำลังโหลดจาก Database...</div></div></div>
+          <div class="card-hd-left"><div class="sec-bar" style="background:var(--orange)"></div><div><div class="card-title">วัสดุคงคลัง — ต้องเติม</div><div class="card-sub">คลังกลาง · อัปเดตล่าสุด 10:45 น.</div></div></div>
           <button class="btn btn-sm btn-o" onclick="nav('stock-main','คลังวัสดุ')">จัดการ</button>
         </div>
         <div id="stock-alert-area"></div>
@@ -471,7 +471,7 @@ tr:hover td{background:#F8FAFE}
   <div class="grid4 mb16" id="df-stats"></div>
   <div class="col-6-4">
     <div>
-      <div class="tabs"><button class="tab-btn act" onclick="filterDF('all',this)" id="df-tab-all">ทั้งหมด (0)</button><button class="tab-btn" onclick="filterDF('open',this)" id="df-tab-open">Open (0)</button><button class="tab-btn" onclick="filterDF('fix',this)" id="df-tab-fix">กำลังแก้ (0)</button><button class="tab-btn" onclick="filterDF('closed',this)" id="df-tab-closed">Closed (0)</button></div>
+      <div class="tabs"><button class="tab-btn act" onclick="filterDF('all',this)">ทั้งหมด (8)</button><button class="tab-btn" onclick="filterDF('open',this)">Open (4)</button><button class="tab-btn" onclick="filterDF('fix',this)">กำลังแก้ (3)</button><button class="tab-btn" onclick="filterDF('closed',this)">Closed (1)</button></div>
       <div id="df-list"></div>
     </div>
     <div class="card">
@@ -614,308 +614,6 @@ tr:hover td{background:#F8FAFE}
   </div>
 </div>
 
-
-<!-- ══════════════════════════════════════════
-     CONTRACT MODULE — หน้าสัญญา + งวดงาน
-══════════════════════════════════════════ -->
-<div class="page" id="page-contract">
-  <div class="grid2">
-    <!-- LEFT: รายการสัญญา -->
-    <div>
-      <div class="card mb16">
-        <div class="card-hd">
-          <div class="card-hd-left">
-            <div class="sec-bar" style="background:var(--blue)"></div>
-            <div><div class="card-title">สัญญาโครงการ</div><div class="card-sub">เลือกโครงการเพื่อดูสัญญา</div></div>
-          </div>
-          <button class="btn btn-sm btn-s" onclick="showContractForm()">+ สร้างสัญญา</button>
-        </div>
-        <!-- Project Selector -->
-        <div class="fgrp mb16">
-          <label class="flbl">เลือกโครงการ</label>
-          <select class="fsel" id="contract-proj-sel" onchange="loadContractByProject(this.value)">
-            <option value="">— เลือกโครงการ —</option>
-          </select>
-        </div>
-        <div id="contract-list">
-          <div class="empty"><div class="empty-icon">📄</div><div class="empty-title">ยังไม่มีสัญญา</div><div class="empty-sub">กดปุ่ม "สร้างสัญญา" เพื่อเพิ่ม</div></div>
-        </div>
-      </div>
-    </div>
-
-    <!-- RIGHT: งวดงานตามสัญญา -->
-    <div>
-      <div class="card mb16">
-        <div class="card-hd">
-          <div class="card-hd-left">
-            <div class="sec-bar" style="background:var(--orange)"></div>
-            <div><div class="card-title">งวดงานตามสัญญา</div><div class="card-sub" id="contract-milestone-sub">เลือกสัญญาเพื่อดูงวดงาน</div></div>
-          </div>
-          <button class="btn btn-sm btn-p" id="btn-add-milestone" style="display:none" onclick="showMilestoneForm()">+ เพิ่มงวด</button>
-        </div>
-        <div id="contract-milestones">
-          <div class="empty"><div class="empty-icon">💰</div><div class="empty-title">เลือกสัญญาก่อน</div></div>
-        </div>
-      </div>
-
-      <!-- Summary -->
-      <div class="card" id="contract-summary" style="display:none">
-        <div class="card-title" style="margin-bottom:14px">สรุปมูลค่าสัญญา</div>
-        <div id="contract-summary-content"></div>
-      </div>
-    </div>
-  </div>
-
-  <!-- Contract Form Modal -->
-  <div id="contract-form-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:5000;align-items:center;justify-content:center;overflow-y:auto">
-    <div style="background:#fff;border-radius:16px;padding:28px;width:min(560px,94vw);margin:20px auto;box-shadow:0 20px 60px rgba(0,0,0,.2)">
-      <div style="font-size:17px;font-weight:700;color:var(--text-h);margin-bottom:20px;display:flex;align-items:center;justify-content:space-between">
-        📄 สร้างสัญญาโครงการ
-        <button onclick="hideContractForm()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3)">✕</button>
-      </div>
-      <div class="fgrp">
-        <label class="flbl">โครงการ</label>
-        <select class="fsel" id="cf-project"></select>
-      </div>
-      <div class="form-row">
-        <div class="fgrp"><label class="flbl">เลขที่สัญญา</label><input class="finp" id="cf-number" placeholder="เช่น สัญญา 001/2569"></div>
-        <div class="fgrp"><label class="flbl">วันที่ทำสัญญา</label><input type="date" class="finp" id="cf-date"></div>
-      </div>
-      <div class="form-row">
-        <div class="fgrp"><label class="flbl">ชื่อผู้รับเหมา</label><input class="finp" id="cf-contractor" placeholder="บจก./ห้าง/บุคคล"></div>
-        <div class="fgrp"><label class="flbl">ชื่อเจ้าของงาน</label><input class="finp" id="cf-owner" placeholder="ชื่อลูกค้า"></div>
-      </div>
-      <div class="form-row">
-        <div class="fgrp"><label class="flbl">มูลค่าสัญญารวม (บาท)</label><input type="number" class="finp" id="cf-value" placeholder="0"></div>
-        <div class="fgrp"><label class="flbl">ระยะประกัน (เดือน)</label><input type="number" class="finp" id="cf-warranty" value="12"></div>
-      </div>
-      <div class="fgrp"><label class="flbl">หมายเหตุ / เงื่อนไขพิเศษ</label><textarea class="fta" id="cf-notes" placeholder="รายละเอียดเพิ่มเติม..."></textarea></div>
-
-      <!-- Milestone section in contract form -->
-      <div style="background:var(--bg);border-radius:var(--r);padding:14px;margin-bottom:16px">
-        <div style="font-size:13px;font-weight:600;color:var(--text-h);margin-bottom:10px">งวดงานตามสัญญา</div>
-        <div id="cf-milestones-list"></div>
-        <button onclick="addMilestoneRow()" class="btn btn-ghost btn-sm" style="width:100%;margin-top:8px;justify-content:center">
-          + เพิ่มงวดงาน
-        </button>
-      </div>
-      <button class="btn btn-p btn-full" onclick="saveContract()">💾 บันทึกสัญญา</button>
-    </div>
-  </div>
-</div>
-
-<!-- ══════════════════════════════════════════
-     BOQ MODULE — ถอดปริมาณวัสดุ
-══════════════════════════════════════════ -->
-<div class="page" id="page-boq">
-  <!-- Project + Phase selector -->
-  <div class="card mb16">
-    <div class="card-hd">
-      <div class="card-hd-left">
-        <div class="sec-bar" style="background:var(--blue)"></div>
-        <div><div class="card-title">BOQ — ถอดปริมาณวัสดุ</div><div class="card-sub">เลือกโครงการและ Phase เพื่อกรอก BOQ</div></div>
-      </div>
-      <div style="display:flex;gap:8px">
-        <button class="btn btn-sm btn-ghost" onclick="exportBOQ()">⬇️ Export Excel</button>
-        <button class="btn btn-sm btn-s" onclick="showBOQForm()">+ เพิ่มรายการ</button>
-      </div>
-    </div>
-    <div class="frow">
-      <div class="fgrp">
-        <label class="flbl">โครงการ</label>
-        <select class="fsel" id="boq-proj-sel" onchange="loadBOQ()">
-          <option value="">— เลือกโครงการ —</option>
-        </select>
-      </div>
-      <div class="fgrp">
-        <label class="flbl">Phase / หมวดงาน</label>
-        <select class="fsel" id="boq-phase-sel" onchange="loadBOQ()">
-          <option value="">— ทุก Phase —</option>
-        </select>
-      </div>
-    </div>
-
-    <!-- BOQ Summary Bar -->
-    <div id="boq-summary-bar" style="display:none;background:var(--blue3);border-radius:var(--r);padding:12px 16px;display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin-top:4px">
-      <div style="text-align:center"><div style="font-size:11px;color:var(--text3)">รายการทั้งหมด</div><div style="font-size:18px;font-weight:700;color:var(--blue)" id="boq-count">0</div></div>
-      <div style="text-align:center"><div style="font-size:11px;color:var(--text3)">มูลค่าวัสดุรวม</div><div style="font-size:14px;font-weight:700;color:var(--blue)" id="boq-total">฿0</div></div>
-      <div style="text-align:center"><div style="font-size:11px;color:var(--text3)">ส่งจัดซื้อแล้ว</div><div style="font-size:18px;font-weight:700;color:var(--green)" id="boq-sent">0</div></div>
-      <div style="text-align:center"><div style="font-size:11px;color:var(--text3)">รอดำเนินการ</div><div style="font-size:18px;font-weight:700;color:var(--orange)" id="boq-pending">0</div></div>
-    </div>
-  </div>
-
-  <!-- BOQ Table -->
-  <div class="card">
-    <div id="boq-table-wrap">
-      <div class="empty"><div class="empty-icon">📋</div><div class="empty-title">เลือกโครงการเพื่อดู BOQ</div></div>
-    </div>
-  </div>
-
-  <!-- BOQ Form Modal -->
-  <div id="boq-form-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:5000;align-items:center;justify-content:center;overflow-y:auto">
-    <div style="background:#fff;border-radius:16px;padding:28px;width:min(600px,94vw);margin:20px auto;box-shadow:0 20px 60px rgba(0,0,0,.2)">
-      <div style="font-size:17px;font-weight:700;color:var(--text-h);margin-bottom:20px;display:flex;align-items:center;justify-content:space-between">
-        📋 เพิ่มรายการ BOQ
-        <button onclick="hideBOQForm()" style="background:none;border:none;font-size:20px;cursor:pointer;color:var(--text3)">✕</button>
-      </div>
-      <div class="form-row">
-        <div class="fgrp"><label class="flbl">โครงการ</label><select class="fsel" id="bq-proj"></select></div>
-        <div class="fgrp"><label class="flbl">Phase</label><select class="fsel" id="bq-phase"><option value="">— เลือก Phase —</option></select></div>
-      </div>
-      <div class="form-row">
-        <div class="fgrp"><label class="flbl">หมวดงาน</label>
-          <select class="fsel" id="bq-cat">
-            <option>งานโครงสร้าง</option><option>งานสถาปัตย์</option>
-            <option>งานระบบไฟฟ้า</option><option>งานระบบประปา</option>
-            <option>งานหลังคา</option><option>งานพื้น-ผนัง</option>
-            <option>งานประตู-หน้าต่าง</option><option>งานสี</option><option>อื่น ๆ</option>
-          </select>
-        </div>
-        <div class="fgrp"><label class="flbl">รหัสรายการ</label><input class="finp" id="bq-num" placeholder="เช่น S-001"></div>
-      </div>
-      <div class="fgrp"><label class="flbl">รายละเอียดงาน / วัสดุ</label><input class="finp" id="bq-desc" placeholder="เช่น คอนกรีต B25 เทฐานราก F1"></div>
-      <div class="fgrp"><label class="flbl">Spec / มาตรฐาน</label><input class="finp" id="bq-spec" placeholder="เช่น มอก. 213-2560"></div>
-      <div class="form-row">
-        <div class="fgrp"><label class="flbl">หน่วย</label>
-          <select class="fsel" id="bq-unit">
-            <option>ลบ.ม.</option><option>ตร.ม.</option><option>ล.ม.</option>
-            <option>กก.</option><option>ตัน</option><option>แผ่น</option>
-            <option>ถุง</option><option>ต้น</option><option>ชุด</option>
-            <option>ชิ้น</option><option>ใบ</option><option>เมตร</option><option>อื่น ๆ</option>
-          </select>
-        </div>
-        <div class="fgrp"><label class="flbl">ปริมาณ</label><input type="number" class="finp" id="bq-qty" placeholder="0" oninput="calcBOQTotal()"></div>
-      </div>
-      <div class="form-row">
-        <div class="fgrp"><label class="flbl">ราคาต่อหน่วย (บาท)</label><input type="number" class="finp" id="bq-price" placeholder="0" oninput="calcBOQTotal()"></div>
-        <div class="fgrp">
-          <label class="flbl">มูลค่ารวม</label>
-          <div style="background:var(--blue3);border-radius:var(--r2);padding:9px 12px;font-size:16px;font-weight:700;color:var(--blue)" id="bq-total-display">฿ 0</div>
-        </div>
-      </div>
-      <div style="display:flex;gap:8px;margin-top:4px">
-        <button class="btn btn-p" style="flex:1;justify-content:center" onclick="saveBOQItem()">💾 บันทึก</button>
-        <button class="btn btn-s" style="flex:1;justify-content:center" onclick="saveBOQAndSendPR()">📤 บันทึก + ส่งจัดซื้อ</button>
-      </div>
-    </div>
-  </div>
-</div>
-
-
-<!-- ══════════════════════════════════════════
-     FILE MANAGER — อัปโหลดเอกสาร
-══════════════════════════════════════════ -->
-<div class="page" id="page-files">
-  <div class="grid2">
-    <!-- LEFT: อัปโหลด -->
-    <div>
-      <div class="card mb16">
-        <div class="card-hd">
-          <div class="card-hd-left">
-            <div class="sec-bar" style="background:var(--blue)"></div>
-            <div><div class="card-title">อัปโหลดเอกสาร</div><div class="card-sub">PDF · รูปภาพ · Excel · Word</div></div>
-          </div>
-        </div>
-
-        <!-- Project Selector -->
-        <div class="fgrp mb12">
-          <label class="flbl">โครงการ</label>
-          <select class="fsel" id="file-proj-sel">
-            <option value="">— เลือกโครงการ —</option>
-          </select>
-        </div>
-
-        <!-- Category -->
-        <div class="fgrp mb12">
-          <label class="flbl">ประเภทเอกสาร</label>
-          <select class="fsel" id="file-category">
-            <option value="contract">📄 สัญญา</option>
-            <option value="boq">📋 BOQ / ถอดปริมาณ</option>
-            <option value="drawing">📐 แบบก่อสร้าง</option>
-            <option value="photo">📸 รูปถ่ายหน้างาน</option>
-            <option value="report">📊 รายงาน</option>
-            <option value="invoice">💰 ใบแจ้งหนี้ / ใบเสร็จ</option>
-            <option value="permit">🏛️ ใบอนุญาต</option>
-            <option value="other">📁 อื่น ๆ</option>
-          </select>
-        </div>
-
-        <!-- Description -->
-        <div class="fgrp mb16">
-          <label class="flbl">คำอธิบาย (ไม่บังคับ)</label>
-          <input class="finp" id="file-desc" placeholder="เช่น สัญญาจ้างก่อสร้างบ้านคุณนิด">
-        </div>
-
-        <!-- Drop Zone -->
-        <div id="file-dropzone"
-          style="border:2px dashed var(--border2);border-radius:var(--r3);padding:36px 20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:14px"
-          onclick="document.getElementById('file-input').click()"
-          ondragover="event.preventDefault();this.style.borderColor='var(--blue)';this.style.background='var(--blue3)'"
-          ondragleave="this.style.borderColor='var(--border2)';this.style.background='transparent'"
-          ondrop="handleFileDrop(event)">
-          <div style="font-size:44px;margin-bottom:10px">📁</div>
-          <div style="font-size:15px;font-weight:600;color:var(--text-h);margin-bottom:6px">คลิกหรือลากไฟล์มาวาง</div>
-          <div style="font-size:12px;color:var(--text3)">PDF · PNG · JPG · XLSX · DOCX · สูงสุด 50 MB</div>
-        </div>
-        <input type="file" id="file-input" multiple accept=".pdf,.png,.jpg,.jpeg,.xlsx,.xls,.docx,.doc" style="display:none" onchange="handleFileSelect(this.files)">
-
-        <!-- File Queue -->
-        <div id="file-queue" style="display:none;margin-bottom:14px">
-          <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px">ไฟล์ที่เลือก</div>
-          <div id="file-queue-list"></div>
-        </div>
-
-        <!-- Upload Button -->
-        <button id="btn-upload" class="btn btn-p btn-full" onclick="uploadFiles()" style="display:none">
-          📤 อัปโหลดทั้งหมด
-        </button>
-
-        <!-- Progress -->
-        <div id="upload-progress" style="display:none;margin-top:12px">
-          <div class="pbar-row">
-            <div class="pbar" style="height:8px"><div class="pfill" id="upload-prog-fill" style="width:0%;background:var(--blue)"></div></div>
-            <div class="ppct" id="upload-prog-pct">0%</div>
-          </div>
-          <div style="font-size:12px;color:var(--text3);margin-top:4px" id="upload-prog-text">กำลังอัปโหลด...</div>
-        </div>
-      </div>
-    </div>
-
-    <!-- RIGHT: รายการเอกสาร -->
-    <div>
-      <div class="card">
-        <div class="card-hd">
-          <div class="card-hd-left">
-            <div class="sec-bar" style="background:var(--orange)"></div>
-            <div><div class="card-title">เอกสารทั้งหมด</div></div>
-          </div>
-          <select class="fsel" id="file-filter-cat" onchange="loadFiles()" style="width:auto;font-size:12px;padding:5px 10px">
-            <option value="">ทุกประเภท</option>
-            <option value="contract">📄 สัญญา</option>
-            <option value="boq">📋 BOQ</option>
-            <option value="drawing">📐 แบบ</option>
-            <option value="photo">📸 รูปถ่าย</option>
-            <option value="report">📊 รายงาน</option>
-            <option value="invoice">💰 ใบแจ้งหนี้</option>
-            <option value="permit">🏛️ ใบอนุญาต</option>
-          </select>
-        </div>
-
-        <!-- Filter by project -->
-        <div class="fgrp mb14">
-          <select class="fsel" id="file-filter-proj" onchange="loadFiles()">
-            <option value="">ทุกโครงการ</option>
-          </select>
-        </div>
-
-        <div id="file-list">
-          <div class="empty"><div class="empty-icon">📁</div><div class="empty-title">ยังไม่มีเอกสาร</div><div class="empty-sub">อัปโหลดเอกสารจากด้านซ้าย</div></div>
-        </div>
-      </div>
-    </div>
-  </div>
-</div>
-
 </main>
 
 <!-- BOTTOM NAV (mobile) -->
@@ -960,7 +658,7 @@ var PHASES=[
   {n:'P14 เก็บงาน',pct:10,col:'#FF8A00',st:'active'},
   {n:'P15 ส่งมอบ',pct:0,col:'#90A4AE',st:'wait'}
 ];
-var STOCK=[]; // โหลดจาก Supabase DB เท่านั้น
+var STOCK=[];
 var MILESTONES=[
   {n:1,title:'งวด 1 — ฐานราก',amt:'1,250,000',st:'done'},
   {n:2,title:'งวด 2 — ผนัง MEP',amt:'980,000',st:'done'},
@@ -968,7 +666,7 @@ var MILESTONES=[
   {n:4,title:'งวด 4 — สี ไฟฟ้า',amt:'620,000',st:'wait'},
   {n:5,title:'งวด 5 — ส่งมอบ',amt:'400,000',st:'wait'}
 ];
-var DEFECTS=[]; // โหลดจาก Supabase DB เท่านั้น
+var DEFECTS=[];
 var PRS=[
   {id:'PR-001',t:'คอนกรีต B25 Phase 2',amt:'฿138,280',st:'approved',src:'BOQ'},
   {id:'PR-002',t:'เหล็ก DB20 + RB9',amt:'฿108,470',st:'pend',src:'AI'},
@@ -1001,11 +699,6 @@ var MENU_CFG={
     {label:'รายงาน',items:[
       {icon:'🤖',t:'AI Analyzer',id:'ai'},
       {icon:'🏠',t:'Owner Portal',id:'owner'}
-    ]},
-  {label:'เอกสาร & สัญญา',items:[
-      {icon:'📁',t:'เอกสาร & ไฟล์',id:'files'},
-      {icon:'📄',t:'สัญญา + งวดงาน',id:'contract'},
-      {icon:'📋',t:'BOQ ถอดปริมาณ',id:'boq'}
     ]}
   ],
   eng:[
@@ -1020,9 +713,6 @@ var MENU_CFG={
     {label:'อนุมัติ',items:[
       {icon:'📄',t:'อนุมัติ PR',id:'proc'},
       {icon:'🏠',t:'Owner Portal',id:'owner'}
-    ]},
-  {label:'เอกสาร',items:[
-      {icon:'📁',t:'เอกสาร & ไฟล์',id:'files'}
     ]}
   ],
   pm:[
@@ -1057,9 +747,6 @@ var MENU_CFG={
         {icon:'🔄',t:'โอนระหว่างคลัง',id:'stock-main'}
       ]},
       {icon:'🤖',t:'AI → จัดซื้อ',id:'ai'}
-    ]},
-  {label:'เอกสาร',items:[
-      {icon:'📁',t:'เอกสาร & ไฟล์',id:'files'}
     ]}
   ],
   acc:[
@@ -1125,7 +812,29 @@ function toggleDeep(el){
 }
 
 // ── NAVIGATION ─────────────────────────────────────────────────────────────
-
+function nav(id,label){
+  document.querySelectorAll('.page').forEach(p=>p.classList.remove('act'));
+  var pg=document.getElementById('page-'+id);
+  if(pg)pg.classList.add('act');
+  // Breadcrumb
+  var parts=label?label.split(' › '):[''];
+  document.getElementById('bc-parent').textContent=parts[0]||'Dashboard';
+  if(parts.length>1){document.getElementById('bc-sep').style.display='';document.getElementById('bc-cur').style.display='';document.getElementById('bc-cur').textContent=parts[parts.length-1];}
+  else{document.getElementById('bc-sep').style.display='none';document.getElementById('bc-cur').style.display='none';}
+  // Mark active
+  document.querySelectorAll('.mn-item,.sub-item,.deep-item').forEach(function(el){el.classList.remove('act');});
+  document.querySelectorAll('[onclick*="nav(\''+id+'\'"]').forEach(function(el){el.classList.add('act');});
+  window.scrollTo(0,0);
+  // Lazy render
+  if(id==='dashboard')renderDash();
+  if(id==='projects')renderProjects();
+  if(id==='phases')renderPhases();
+  if(id==='defects')renderDefects();
+  if(id==='stock-main')renderStock();
+  if(id==='proc')renderProc();
+  if(id==='owner')renderOwner();
+  if(id==='report')renderReport();
+}
 
 function toggleSB(){document.getElementById('sb').classList.toggle('col');}
 function botAct(el){document.querySelectorAll('.bot-item').forEach(b=>b.classList.remove('act'));el.classList.add('act');}
@@ -1151,8 +860,8 @@ function renderDash(){
   var kpis=[
     {n:'87%',l:'ความคืบหน้าเฉลี่ย',icon:'📊',bg:'#E3F2FD',col:'var(--blue)',acc:'var(--blue)',chg:'↑ +5% สัปดาห์นี้',up:true},
     {n:'3',l:'โครงการที่ดำเนินการ',icon:'🏗️',bg:'#FFF3E0',col:'var(--orange)',acc:'var(--orange)',chg:'↑ 1 เปิดใหม่',up:true},
-    {n:DEFECTS.filter(function(d){return d.st!=='closed';}).length.toString(),l:'Defect ค้างอยู่',icon:'⚠️',bg:'#FFEBEE',col:'var(--danger)',acc:'var(--danger)',chg:'อัปเดตจาก DB',up:false},
-    {n:STOCK.filter(function(s){return s.st!=='ok';}).length.toString(),l:'Stock ต่ำกว่า Min',icon:'📦',bg:'#E8F5E9',col:'var(--warn)',acc:'var(--warn)',chg:STOCK.filter(function(s){return s.st!=='ok';}).length?'↓ ต้องสั่งซื้อด่วน':'✅ ปกติ',up:false}
+    {n:'8',l:'Defect ค้างอยู่',icon:'⚠️',bg:'#FFEBEE',col:'var(--danger)',acc:'var(--danger)',chg:'↓ ปิดแล้ว 1 รายการ',up:false},
+    {n:'4',l:'Stock ต่ำกว่า Min',icon:'📦',bg:'#E8F5E9',col:'var(--warn)',acc:'var(--warn)',chg:'↓ ต้องสั่งซื้อด่วน',up:false}
   ];
   document.getElementById('kpi-area').innerHTML=kpis.map(k=>`
     <div class="kpi" onclick="nav('dashboard','Dashboard')">
@@ -1207,8 +916,7 @@ function renderDash(){
       </div>`).join('')}`;
 
   // Stock alerts
-  // Only show stock alerts if there are real items from DB
-  var lowSt = STOCK.filter(function(s){return s.st!=='ok';});
+  var lowSt=STOCK.filter(s=>s.st!=='ok');
   document.getElementById('stock-alert-area').innerHTML=lowSt.length?lowSt.map(s=>`
     <div class="stock-row">
       <div class="stock-icon-box">${s.icon}</div>
@@ -1222,7 +930,7 @@ function renderDash(){
         <div style="font-size:10px;color:var(--text3)">${s.unit}</div>
         <span class="badge ${s.st==='out'?'b-red':'b-orange'}" style="margin-top:4px">${s.st==='out'?'หมด':'ต่ำ'}</span>
       </div>
-    </div>`).join(''):'<div style="text-align:center;padding:20px;color:var(--text3);font-size:13px">✅ ไม่มีวัสดุต่ำกว่าค่า Min</div>';
+    </div>`).join(''):'<div class="empty"><div class="empty-icon">✅</div><div class="empty-title">Stock ปกติทั้งหมด</div></div>';
 
   // Activity
   var acts=[
@@ -1323,16 +1031,11 @@ function getGPS(){
 
 // ── DEFECTS ─────────────────────────────────────────────────────────────────
 function renderDefects(){
-  var s={open:DEFECTS.filter(function(d){return d.st==='open';}).length,fix:DEFECTS.filter(function(d){return d.st==='fix';}).length,closed:DEFECTS.filter(function(d){return d.st==='closed';}).length,all:DEFECTS.length};
+  var s={open:4,fix:3,closed:1,all:8};
   document.getElementById('df-stats').innerHTML=[
     {n:s.all,l:'ทั้งหมด',col:'var(--text-h)'},{n:s.open,l:'Open',col:'var(--danger)'},{n:s.fix,l:'กำลังแก้',col:'var(--blue)'},{n:s.closed,l:'ปิดแล้ว',col:'var(--green)'}
   ].map(d=>`<div class="kpi" style="padding:14px"><div class="kpi-num" style="color:${d.col};font-size:26px">${d.n}</div><div class="kpi-lbl">${d.l}</div></div>`).join('');
   var filtered=DEFECTS.filter(d=>dfFilter==='all'||d.st===dfFilter);
-  // Update tab counts
-  var _t=document.getElementById('df-tab-all'); if(_t) _t.textContent='ทั้งหมด ('+DEFECTS.length+')';
-  var _o=document.getElementById('df-tab-open'); if(_o) _o.textContent='Open ('+DEFECTS.filter(function(d){return d.st==='open';}).length+')';
-  var _f=document.getElementById('df-tab-fix'); if(_f) _f.textContent='กำลังแก้ ('+DEFECTS.filter(function(d){return d.st==='fix';}).length+')';
-  var _c=document.getElementById('df-tab-closed'); if(_c) _c.textContent='Closed ('+DEFECTS.filter(function(d){return d.st==='closed';}).length+')';
   document.getElementById('df-list').innerHTML=filtered.map(d=>`
     <div class="df-card ${d.sev}">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px">
@@ -1351,7 +1054,7 @@ function renderDefects(){
 }
 function filterDF(f,el){dfFilter=f;document.querySelectorAll('#page-defects .tab-btn').forEach(b=>b.classList.remove('act'));if(el)el.classList.add('act');renderDefects();}
 function advDF(id){var d=DEFECTS.find(x=>x.id===id);if(!d)return;var o=['open','fix','recheck','closed'];var i=o.indexOf(d.st);d.st=o[Math.min(i+1,o.length-1)];renderDefects();}
-
+function addDF_orig_disabled() {){var t=document.getElementById('ndt').value.trim();if(!t){alert('กรุณาระบุรายละเอียด');return;}DEFECTS.push({id:'D-00'+(DEFECTS.length+1),t,loc:document.getElementById('ndl').value,sev:document.getElementById('nds').value,st:'open',by:'หัวหน้าช่าง'});document.getElementById('ndt').value='';filterDF('all');alert('✅ เพิ่ม Defect สำเร็จ');}
 
 // ── PROCUREMENT ─────────────────────────────────────────────────────────────
 function renderProc(){
@@ -1425,7 +1128,7 @@ function renderStock(){
     </div>`).join(''):'<div class="empty" style="padding:20px"><div class="empty-icon">✅</div><div class="empty-title">ปกติทั้งหมด</div></div>';
 }
 function setTxn(m,el){txnMode=m;document.querySelectorAll('#page-stock-main .tab-btn').forEach(b=>b.classList.remove('act'));if(el)el.classList.add('act');document.getElementById('tx-lbl').textContent={in:'📦 บันทึกรับเข้า',out:'📤 บันทึกเบิก',move:'🔄 บันทึกโอน'}[m];}
-
+function doTxn_orig_disabled() {){var qty=parseFloat(document.getElementById('tx-qty').value)||0;if(!qty){alert('กรุณากรอกจำนวน');return;}var mat=document.getElementById('tx-mat').value;var s=STOCK.find(x=>x.n.includes(mat.split(' ')[0]));if(s){if(txnMode==='in')s.qty+=qty;else if(txnMode==='out'){if(s.qty<qty){alert('จำนวนไม่เพียงพอ');return;}s.qty-=qty;}s.st=s.qty===0?'out':s.qty<s.min?'low':'ok';renderStock();document.getElementById('tx-qty').value='';alert('✅ บันทึกสำเร็จ');}}
 
 // ── AI ANALYZER ──────────────────────────────────────────────────────────────
 var aiSteps=['อ่านและแยกหน้าเอกสาร','วิเคราะห์ขนาดและระยะ','ตรวจสอบองศา/Slope','ถอดปริมาณ BOQ','เปรียบเทียบมาตรฐาน','สร้างรายงาน'];
@@ -1513,1084 +1216,295 @@ function renderOwner(){
       </div>
     </div>`).join('');
 }
-
+function ownerApprove_orig_disabled() {i){if(!confirm('ยืนยันอนุมัติ '+MILESTONES[i].title+'?'))return;MILESTONES[i].st='done';renderOwner();alert('✅ อนุมัติสำเร็จ\nIP: 10.0.0.1 · '+new Date().toLocaleString('th-TH'));}
 
 // ── INIT ─────────────────────────────────────────────────────────────────────
 buildSidebar('ceo');
 renderDash();
 renderReport();
-
-// ══════════════════════════════════════════
-// SUPABASE — Real Database Connection
-// ══════════════════════════════════════════
-const SB_URL = 'https://kdfbllrobnfdvelbotwh.supabase.co';
-const SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtkZmJsbHJvYm5mZHZlbGJvdHdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0MzI3NjgsImV4cCI6MjA5ODAwODc2OH0.j70WO4TVFqOibQs5y6tfiZN5ZJoipoeiSJt0ZDVnE-4';
-
-async function sbFetch(table, opts) {
-  opts = opts || {};
-  var select = opts.select || '*';
-  var filter = opts.filter || '';
-  var order  = opts.order  || '';
-  var limit  = opts.limit  || 200;
-  var url = SB_URL + '/rest/v1/' + table + '?select=' + select;
-  if(filter) url += '&' + filter;
-  if(order)  url += '&order=' + order;
-  url += '&limit=' + limit;
-  try {
-    var res = await fetch(url, { headers: {'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY} });
-    return res.ok ? await res.json() : null;
-  } catch(e) { console.error('sbFetch',e); return null; }
-}
-async function sbInsert(table, data) {
-  try {
-    var res = await fetch(SB_URL + '/rest/v1/' + table, {
-      method: 'POST',
-      headers: {'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'},
-      body: JSON.stringify(data)
-    });
-    var txt = await res.text(); return txt ? JSON.parse(txt) : null;
-  } catch(e) { return null; }
-}
-async function sbPatch(table, id, data) {
-  try {
-    var res = await fetch(SB_URL + '/rest/v1/' + table + '?id=eq.' + id, {
-      method: 'PATCH',
-      headers: {'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'},
-      body: JSON.stringify(data)
-    });
-    var txt = await res.text(); return txt ? JSON.parse(txt) : null;
-  } catch(e) { return null; }
-}
-
-function showToast(msg, type) {
-  var t = document.getElementById('sp-toast');
-  if(!t){ t=document.createElement('div'); t.id='sp-toast';
-    t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:9999;font-family:IBM Plex Sans Thai,sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:opacity .4s;white-space:nowrap';
-    document.body.appendChild(t); }
-  t.style.background = type==='error'?'#C62828':type==='warn'?'#E65100':'#2E7D32';
-  t.style.color='#fff'; t.style.opacity='1'; t.textContent=msg;
-  setTimeout(function(){ t.style.opacity='0'; }, 3000);
-}
-
-function showLoading(show) {
-  var el = document.getElementById('sp-load');
-  if(show && !el){
-    el=document.createElement('div'); el.id='sp-load';
-    el.innerHTML='<div id="sp-spinner" style="width:36px;height:36px;border:3px solid #E3F2FD;border-top-color:#1565C0;border-radius:50%;margin:0 auto 10px"></div><div style="font-size:13px;color:#1565C0;font-family:IBM Plex Sans Thai,sans-serif">กำลังโหลดจากฐานข้อมูล...</div>';
-    el.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:14px;padding:28px 36px;text-align:center;z-index:9998;box-shadow:0 8px 32px rgba(0,0,0,.15)';
-    var st=document.createElement('style'); st.textContent='@keyframes spspin{to{transform:rotate(360deg)}} #sp-spinner{animation:spspin .7s linear infinite}';
-    document.head.appendChild(st); document.body.appendChild(el);
-  } else if(!show && el) el.remove();
-}
-
-
-
-// Override addDF to save to DB
-var _origAddDF = typeof addDF === 'function' ? addDF : null;
-
-
-// Override doTxn to save to DB
-var _origDoTxn = typeof doTxn === 'function' ? doTxn : null;
-
-
-// Auto load when page ready
-document.addEventListener('DOMContentLoaded', function(){ setTimeout(loadFromDB, 400); });
-
 </script>
 
-<!-- ══════════════════════════════════════════
-     LOGIN MODAL
-══════════════════════════════════════════ -->
-<div id="login-overlay" style="display:none;position:fixed;inset:0;background:rgba(10,20,40,.85);z-index:10000;align-items:center;justify-content:center;backdrop-filter:blur(4px)">
+<!-- ══ LOGIN MODAL ══ -->
+<div id="login-overlay" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.85);z-index:10000;align-items:center;justify-content:center;backdrop-filter:blur(4px)">
   <div style="background:#fff;border-radius:20px;padding:36px;width:min(420px,90vw);box-shadow:0 20px 60px rgba(0,0,0,.3)">
-    <div style="text-align:center;margin-bottom:28px">
+    <div style="text-align:center;margin-bottom:24px">
       <div style="width:56px;height:56px;background:#FF8A00;border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:28px;margin:0 auto 12px">🏗️</div>
       <div style="font-size:22px;font-weight:700;color:#1A237E;font-family:IBM Plex Sans Thai,sans-serif">SitePro</div>
-      <div style="font-size:13px;color:#90A4AE;margin-top:4px;font-family:IBM Plex Sans Thai,sans-serif">Angjing 365 Construction</div>
+      <div style="font-size:13px;color:#90A4AE;font-family:IBM Plex Sans Thai,sans-serif">Angjing 365 Construction</div>
     </div>
-    <div style="margin-bottom:14px">
+    <div style="margin-bottom:12px">
       <div style="font-size:12px;font-weight:600;color:#546E7A;margin-bottom:5px;font-family:IBM Plex Sans Thai,sans-serif">Email</div>
-      <input id="login-email" type="email" placeholder="email@angjing365.com"
-        style="width:100%;padding:11px 14px;border:1.5px solid #DDE3EA;border-radius:8px;font-size:14px;font-family:IBM Plex Sans Thai,sans-serif;outline:none;transition:border .15s"
-        onfocus="this.style.borderColor='#1565C0'" onblur="this.style.borderColor='#DDE3EA'">
+      <input id="lg-email" type="email" placeholder="email@angjing365.com" style="width:100%;padding:11px 14px;border:1.5px solid #DDE3EA;border-radius:8px;font-size:14px;font-family:IBM Plex Sans Thai,sans-serif;outline:none" onfocus="this.style.borderColor='#1565C0'" onblur="this.style.borderColor='#DDE3EA'">
     </div>
     <div style="margin-bottom:20px">
       <div style="font-size:12px;font-weight:600;color:#546E7A;margin-bottom:5px;font-family:IBM Plex Sans Thai,sans-serif">รหัสผ่าน</div>
-      <input id="login-pass" type="password" placeholder="••••••••"
-        style="width:100%;padding:11px 14px;border:1.5px solid #DDE3EA;border-radius:8px;font-size:14px;font-family:IBM Plex Sans Thai,sans-serif;outline:none;transition:border .15s"
-        onfocus="this.style.borderColor='#1565C0'" onblur="this.style.borderColor='#DDE3EA'"
-        onkeydown="if(event.key==='Enter')doLogin()">
+      <input id="lg-pass" type="password" placeholder="••••••••" style="width:100%;padding:11px 14px;border:1.5px solid #DDE3EA;border-radius:8px;font-size:14px;font-family:IBM Plex Sans Thai,sans-serif;outline:none" onfocus="this.style.borderColor='#1565C0'" onblur="this.style.borderColor='#DDE3EA'" onkeydown="if(event.key==='Enter')doLogin()">
     </div>
-    <button onclick="doLogin()" style="width:100%;padding:12px;background:#1565C0;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;transition:background .15s" onmouseover="this.style.background='#0D47A1'" onmouseout="this.style.background='#1565C0'">
-      เข้าสู่ระบบ
-    </button>
+    <button onclick="doLogin()" style="width:100%;padding:12px;background:#1565C0;color:#fff;border:none;border-radius:8px;font-size:15px;font-weight:600;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif">เข้าสู่ระบบ</button>
     <div style="margin-top:16px;background:#F0F4F8;border-radius:10px;padding:12px">
       <div style="font-size:11px;font-weight:600;color:#90A4AE;margin-bottom:8px;font-family:IBM Plex Sans Thai,sans-serif">Demo Accounts</div>
       <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-        <button onclick="quickLogin('ceo@angjing365.com')" style="padding:5px 8px;background:#E3F2FD;border:1px solid #BBDEFB;border-radius:6px;font-size:11px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#1565C0;font-weight:500">👑 CEO</button>
-        <button onclick="quickLogin('engineer@angjing365.com')" style="padding:5px 8px;background:#E8F5E9;border:1px solid #A5D6A7;border-radius:6px;font-size:11px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#2E7D32;font-weight:500">👷 วิศวกร</button>
-        <button onclick="quickLogin('foreman@angjing365.com')" style="padding:5px 8px;background:#FFF3E0;border:1px solid #FFCC80;border-radius:6px;font-size:11px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#E65100;font-weight:500">🔨 หัวหน้าช่าง</button>
-        <button onclick="quickLogin('procurement@angjing365.com')" style="padding:5px 8px;background:#F3E5F5;border:1px solid #CE93D8;border-radius:6px;font-size:11px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#6A1B9A;font-weight:500">🛒 จัดซื้อ</button>
-        <button onclick="quickLogin('owner@angjing365.com')" style="padding:5px 8px;background:#E8F5E9;border:1px solid #A5D6A7;border-radius:6px;font-size:11px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#1B5E20;font-weight:500;grid-column:span 2">🏠 Owner</button>
+        <button onclick="quickLogin('ceo@angjing365.com')" style="padding:6px 8px;background:#E3F2FD;border:1px solid #BBDEFB;border-radius:6px;font-size:11px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#1565C0;font-weight:500">👑 CEO</button>
+        <button onclick="quickLogin('engineer@angjing365.com')" style="padding:6px 8px;background:#E8F5E9;border:1px solid #A5D6A7;border-radius:6px;font-size:11px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#2E7D32;font-weight:500">👷 วิศวกร</button>
+        <button onclick="quickLogin('foreman@angjing365.com')" style="padding:6px 8px;background:#FFF3E0;border:1px solid #FFCC80;border-radius:6px;font-size:11px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#E65100;font-weight:500">🔨 หัวหน้าช่าง</button>
+        <button onclick="quickLogin('procurement@angjing365.com')" style="padding:6px 8px;background:#F3E5F5;border:1px solid #CE93D8;border-radius:6px;font-size:11px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#6A1B9A;font-weight:500">🛒 จัดซื้อ</button>
+        <button onclick="quickLogin('owner@angjing365.com')" style="padding:6px 8px;background:#E8F5E9;border:1px solid #A5D6A7;border-radius:6px;font-size:11px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#1B5E20;font-weight:500;grid-column:span 2">🏠 Owner</button>
       </div>
-      <div style="font-size:10px;color:#B0BEC5;margin-top:6px;text-align:center;font-family:IBM Plex Sans Thai,sans-serif">รหัสผ่าน Demo: sitepro2569</div>
+      <div style="font-size:10px;color:#B0BEC5;margin-top:6px;text-align:center;font-family:IBM Plex Sans Thai,sans-serif">รหัสผ่าน: sitepro2569</div>
     </div>
-    <div id="login-error" style="display:none;margin-top:10px;padding:8px 12px;background:#FFEBEE;border-radius:6px;font-size:12px;color:#C62828;text-align:center;font-family:IBM Plex Sans Thai,sans-serif"></div>
-  </div>
-</div>
-
-<!-- LINE NOTIFY MODAL -->
-<div id="line-modal" style="display:none;position:fixed;inset:0;background:rgba(0,0,0,.5);z-index:9999;align-items:center;justify-content:center">
-  <div style="background:#fff;border-radius:16px;padding:24px;width:min(380px,90vw);box-shadow:0 8px 32px rgba(0,0,0,.2)">
-    <div style="font-size:16px;font-weight:600;color:#1A237E;margin-bottom:16px;font-family:IBM Plex Sans Thai,sans-serif">📲 LINE Notify</div>
-    <div id="line-msg" style="background:#F0F4F8;border-radius:8px;padding:12px;font-size:13px;color:#37474F;margin-bottom:16px;font-family:IBM Plex Sans Thai,sans-serif;line-height:1.6"></div>
-    <div style="display:flex;gap:8px">
-      <button onclick="sendLineNotify()" style="flex:1;padding:10px;background:#06C755;color:#fff;border:none;border-radius:8px;font-size:13px;font-weight:600;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif">ส่ง LINE</button>
-      <button onclick="document.getElementById('line-modal').style.display='none'" style="padding:10px 16px;background:#F0F4F8;border:none;border-radius:8px;font-size:13px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif">ยกเลิก</button>
-    </div>
+    <div id="lg-err" style="display:none;margin-top:10px;padding:8px 12px;background:#FFEBEE;border-radius:6px;font-size:12px;color:#C62828;text-align:center;font-family:IBM Plex Sans Thai,sans-serif"></div>
   </div>
 </div>
 
 <script>
-// ══════════════════════════════════════════
-// LOGIN SYSTEM
-// ══════════════════════════════════════════
+// ══ SUPABASE CONFIG ══
+var SB_URL = 'https://kdfbllrobnfdvelbotwh.supabase.co';
+var SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtkZmJsbHJvYm5mZHZlbGJvdHdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0MzI3NjgsImV4cCI6MjA5ODAwODc2OH0.j70WO4TVFqOibQs5y6tfiZN5ZJoipoeiSJt0ZDVnE-4';
+
+async function sbFetch(table, opts) {
+  opts = opts || {};
+  var url = SB_URL + '/rest/v1/' + table + '?select=' + (opts.select||'*');
+  if(opts.filter) url += '&' + opts.filter;
+  if(opts.order)  url += '&order=' + opts.order;
+  url += '&limit=' + (opts.limit||200);
+  try {
+    var r = await fetch(url, {headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});
+    return r.ok ? await r.json() : null;
+  } catch(e) { return null; }
+}
+async function sbInsert(table, data) {
+  try {
+    var r = await fetch(SB_URL+'/rest/v1/'+table, {
+      method:'POST',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'},
+      body:JSON.stringify(data)
+    });
+    var t=await r.text(); return t?JSON.parse(t):null;
+  } catch(e) { return null; }
+}
+async function sbPatch(table, id, data) {
+  try {
+    var r = await fetch(SB_URL+'/rest/v1/'+table+'?id=eq.'+id, {
+      method:'PATCH',
+      headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'},
+      body:JSON.stringify(data)
+    });
+    var t=await r.text(); return t?JSON.parse(t):null;
+  } catch(e) { return null; }
+}
+
+// ══ TOAST ══
+function showToast(msg,type) {
+  var t=document.getElementById('sp-toast');
+  if(!t){t=document.createElement('div');t.id='sp-toast';t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:9999;font-family:IBM Plex Sans Thai,sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:opacity .4s;white-space:nowrap';document.body.appendChild(t);}
+  t.style.background=type==='error'?'#C62828':type==='warn'?'#E65100':'#2E7D32';
+  t.style.color='#fff';t.style.opacity='1';t.textContent=msg;
+  setTimeout(function(){t.style.opacity='0';},3000);
+}
+
+// ══ LOADING ══
+function showLoading(show) {
+  var el=document.getElementById('sp-load');
+  if(show&&!el){
+    el=document.createElement('div');el.id='sp-load';
+    el.innerHTML='<div style="width:36px;height:36px;border:3px solid #E3F2FD;border-top-color:#1565C0;border-radius:50%;animation:spspin .7s linear infinite;margin:0 auto 10px"></div><div style="font-size:13px;color:#1565C0;font-family:IBM Plex Sans Thai,sans-serif">กำลังโหลดจากฐานข้อมูล...</div>';
+    el.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:14px;padding:28px 36px;text-align:center;z-index:9998;box-shadow:0 8px 32px rgba(0,0,0,.15)';
+    var st=document.createElement('style');st.textContent='@keyframes spspin{to{transform:rotate(360deg)}}';
+    document.head.appendChild(st);document.body.appendChild(el);
+  } else if(!show&&el) el.remove();
+}
+
+// ══ DATE HELPERS ══
+function formatDateThai(d) {
+  if(!d) return '—';
+  var dt=new Date(d);
+  if(isNaN(dt)) return '—';
+  var m=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
+  return dt.getDate()+' '+m[dt.getMonth()]+' '+(dt.getFullYear()+543);
+}
+function daysLeft(dateStr) {
+  if(!dateStr) return 0;
+  var diff=Math.ceil((new Date(dateStr)-new Date())/86400000);
+  return Math.max(0,diff);
+}
+
+// ══ LOGIN ══
+var currentUser = null;
 var DEMO_USERS = {
-  'ceo@angjing365.com':         {role:'ceo',      name:'ประพัฒน์ รุ่งเรือง', pass:'sitepro2569'},
-  'engineer@angjing365.com':    {role:'eng',       name:'สมศักดิ์ วิชาการ',   pass:'sitepro2569'},
-  'foreman@angjing365.com':     {role:'foreman',   name:'สมชาย ชำนาญ',       pass:'sitepro2569'},
-  'procurement@angjing365.com': {role:'proc',      name:'มาลี จัดหา',         pass:'sitepro2569'},
-  'owner@angjing365.com':       {role:'owner',     name:'วิชัย เจ้าของ',      pass:'sitepro2569'}
+  'ceo@angjing365.com':         {role:'ceo',     name:'ประพัฒน์ รุ่งเรือง',pass:'sitepro2569'},
+  'engineer@angjing365.com':    {role:'eng',      name:'สมศักดิ์ วิชาการ',  pass:'sitepro2569'},
+  'foreman@angjing365.com':     {role:'foreman',  name:'สมชาย ชำนาญ',      pass:'sitepro2569'},
+  'procurement@angjing365.com': {role:'proc',     name:'มาลี จัดหา',        pass:'sitepro2569'},
+  'owner@angjing365.com':       {role:'owner',    name:'วิชัย เจ้าของ',     pass:'sitepro2569'}
 };
 
-var currentUser = null;
-
 function showLoginModal() {
-  var el = document.getElementById('login-overlay');
-  if(el) { el.style.display = 'flex'; }
+  var el=document.getElementById('login-overlay');
+  if(el) el.style.display='flex';
 }
 function hideLoginModal() {
-  var el = document.getElementById('login-overlay');
-  if(el) el.style.display = 'none';
+  var el=document.getElementById('login-overlay');
+  if(el) el.style.display='none';
 }
-
 function quickLogin(email) {
-  document.getElementById('login-email').value = email;
-  document.getElementById('login-pass').value = 'sitepro2569';
+  document.getElementById('lg-email').value=email;
+  document.getElementById('lg-pass').value='sitepro2569';
   doLogin();
 }
-
 function doLogin() {
-  var email = document.getElementById('login-email').value.trim().toLowerCase();
-  var pass  = document.getElementById('login-pass').value;
-  var errEl = document.getElementById('login-error');
-  
-  var user = DEMO_USERS[email];
-  if(!user || user.pass !== pass) {
-    errEl.style.display = 'block';
-    errEl.textContent = 'Email หรือรหัสผ่านไม่ถูกต้อง';
-    return;
-  }
-  
-  currentUser = {email: email, name: user.name, role: user.role};
-  localStorage.setItem('sp_user', JSON.stringify(currentUser));
-  
+  var email=document.getElementById('lg-email').value.trim().toLowerCase();
+  var pass=document.getElementById('lg-pass').value;
+  var err=document.getElementById('lg-err');
+  var u=DEMO_USERS[email];
+  if(!u||u.pass!==pass){err.style.display='block';err.textContent='Email หรือรหัสผ่านไม่ถูกต้อง';return;}
+  currentUser={email:email,name:u.name,role:u.role};
+  try{localStorage.setItem('sp_user',JSON.stringify(currentUser));}catch(e){}
   hideLoginModal();
-  applyUserRole(user.role, user.name);
-  showToast('✅ ยินดีต้อนรับ ' + user.name);
-  // Navigate to dashboard
-  setTimeout(function() {
-    nav('dashboard', 'Dashboard');
-    renderDash();
-  }, 200);
+  applyRole(u.role,u.name);
+  setTimeout(function(){loadFromDB();nav('dashboard','Dashboard');},200);
 }
-
-function applyUserRole(role, name) {
-  // Update sidebar user info
-  var av = document.getElementById('sb-av');
-  var nm = document.getElementById('sb-name');
-  var rl = document.getElementById('sb-role');
-  var roleNames = {ceo:'CEO',eng:'วิศวกร',foreman:'หัวหน้าช่าง',proc:'จัดซื้อ',owner:'Owner'};
-  if(av) av.textContent = roleNames[role] || role;
-  if(nm) nm.textContent = name;
-  if(rl) rl.textContent = (roleNames[role]||role) + ' · ' + 'Angjing 365';
-  
-  // Switch role selector
-  var sel = document.querySelector('.role-pick select');
-  if(sel) { sel.value = role; switchRole(role); }
-  
-  // Update header logout button
-  var hBtn = document.querySelector('.hdr-btn:last-child');
-  if(hBtn) {
-    hBtn.title = 'ออกจากระบบ: ' + name;
-    hBtn.onclick = function() { if(confirm('ออกจากระบบ?')) logoutUser(); };
-  }
-  
-  // Rebuild sidebar for role
+function applyRole(role,name) {
+  var av=document.getElementById('sb-av'),nm=document.getElementById('sb-name'),rl=document.getElementById('sb-role');
+  var rn={ceo:'CEO',eng:'วิศวกร',foreman:'หัวหน้าช่าง',proc:'จัดซื้อ',owner:'Owner'};
+  if(av) av.textContent=rn[role]||role;
+  if(nm) nm.textContent=name;
+  if(rl) rl.textContent=(rn[role]||role)+' · Angjing 365';
+  var sel=document.querySelector('.role-pick select');
+  if(sel){sel.value=role;switchRole(role);}
   buildSidebar(role);
 }
-
 function logoutUser() {
-  currentUser = null;
-  localStorage.removeItem('sp_user');
+  currentUser=null;
+  try{localStorage.removeItem('sp_user');}catch(e){}
   showLoginModal();
 }
 
-// ── CHECK LOGIN ON LOAD ───────────────────
-document.addEventListener('DOMContentLoaded', function() {
-  var saved = localStorage.getItem('sp_user');
-  if(saved) {
-    try {
-      currentUser = JSON.parse(saved);
-      applyUserRole(currentUser.role, currentUser.name);
-      setTimeout(function(){ nav('dashboard','Dashboard'); renderDash(); }, 300);
-    } catch(e) {
-      localStorage.removeItem('sp_user');
-      setTimeout(showLoginModal, 600);
-    }
-  } else {
-    setTimeout(showLoginModal, 600);
-  }
-});
-
-// ══════════════════════════════════════════
-// LINE NOTIFY (Simulation)
-// ══════════════════════════════════════════
-var lineNotifyMsg = '';
-
-function triggerLineNotify(msg, recipients) {
-  lineNotifyMsg = msg;
-  document.getElementById('line-msg').innerHTML = 
-    '<strong>📤 ส่งถึง:</strong> ' + (recipients||'ทีมงาน') + '<br><br>' +
-    '<strong>ข้อความ:</strong><br>' + msg;
-  document.getElementById('line-modal').style.display = 'flex';
-}
-
-function sendLineNotify() {
-  document.getElementById('line-modal').style.display = 'none';
-  showToast('✅ ส่ง LINE Notify สำเร็จ');
-  // In production: call Supabase Edge Function to send LINE
-}
-
-// ══════════════════════════════════════════
-// FIX DATE DISPLAY — Thai Buddhist Year
-// ══════════════════════════════════════════
-function formatDateThai(dateStr) {
-  if(!dateStr) return '—';
-  var d = new Date(dateStr);
-  if(isNaN(d)) return '—';
-  var months = ['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];
-  return d.getDate() + ' ' + months[d.getMonth()] + ' ' + (d.getFullYear() + 543);
-}
-
-function daysLeftFromISO(dateStr) {
-  if(!dateStr) return 0;
-  var end = new Date(dateStr);
-  var today = new Date();
-  today.setHours(0,0,0,0);
-  var diff = Math.ceil((end - today) / 86400000);
-  return Math.max(0, diff);
-}
-
-// ══════════════════════════════════════════
-// SUPABASE ADMIN FUNCTIONS
-// ══════════════════════════════════════════
-
-// Save daily report
-async function submitReport() {
-  if(!currentUser) { showToast('⚠️ กรุณาเข้าสู่ระบบก่อน','warn'); return; }
-  var summary = document.querySelector('#page-report textarea');
-  var proj = PROJECTS[0];
-  var ph = PHASES.find(function(p){return p.st==='active';});
-  
-  var data = {
-    project_id: proj ? proj.id : null,
-    phase_id:   ph ? ph.id : null,
-    report_date: new Date().toISOString().split('T')[0],
-    summary:     summary ? summary.value : '',
-    workers_count: parseInt(document.querySelector('#page-report input[type=number]')?.value||0),
-    progress_pct:  parseInt(document.querySelectorAll('#page-report input[type=number]')[1]?.value||0),
-    approval_status: 'pending'
-  };
-  
-  var r = await sbInsert('daily_reports', data);
-  if(r) {
-    showToast('✅ ส่ง Report สำเร็จ');
-    triggerLineNotify(
-      '📋 Daily Report ใหม่
-โครงการ: ' + (proj?proj.name:'—') + '
-วันที่: ' + formatDateThai(data.report_date) + '
-โดย: ' + currentUser.name,
-      'วิศวกร'
-    );
-  } else {
-    showToast('❌ บันทึกไม่สำเร็จ','error');
-  }
-}
-
-// ══════════════════════════════════════════
-// IMPROVED loadFromDB — fix dates
-// ══════════════════════════════════════════
-var _origLoadFromDB = loadFromDB;
+// ══ LOAD FROM DB ══
 async function loadFromDB() {
   showLoading(true);
   try {
-    var results = await Promise.all([
-      sbFetch('projects',    {order:'name'}),
-      sbFetch('phases',      {order:'phase_number'}),
-      sbFetch('stock_items', {order:'name'}),
-      sbFetch('defects',     {order:'created_at.desc'}),
-      sbFetch('milestones',  {order:'milestone_number'})
+    var res = await Promise.all([
+      sbFetch('projects',   {order:'name'}),
+      sbFetch('phases',     {order:'phase_number'}),
+      sbFetch('stock_items',{order:'name'}),
+      sbFetch('defects',    {order:'created_at.desc'}),
+      sbFetch('milestones', {order:'milestone_number'})
     ]);
-    var projects=results[0], phases=results[1], stock=results[2], defects=results[3], milestones=results[4];
+    var projects=res[0],phases=res[1],stock=res[2],defects=res[3],milestones=res[4];
 
-    if(projects && projects.length) {
-      PROJECTS = projects.map(function(p) {
-        var pp = (phases||[]).filter(function(ph){return ph.project_id===p.id;});
-        var pct = pp.length ? Math.round(pp.reduce(function(s,ph){return s+(ph.progress_pct||0);},0)/pp.length) : 0;
-        var aph = pp.find(function(ph){return ph.status==='active';});
-        var msd = (milestones||[]).filter(function(m){return m.project_id===p.id&&m.status==='approved';}).length;
-        return {
-          id: p.id,
-          name: p.name,
-          loc: p.address||'—',
-          pct: pct,
-          phase: aph ? aph.name : '—',
-          days: daysLeftFromISO(p.end_date_planned),
-          daysStr: daysLeftFromISO(p.end_date_planned) + ' วัน',
-          endDate: formatDateThai(p.end_date_planned),
-          budget: Number(p.budget_total||0)/1000000,
-          used: Number(p.budget_used||0)/1000000,
-          st: p.status,
-          milestone: msd
-        };
+    if(projects&&projects.length) {
+      PROJECTS=projects.map(function(p){
+        var pp=(phases||[]).filter(function(ph){return ph.project_id===p.id;});
+        var pct=pp.length?Math.round(pp.reduce(function(s,ph){return s+(ph.progress_pct||0);},0)/pp.length):0;
+        var aph=pp.find(function(ph){return ph.status==='active';});
+        var msd=(milestones||[]).filter(function(m){return m.project_id===p.id&&m.status==='approved';}).length;
+        return {id:p.id,name:p.name,loc:p.address||'—',pct:pct,
+          phase:aph?aph.name:'—',days:daysLeft(p.end_date_planned),
+          budget:Number(p.budget_total||0)/1000000,used:Number(p.budget_used||0)/1000000,
+          st:p.status,milestone:msd};
       });
     }
-    if(phases && phases.length) {
-      PHASES = phases.map(function(p){
+    if(phases&&phases.length) {
+      PHASES=phases.map(function(p){
         return {id:p.id,n:p.name,pct:p.progress_pct||0,col:p.color_hex||'#1565C0',
           st:p.status==='done'?'done':p.status==='active'?'active':'wait',
-          project_id:p.project_id,
-          startDate: formatDateThai(p.start_date),
-          endDate: formatDateThai(p.end_date_planned)};
+          project_id:p.project_id};
       });
     }
-    if(stock && stock.length) {
-      STOCK = stock.map(function(s){
+    if(stock&&stock.length) {
+      STOCK=stock.map(function(s){
         return {id:s.id,icon:s.icon||'📦',n:s.name,unit:s.unit,
           qty:Number(s.qty_current||0),min:Number(s.qty_min||0),max:Number(s.qty_max||100),
           lot:s.lot_number||'—',st:s.status||'ok'};
       });
-    }
-    if(defects && defects.length) {
-      DEFECTS = defects.map(function(d){
+    } else { STOCK=[]; }
+    if(defects&&defects.length) {
+      DEFECTS=defects.map(function(d){
         return {id:d.id,t:d.title,loc:d.location||'—',
           sev:d.severity==='high'?'high':d.severity==='medium'?'med':'low',
-          st:d.status==='open'?'open':d.status==='fixing'?'fix':d.status==='closed'?'closed':'fix',
-          by:'—', date: formatDateThai(d.created_at)};
+          st:d.status==='open'?'open':d.status==='fixing'?'fix':d.status==='closed'?'closed':'fix',by:'—'};
       });
-    }
-    if(milestones && milestones.length) {
-      MILESTONES = milestones.map(function(m){
+    } else { DEFECTS=[]; }
+    if(milestones&&milestones.length) {
+      MILESTONES=milestones.map(function(m){
         return {id:m.id,n:m.milestone_number,title:m.title,
-          amt:'฿' + Number(m.amount||0).toLocaleString('th-TH'),
-          st:m.status==='approved'?'done':m.status==='pending'?'pend':'wait',
-          approvedAt: m.owner_approved_at ? formatDateThai(m.owner_approved_at) : null};
+          amt:'฿'+Number(m.amount||0).toLocaleString('th-TH'),
+          st:m.status==='approved'?'done':m.status==='pending'?'pend':'wait'};
       });
     }
     renderDash();
-    if(typeof renderStock==='function') renderStock();
-    showToast('✅ โหลดข้อมูลจาก Database สำเร็จ');
     var el=document.getElementById('stock-update-time');
     if(el) el.textContent='คลังกลาง · อัปเดต '+new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})+' น.';
-    console.log('✅ DB loaded:', {projects:PROJECTS.length, phases:PHASES.length, stock:STOCK.length});
-  } catch(err) {
-    console.error('loadFromDB error:', err);
-    showToast('⚠️ ใช้ข้อมูล Demo', 'warn');
+    showToast('✅ โหลดข้อมูลจาก Database สำเร็จ');
+  } catch(e) {
+    console.error('loadFromDB error:',e);
+    showToast('⚠️ ไม่สามารถเชื่อม Database ได้','warn');
   }
   showLoading(false);
 }
 
-// Re-override ownerApprove with LINE notify
-function ownerApprove(i) {
-  if(!confirm('ยืนยันอนุมัติ ' + MILESTONES[i].title + '?')) return;
-  var ms = MILESTONES[i];
-  if(ms.id) {
-    sbPatch('milestones', ms.id, {
-      status: 'approved',
-      owner_approved_at: new Date().toISOString(),
-      owner_device: navigator.userAgent.substring(0,200)
-    }).then(function(r) {
-      if(r) {
-        showToast('✅ อนุมัติงวดงานสำเร็จ · บันทึกหลักฐานแล้ว');
-        triggerLineNotify(
-          '💰 Owner อนุมัติงวดงานแล้ว\n' + ms.title + '\nจำนวน: ' + ms.amt + '\nเวลา: ' + new Date().toLocaleString('th-TH'),
-          'CEO + บัญชี'
-        );
-        loadFromDB();
-      } else showToast('❌ บันทึกไม่สำเร็จ','error');
-    });
-  }
-}
-
-// Override addDF with LINE notify
+// Override addDF to save to DB
 function addDF() {
-  var t = document.getElementById('ndt');
-  if(!t || !t.value.trim()){ alert('กรุณาระบุรายละเอียด'); return; }
-  var proj = PROJECTS[0];
-  var data = {
-    title: t.value.trim(),
-    location: document.getElementById('ndl') ? document.getElementById('ndl').value : '—',
-    severity: document.getElementById('nds') ? 
-      (document.getElementById('nds').value==='high'?'high':document.getElementById('nds').value==='med'?'medium':'low') : 'medium',
-    status: 'open',
-    project_id: proj ? proj.id : null
-  };
-  sbInsert('defects', data).then(function(r) {
-    if(r) {
-      showToast('✅ บันทึก Defect สำเร็จ');
-      triggerLineNotify(
-        '⚠️ Defect ใหม่\n' + data.title + '\nตำแหน่ง: ' + data.location + '\nระดับ: ' + data.severity,
-        'วิศวกร + หัวหน้าช่าง'
-      );
-      t.value='';
-      loadFromDB();
-    } else showToast('❌ บันทึกไม่สำเร็จ','error');
+  var t=document.getElementById('ndt');
+  if(!t||!t.value.trim()){alert('กรุณาระบุรายละเอียด');return;}
+  var proj=PROJECTS[0];
+  sbInsert('defects',{
+    title:t.value.trim(),
+    location:document.getElementById('ndl')?document.getElementById('ndl').value:'—',
+    severity:document.getElementById('nds')?(document.getElementById('nds').value==='high'?'high':document.getElementById('nds').value==='med'?'medium':'low'):'medium',
+    status:'open',project_id:proj?proj.id:null
+  }).then(function(r){
+    if(r){showToast('✅ บันทึก Defect สำเร็จ');t.value='';loadFromDB();}
+    else showToast('❌ บันทึกไม่สำเร็จ','error');
   });
 }
 
-// Override doTxn with DB save
+// Override doTxn to save to DB
 function doTxn() {
-  var qty = parseFloat(document.getElementById('tx-qty').value)||0;
-  if(!qty){ alert('กรุณากรอกจำนวน'); return; }
-  var matName = document.getElementById('tx-mat').value;
-  var item = STOCK.find(function(s){return s.n.includes(matName.split(' ')[0]);});
-  if(!item){ showToast('ไม่พบวัสดุ','error'); return; }
-  var newQty = item.qty;
-  if(txnMode==='in') newQty += qty;
-  else {
-    if(item.qty < qty){ showToast('❌ จำนวนไม่เพียงพอ','error'); return; }
-    newQty -= qty;
-  }
-  var newSt = newQty===0?'out':newQty<item.min?'low':'ok';
-  var lotVal = document.getElementById('tx-lot') ? document.getElementById('tx-lot').value : item.lot;
-  
-  sbPatch('stock_items', item.id, {qty_current:newQty, status:newSt, lot_number:lotVal||item.lot}).then(function(r) {
-    if(r) {
-      showToast('✅ บันทึก Stock สำเร็จ');
-      document.getElementById('tx-qty').value='';
-      if(newSt==='low'||newSt==='out') {
-        triggerLineNotify(
-          '📦 แจ้งเตือน Stock ' + (newSt==='out'?'หมด':'ต่ำ') + '\n' + item.n + '\nคงเหลือ: ' + newQty + ' ' + item.unit + '\nMin: ' + item.min,
-          'จัดซื้อ + CEO'
-        );
-      }
-      loadFromDB();
-    } else showToast('❌ บันทึกไม่สำเร็จ','error');
+  var qty=parseFloat(document.getElementById('tx-qty').value)||0;
+  if(!qty){alert('กรุณากรอกจำนวน');return;}
+  var mat=document.getElementById('tx-mat').value;
+  var item=STOCK.find(function(s){return s.n.includes(mat.split(' ')[0]);});
+  if(!item){showToast('ไม่พบวัสดุ','error');return;}
+  var newQty=item.qty;
+  if(txnMode==='in') newQty+=qty;
+  else{if(item.qty<qty){showToast('❌ จำนวนไม่เพียงพอ','error');return;}newQty-=qty;}
+  var newSt=newQty===0?'out':newQty<item.min?'low':'ok';
+  sbPatch('stock_items',item.id,{qty_current:newQty,status:newSt}).then(function(r){
+    if(r){showToast('✅ บันทึก Stock สำเร็จ');document.getElementById('tx-qty').value='';loadFromDB();}
+    else showToast('❌ บันทึกไม่สำเร็จ','error');
   });
 }
 
-// ══════════════════════════════════════════
-// CONTRACT MODULE — JavaScript
-// ══════════════════════════════════════════
-var currentContractId = null;
-var cfMilestoneRows = [];
-
-function showContractForm() {
-  populateContractProjectSel();
-  cfMilestoneRows = [];
-  renderCFMilestones();
-  document.getElementById('cf-date').value = new Date().toISOString().split('T')[0];
-  var modal = document.getElementById('contract-form-modal');
-  modal.style.display = 'flex';
-}
-function hideContractForm() {
-  document.getElementById('contract-form-modal').style.display = 'none';
-}
-
-function populateContractProjectSel() {
-  var sels = ['contract-proj-sel','cf-project','boq-proj-sel','bq-proj'];
-  sels.forEach(function(selId) {
-    var sel = document.getElementById(selId);
-    if(!sel) return;
-    var cur = sel.value;
-    sel.innerHTML = '<option value="">— เลือกโครงการ —</option>';
-    PROJECTS.forEach(function(p) {
-      var opt = document.createElement('option');
-      opt.value = p.id; opt.textContent = p.name;
-      sel.appendChild(opt);
+// Override ownerApprove to save to DB
+function ownerApprove(i) {
+  if(!confirm('ยืนยันอนุมัติ '+MILESTONES[i].title+'?')) return;
+  var ms=MILESTONES[i];
+  if(ms.id) {
+    sbPatch('milestones',ms.id,{status:'approved',owner_approved_at:new Date().toISOString(),owner_device:navigator.userAgent.substring(0,200)}).then(function(r){
+      if(r){showToast('✅ อนุมัติงวดงานสำเร็จ');loadFromDB();}
+      else showToast('❌ บันทึกไม่สำเร็จ','error');
     });
-    if(cur) sel.value = cur;
-  });
-}
-
-function addMilestoneRow() {
-  cfMilestoneRows.push({title:'', conditions:'', amount:0, pct:0});
-  renderCFMilestones();
-}
-
-function renderCFMilestones() {
-  var con = document.getElementById('cf-milestones-list');
-  if(!con) return;
-  if(!cfMilestoneRows.length) {
-    con.innerHTML = '<div style="text-align:center;color:var(--text3);font-size:12px;padding:10px">กด "+ เพิ่มงวดงาน" ด้านล่าง</div>';
-    return;
-  }
-  con.innerHTML = cfMilestoneRows.map(function(r, i) {
-    return '<div style="background:#fff;border:1px solid var(--border);border-radius:var(--r2);padding:10px;margin-bottom:8px">'
-      + '<div style="display:flex;align-items:center;gap:6px;margin-bottom:8px">'
-      + '<span style="font-size:12px;font-weight:600;color:var(--blue);min-width:50px">งวดที่ '+(i+1)+'</span>'
-      + '<input class="finp" style="flex:1" placeholder="ชื่องวด เช่น งานฐานราก" value="'+r.title+'" oninput="cfMilestoneRows['+i+'].title=this.value">'
-      + '<button onclick="cfMilestoneRows.splice('+i+',1);renderCFMilestones()" style="background:none;border:none;color:var(--danger);font-size:16px;cursor:pointer">✕</button>'
-      + '</div>'
-      + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">'
-      + '<div><div class="flbl">มูลค่า (บาท)</div><input type="number" class="finp" placeholder="0" value="'+r.amount+'" oninput="cfMilestoneRows['+i+'].amount=parseFloat(this.value)||0;calcMilestonePct()"></div>'
-      + '<div><div class="flbl">% ของสัญญา</div><input type="number" class="finp" id="cfmpct'+i+'" placeholder="0" value="'+r.pct+'" readonly style="background:var(--bg)"></div>'
-      + '</div>'
-      + '<div style="margin-top:8px"><div class="flbl">เงื่อนไขการเบิกงวด</div><input class="finp" placeholder="เช่น เมื่อฐานรากแล้วเสร็จ 100%" value="'+r.conditions+'" oninput="cfMilestoneRows['+i+'].conditions=this.value"></div>'
-      + '</div>';
-  }).join('');
-  calcMilestonePct();
-}
-
-function calcMilestonePct() {
-  var totalVal = parseFloat(document.getElementById('cf-value').value)||0;
-  if(!totalVal) return;
-  cfMilestoneRows.forEach(function(r, i) {
-    var el = document.getElementById('cfmpct'+i);
-    if(el) { r.pct = totalVal ? Math.round(r.amount/totalVal*1000)/10 : 0; el.value = r.pct; }
-  });
-}
-
-async function saveContract() {
-  var projId = document.getElementById('cf-project').value;
-  var num    = document.getElementById('cf-number').value.trim();
-  var val    = parseFloat(document.getElementById('cf-value').value)||0;
-  if(!projId || !num) { alert('กรุณาเลือกโครงการและใส่เลขที่สัญญา'); return; }
-  if(!cfMilestoneRows.length) { alert('กรุณาเพิ่มงวดงานอย่างน้อย 1 งวด'); return; }
-
-  var contractData = {
-    project_id: projId,
-    contract_number: num,
-    contract_date: document.getElementById('cf-date').value,
-    contractor_name: document.getElementById('cf-contractor').value,
-    owner_name: document.getElementById('cf-owner').value,
-    total_value: val,
-    warranty_months: parseInt(document.getElementById('cf-warranty').value)||12,
-    notes: document.getElementById('cf-notes').value,
-    status: 'active'
-  };
-
-  var r = await sbInsert('contracts', contractData);
-  if(!r || !r[0]) { showToast('❌ บันทึกสัญญาไม่สำเร็จ','error'); return; }
-  var contractId = r[0].id;
-
-  // Insert milestones
-  var msData = cfMilestoneRows.map(function(ms, i) {
-    return {
-      contract_id: contractId,
-      project_id: projId,
-      milestone_number: i+1,
-      title: ms.title,
-      conditions: ms.conditions,
-      amount: ms.amount,
-      pct_of_total: ms.pct,
-      status: 'wait'
-    };
-  });
-
-  for(var i=0; i<msData.length; i++) {
-    await sbInsert('contract_milestones', msData[i]);
-  }
-
-  showToast('✅ บันทึกสัญญาและงวดงานสำเร็จ');
-  hideContractForm();
-  loadContractByProject(projId);
-}
-
-async function loadContractByProject(projId) {
-  if(!projId) { document.getElementById('contract-list').innerHTML='<div class="empty"><div class="empty-icon">📄</div><div class="empty-title">เลือกโครงการ</div></div>'; return; }
-  var contracts = await sbFetch('contracts', {filter:'project_id=eq.'+projId, order:'created_at.desc'});
-  if(!contracts || !contracts.length) {
-    document.getElementById('contract-list').innerHTML='<div class="empty"><div class="empty-icon">📄</div><div class="empty-title">ยังไม่มีสัญญา</div><div class="empty-sub">กด + สร้างสัญญา</div></div>';
-    return;
-  }
-  document.getElementById('contract-list').innerHTML = contracts.map(function(c) {
-    return '<div style="border:1px solid var(--border);border-radius:var(--r);padding:14px;margin-bottom:8px;cursor:pointer;transition:all .15s" onclick="selectContract(''+c.id+'',''+c.contract_number+'')" onmouseover="this.style.borderColor='var(--blue)'" onmouseout="this.style.borderColor='var(--border)'">'
-      + '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:6px">'
-      + '<div style="font-size:14px;font-weight:600;color:var(--text-h)">'+c.contract_number+'</div>'
-      + '<span class="badge b-green">Active</span></div>'
-      + '<div style="font-size:12px;color:var(--text3)">มูลค่ารวม: <strong style="color:var(--blue)">฿'+Number(c.total_value||0).toLocaleString('th-TH')+'</strong></div>'
-      + '<div style="font-size:12px;color:var(--text3)">ผู้รับเหมา: '+c.contractor_name+'  ·  เจ้าของงาน: '+c.owner_name+'</div>'
-      + '</div>';
-  }).join('');
-}
-
-async function selectContract(id, num) {
-  currentContractId = id;
-  document.getElementById('contract-milestone-sub').textContent = 'สัญญา: ' + num;
-  document.getElementById('btn-add-milestone').style.display = 'block';
-
-  var ms = await sbFetch('contract_milestones', {filter:'contract_id=eq.'+id, order:'milestone_number'});
-  if(!ms || !ms.length) {
-    document.getElementById('contract-milestones').innerHTML='<div class="empty"><div class="empty-title">ยังไม่มีงวดงาน</div></div>';
-    return;
-  }
-
-  var totalAmt = ms.reduce(function(s,m){return s+Number(m.amount||0);},0);
-  var approvedAmt = ms.filter(function(m){return m.status==='approved';}).reduce(function(s,m){return s+Number(m.amount||0);},0);
-
-  document.getElementById('contract-milestones').innerHTML = ms.map(function(m,i) {
-    var isDone = m.status==='approved';
-    var isPend = m.status==='pending';
-    var bg = isDone?'var(--green3)':isPend?'var(--blue3)':'var(--bg)';
-    var bc = isDone?'#A5D6A7':isPend?'var(--blue4)':'var(--border)';
-    return '<div style="border:1px solid '+bc+';border-radius:var(--r);padding:12px 14px;margin-bottom:8px;background:'+bg+'">'
-      + '<div style="display:flex;align-items:center;gap:10px">'
-      + '<div style="width:30px;height:30px;border-radius:50%;background:'+(isDone?'var(--green)':isPend?'var(--blue)':'var(--text3)')+';color:#fff;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;flex-shrink:0">'+(isDone?'✓':m.milestone_number)+'</div>'
-      + '<div style="flex:1"><div style="font-size:13px;font-weight:500">'+m.title+'</div>'
-      + '<div style="font-size:12px;color:var(--text3)">'+(m.conditions||'')+'</div></div>'
-      + '<div style="text-align:right">'
-      + '<div style="font-size:14px;font-weight:700;color:'+(isDone?'var(--green)':'var(--blue)')+'">฿'+Number(m.amount||0).toLocaleString('th-TH')+'</div>'
-      + '<div style="font-size:10px;color:var(--text3)">'+m.pct_of_total+'%</div></div></div>'
-      + (isPend && !isDone ? '<div style="margin-top:10px;display:flex;gap:6px"><button class="btn btn-g btn-sm btn-full" onclick="approveContractMilestone(''+m.id+'')">✅ อนุมัติงวดนี้</button></div>' : '')
-      + '</div>';
-  }).join('');
-
-  // Summary
-  document.getElementById('contract-summary').style.display = 'block';
-  var pct = totalAmt ? Math.round(approvedAmt/totalAmt*100) : 0;
-  document.getElementById('contract-summary-content').innerHTML =
-    '<div class="pbar-row mb12"><div class="pbar" style="height:10px"><div class="pfill" style="width:'+pct+'%;background:var(--green)"></div></div><div class="ppct" style="color:var(--green)">'+pct+'%</div></div>'
-    + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">'
-    + '<div style="background:var(--bg);border-radius:var(--r2);padding:12px;text-align:center"><div style="font-size:11px;color:var(--text3)">เบิกแล้ว</div><div style="font-size:16px;font-weight:700;color:var(--green)">฿'+approvedAmt.toLocaleString('th-TH')+'</div></div>'
-    + '<div style="background:var(--bg);border-radius:var(--r2);padding:12px;text-align:center"><div style="font-size:11px;color:var(--text3)">คงเหลือ</div><div style="font-size:16px;font-weight:700;color:var(--orange)">฿'+(totalAmt-approvedAmt).toLocaleString('th-TH')+'</div></div>'
-    + '</div>';
-}
-
-async function approveContractMilestone(id) {
-  if(!confirm('ยืนยันอนุมัติงวดงานนี้?')) return;
-  var r = await sbPatch('contract_milestones', id, {
-    status:'approved',
-    owner_approved_at: new Date().toISOString(),
-    owner_device: navigator.userAgent.substring(0,200)
-  });
-  if(r) { showToast('✅ อนุมัติงวดงานสำเร็จ'); selectContract(currentContractId,''); }
-  else showToast('❌ บันทึกไม่สำเร็จ','error');
-}
-
-// ══════════════════════════════════════════
-// BOQ MODULE — JavaScript
-// ══════════════════════════════════════════
-var boqItems = [];
-
-function showBOQForm() {
-  populateContractProjectSel();
-  document.getElementById('boq-form-modal').style.display = 'flex';
-  var projId = document.getElementById('boq-proj-sel').value;
-  if(projId) document.getElementById('bq-proj').value = projId;
-  loadBOQPhases(projId);
-}
-function hideBOQForm() {
-  document.getElementById('boq-form-modal').style.display = 'none';
-}
-
-function loadBOQPhases(projId) {
-  var sel = document.getElementById('bq-phase');
-  if(!sel) return;
-  sel.innerHTML = '<option value="">— เลือก Phase —</option>';
-  PHASES.filter(function(p){return !projId || p.project_id===projId;}).forEach(function(p) {
-    var opt = document.createElement('option');
-    opt.value = p.id; opt.textContent = p.n;
-    sel.appendChild(opt);
-  });
-  var sel2 = document.getElementById('boq-phase-sel');
-  if(sel2) {
-    sel2.innerHTML = '<option value="">— ทุก Phase —</option>';
-    PHASES.filter(function(p){return !projId || p.project_id===projId;}).forEach(function(p) {
-      var opt = document.createElement('option');
-      opt.value = p.id; opt.textContent = p.n;
-      sel2.appendChild(opt);
-    });
+  } else {
+    MILESTONES[i].st='done';renderOwner();showToast('✅ อนุมัติสำเร็จ');
   }
 }
 
-function calcBOQTotal() {
-  var qty = parseFloat(document.getElementById('bq-qty').value)||0;
-  var price = parseFloat(document.getElementById('bq-price').value)||0;
-  var total = qty * price;
-  document.getElementById('bq-total-display').textContent = '฿ ' + total.toLocaleString('th-TH',{minimumFractionDigits:2});
-}
-
-async function saveBOQItem(sendPR) {
-  var projId = document.getElementById('bq-proj').value;
-  var desc = document.getElementById('bq-desc').value.trim();
-  if(!projId || !desc) { alert('กรุณาเลือกโครงการและใส่รายละเอียด'); return; }
-  var qty = parseFloat(document.getElementById('bq-qty').value)||0;
-  var price = parseFloat(document.getElementById('bq-price').value)||0;
-  var data = {
-    project_id: projId,
-    phase_id: document.getElementById('bq-phase').value || null,
-    item_number: document.getElementById('bq-num').value,
-    description: desc,
-    spec: document.getElementById('bq-spec').value,
-    unit: document.getElementById('bq-unit').value,
-    quantity: qty,
-    unit_price: price,
-    material_name: desc,
-    source: 'manual',
-    status: sendPR ? 'sent_pr' : 'pending'
-  };
-  var r = await sbInsert('boq_items', data);
-  if(r) {
-    showToast('✅ บันทึก BOQ สำเร็จ' + (sendPR?' + ส่งจัดซื้อ':''));
-    if(sendPR) {
-      // Also create PR
-      await sbInsert('purchase_requests', {
-        project_id: projId,
-        phase_id: data.phase_id,
-        title: desc + ' (จาก BOQ)',
-        source: 'boq',
-        items: JSON.stringify([{material:desc, qty:qty, unit:data.unit, unit_price:price}]),
-        total_amount: qty*price,
-        status: 'draft'
-      });
+// ══ INIT ══
+document.addEventListener('DOMContentLoaded',function(){
+  try {
+    var saved=localStorage.getItem('sp_user');
+    if(saved) {
+      currentUser=JSON.parse(saved);
+      applyRole(currentUser.role,currentUser.name);
+      setTimeout(loadFromDB,300);
+    } else {
+      setTimeout(showLoginModal,500);
     }
-    hideBOQForm();
-    loadBOQ();
-  } else showToast('❌ บันทึกไม่สำเร็จ','error');
-}
-
-function saveBOQAndSendPR() { saveBOQItem(true); }
-
-async function loadBOQ() {
-  var projId = document.getElementById('boq-proj-sel').value;
-  var phaseId = document.getElementById('boq-phase-sel').value;
-  if(!projId) {
-    document.getElementById('boq-table-wrap').innerHTML='<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">เลือกโครงการเพื่อดู BOQ</div></div>';
-    return;
+  } catch(e) {
+    setTimeout(showLoginModal,500);
   }
-  loadBOQPhases(projId);
-  var filter = 'project_id=eq.'+projId;
-  if(phaseId) filter += '&phase_id=eq.'+phaseId;
-  var items = await sbFetch('boq_items', {filter:filter, order:'created_at'});
-  boqItems = items || [];
-
-  var total = boqItems.reduce(function(s,i){return s+(i.quantity*i.unit_price);},0);
-  var sent = boqItems.filter(function(i){return i.status==='sent_pr';}).length;
-  var pending = boqItems.filter(function(i){return i.status==='pending';}).length;
-
-  document.getElementById('boq-count').textContent = boqItems.length;
-  document.getElementById('boq-total').textContent = '฿'+total.toLocaleString('th-TH',{minimumFractionDigits:0});
-  document.getElementById('boq-sent').textContent = sent;
-  document.getElementById('boq-pending').textContent = pending;
-  document.getElementById('boq-summary-bar').style.display = boqItems.length ? 'grid' : 'none';
-
-  if(!boqItems.length) {
-    document.getElementById('boq-table-wrap').innerHTML='<div class="empty"><div class="empty-icon">📋</div><div class="empty-title">ยังไม่มีรายการ BOQ</div><div class="empty-sub">กด "+ เพิ่มรายการ" ด้านบน</div></div>';
-    return;
-  }
-
-  var html = '<div class="tbl-wrap"><table><thead><tr>'
-    + '<th>รหัส</th><th>รายละเอียด</th><th>Phase</th><th>หน่วย</th><th style="text-align:right">ปริมาณ</th><th style="text-align:right">ราคา/หน่วย</th><th style="text-align:right">มูลค่ารวม</th><th>สถานะ</th><th></th>'
-    + '</tr></thead><tbody>';
-
-  boqItems.forEach(function(item) {
-    var ph = PHASES.find(function(p){return p.id===item.phase_id;});
-    var rowTotal = item.quantity * item.unit_price;
-    var stBadge = item.status==='sent_pr' ? '<span class="badge b-green">ส่งจัดซื้อ</span>' : '<span class="badge b-gray">รอ</span>';
-    html += '<tr>'
-      + '<td style="font-size:11px;color:var(--text3)">'+(item.item_number||'—')+'</td>'
-      + '<td><div style="font-size:13px;font-weight:500">'+item.description+'</div><div style="font-size:11px;color:var(--text3)">'+(item.spec||'')+'</div></td>'
-      + '<td style="font-size:12px">'+(ph?ph.n:'—')+'</td>'
-      + '<td style="font-size:12px">'+item.unit+'</td>'
-      + '<td style="text-align:right;font-weight:500">'+Number(item.quantity).toLocaleString('th-TH')+'</td>'
-      + '<td style="text-align:right">฿'+Number(item.unit_price).toLocaleString('th-TH')+'</td>'
-      + '<td style="text-align:right;font-weight:700;color:var(--blue)">฿'+rowTotal.toLocaleString('th-TH',{minimumFractionDigits:0})+'</td>'
-      + '<td>'+stBadge+'</td>'
-      + '<td><button class="btn btn-sm btn-ghost" onclick="sendBOQtoPR(''+item.id+'')">📤 จัดซื้อ</button></td>'
-      + '</tr>';
-  });
-
-  // Total row
-  html += '<tr style="background:var(--blue3);font-weight:700">'
-    + '<td colspan="6" style="text-align:right;padding:12px;color:var(--blue)">มูลค่า BOQ รวมทั้งหมด</td>'
-    + '<td style="text-align:right;color:var(--blue);font-size:15px">฿'+total.toLocaleString('th-TH',{minimumFractionDigits:0})+'</td>'
-    + '<td colspan="2"></td></tr>';
-
-  html += '</tbody></table></div>';
-  document.getElementById('boq-table-wrap').innerHTML = html;
-}
-
-async function sendBOQtoPR(itemId) {
-  var item = boqItems.find(function(i){return i.id===itemId;});
-  if(!item) return;
-  if(!confirm('ส่ง "'+item.description+'" ไปหมวดจัดซื้อ?')) return;
-  var r1 = await sbPatch('boq_items', itemId, {status:'sent_pr'});
-  var r2 = await sbInsert('purchase_requests', {
-    project_id: item.project_id,
-    phase_id: item.phase_id,
-    title: item.description + ' (จาก BOQ)',
-    source: 'boq',
-    items: JSON.stringify([{material:item.description, qty:item.quantity, unit:item.unit, unit_price:item.unit_price}]),
-    total_amount: item.quantity * item.unit_price,
-    status: 'draft'
-  });
-  if(r1 && r2) { showToast('✅ ส่งจัดซื้อสำเร็จ'); loadBOQ(); }
-  else showToast('❌ บันทึกไม่สำเร็จ','error');
-}
-
-function exportBOQ() {
-  if(!boqItems.length) { showToast('ไม่มีข้อมูล BOQ','warn'); return; }
-  var csv = 'รหัส,รายละเอียด,Spec,Phase,หน่วย,ปริมาณ,ราคา/หน่วย,มูลค่ารวม,สถานะ\n';
-  boqItems.forEach(function(item) {
-    var ph = PHASES.find(function(p){return p.id===item.phase_id;});
-    csv += [
-      item.item_number||'',
-      '"'+item.description+'"',
-      '"'+(item.spec||'')+'"',
-      ph?ph.n:'—',
-      item.unit,
-      item.quantity,
-      item.unit_price,
-      item.quantity*item.unit_price,
-      item.status==='sent_pr'?'ส่งจัดซื้อแล้ว':'รอดำเนินการ'
-    ].join(',') + '\n';
-  });
-  var blob = new Blob(['\uFEFF'+csv], {type:'text/csv;charset=utf-8'});
-  var a = document.createElement('a'); a.href = URL.createObjectURL(blob);
-  a.download = 'BOQ_SitePro_'+new Date().toLocaleDateString('th-TH')+'.csv';
-  a.click();
-  showToast('✅ Export CSV สำเร็จ');
-}
-
-// Contract+BOQ menu now integrated in MENU_CFG above
-
-// Load contract data when nav to contract page
-var _origNav = nav;
-function nav(id, label) {
-  _origNav(id, label);
-  if(id === 'contract') {
-    setTimeout(function() {
-      populateContractProjectSel();
-    }, 100);
-  }
-  if(id === 'boq') {
-    setTimeout(function() {
-      populateContractProjectSel();
-    }, 100);
-  }
-}
-
-
-// ══════════════════════════════════════════
-// FILE MANAGER — Upload to Supabase Storage
-// ══════════════════════════════════════════
-var SB_STORAGE_URL = 'https://kdfbllrobnfdvelbotwh.supabase.co/storage/v1';
-var SB_BUCKET = 'sitepro-files';
-var pendingFiles = [];
-
-var FILE_ICONS = {
-  contract: '📄', boq: '📋', drawing: '📐',
-  photo: '📸', report: '📊', invoice: '💰',
-  permit: '🏛️', other: '📁'
-};
-var FILE_LABELS = {
-  contract: 'สัญญา', boq: 'BOQ', drawing: 'แบบก่อสร้าง',
-  photo: 'รูปถ่าย', report: 'รายงาน', invoice: 'ใบแจ้งหนี้',
-  permit: 'ใบอนุญาต', other: 'อื่น ๆ'
-};
-
-function handleFileDrop(e) {
-  e.preventDefault();
-  document.getElementById('file-dropzone').style.borderColor = 'var(--border2)';
-  document.getElementById('file-dropzone').style.background = 'transparent';
-  handleFileSelect(e.dataTransfer.files);
-}
-
-function handleFileSelect(files) {
-  if(!files || !files.length) return;
-  pendingFiles = Array.from(files);
-  renderFileQueue();
-}
-
-function renderFileQueue() {
-  if(!pendingFiles.length) {
-    document.getElementById('file-queue').style.display = 'none';
-    document.getElementById('btn-upload').style.display = 'none';
-    return;
-  }
-  document.getElementById('file-queue').style.display = 'block';
-  document.getElementById('btn-upload').style.display = 'flex';
-  document.getElementById('file-queue-list').innerHTML = pendingFiles.map(function(f, i) {
-    var ext = f.name.split('.').pop().toLowerCase();
-    var icon = ['pdf'].includes(ext) ? '📄' : ['png','jpg','jpeg'].includes(ext) ? '🖼️' : ['xlsx','xls'].includes(ext) ? '📊' : ['docx','doc'].includes(ext) ? '📝' : '📁';
-    var size = f.size > 1024*1024 ? (f.size/1024/1024).toFixed(1)+' MB' : (f.size/1024).toFixed(0)+' KB';
-    return '<div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border-radius:var(--r2);margin-bottom:6px">'
-      + '<span style="font-size:22px">'+icon+'</span>'
-      + '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+f.name+'</div>'
-      + '<div style="font-size:11px;color:var(--text3)">'+size+'</div></div>'
-      + '<button onclick="pendingFiles.splice('+i+',1);renderFileQueue()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:16px">✕</button>'
-      + '</div>';
-  }).join('');
-}
-
-async function uploadFiles() {
-  var projId = document.getElementById('file-proj-sel').value;
-  if(!projId) { showToast('⚠️ กรุณาเลือกโครงการก่อน','warn'); return; }
-  if(!pendingFiles.length) { showToast('⚠️ กรุณาเลือกไฟล์ก่อน','warn'); return; }
-
-  var category = document.getElementById('file-category').value;
-  var desc = document.getElementById('file-desc').value;
-  var btn = document.getElementById('btn-upload');
-  btn.disabled = true; btn.textContent = '⏳ กำลังอัปโหลด...';
-  document.getElementById('upload-progress').style.display = 'block';
-
-  var successCount = 0;
-  for(var i = 0; i < pendingFiles.length; i++) {
-    var file = pendingFiles[i];
-    var pct = Math.round((i / pendingFiles.length) * 100);
-    document.getElementById('upload-prog-fill').style.width = pct + '%';
-    document.getElementById('upload-prog-pct').textContent = pct + '%';
-    document.getElementById('upload-prog-text').textContent = 'กำลังอัปโหลด: ' + file.name;
-
-    try {
-      // Create unique file path
-      var timestamp = Date.now();
-      var safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
-      var filePath = projId + '/' + category + '/' + timestamp + '_' + safeName;
-
-      // Upload to Supabase Storage
-      var uploadRes = await fetch(SB_STORAGE_URL + '/object/' + SB_BUCKET + '/' + filePath, {
-        method: 'POST',
-        headers: {
-          'apikey': SB_KEY,
-          'Authorization': 'Bearer ' + SB_KEY,
-          'Content-Type': file.type || 'application/octet-stream',
-          'x-upsert': 'true'
-        },
-        body: file
-      });
-
-      if(uploadRes.ok) {
-        var fileUrl = SB_URL + '/storage/v1/object/public/' + SB_BUCKET + '/' + filePath;
-
-        // Save to database
-        await sbInsert('project_files', {
-          project_id: projId,
-          file_name: file.name,
-          file_path: filePath,
-          file_url: fileUrl,
-          file_type: file.type,
-          file_size: file.size,
-          category: category,
-          description: desc,
-          uploaded_by: currentUser ? currentUser.id : null
-        });
-        successCount++;
-      }
-    } catch(err) {
-      console.error('Upload error:', err);
-    }
-  }
-
-  document.getElementById('upload-prog-fill').style.width = '100%';
-  document.getElementById('upload-prog-pct').textContent = '100%';
-
-  setTimeout(function() {
-    document.getElementById('upload-progress').style.display = 'none';
-    btn.disabled = false;
-    btn.innerHTML = '📤 อัปโหลดทั้งหมด';
-    pendingFiles = [];
-    renderFileQueue();
-    document.getElementById('file-desc').value = '';
-    showToast('✅ อัปโหลดสำเร็จ ' + successCount + '/' + (successCount + (pendingFiles.length - successCount)) + ' ไฟล์');
-    loadFiles();
-  }, 500);
-}
-
-async function loadFiles() {
-  var projId = document.getElementById('file-filter-proj') ? document.getElementById('file-filter-proj').value : '';
-  var cat = document.getElementById('file-filter-cat') ? document.getElementById('file-filter-cat').value : '';
-
-  var filter = '';
-  if(projId) filter += 'project_id=eq.' + projId;
-  if(cat) filter += (filter?'&':'') + 'category=eq.' + cat;
-
-  var files = await sbFetch('project_files', {filter: filter, order: 'created_at.desc', limit: 100});
-  if(!files || !files.length) {
-    document.getElementById('file-list').innerHTML = '<div class="empty"><div class="empty-icon">📁</div><div class="empty-title">ยังไม่มีเอกสาร</div></div>';
-    return;
-  }
-
-  document.getElementById('file-list').innerHTML = files.map(function(f) {
-    var ext = f.file_name.split('.').pop().toLowerCase();
-    var icon = ['pdf'].includes(ext) ? '📄' : ['png','jpg','jpeg'].includes(ext) ? '🖼️' : ['xlsx','xls'].includes(ext) ? '📊' : ['docx','doc'].includes(ext) ? '📝' : '📁';
-    var size = f.file_size > 1024*1024 ? (f.file_size/1024/1024).toFixed(1)+' MB' : f.file_size ? (f.file_size/1024).toFixed(0)+' KB' : '—';
-    var proj = PROJECTS.find(function(p){return p.id===f.project_id;});
-    var catIcon = FILE_ICONS[f.category] || '📁';
-    var catLabel = FILE_LABELS[f.category] || 'อื่น ๆ';
-    var date = f.created_at ? formatDateThai(f.created_at) : '—';
-
-    return '<div style="display:flex;align-items:flex-start;gap:12px;padding:12px;border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;transition:all .15s" onmouseover="this.style.borderColor='var(--blue)'" onmouseleave="this.style.borderColor='var(--border)'">'
-      + '<div style="font-size:28px;flex-shrink:0">'+icon+'</div>'
-      + '<div style="flex:1;min-width:0">'
-      + '<div style="font-size:13px;font-weight:500;color:var(--text-h);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+f.file_name+'</div>'
-      + '<div style="font-size:11px;color:var(--text3);margin-top:3px">'
-      + catIcon+' '+catLabel
-      + (proj?' · '+proj.name:'')
-      + ' · '+size+' · '+date
-      + (f.description?' · <em>'+f.description+'</em>':'')
-      + '</div></div>'
-      + '<div style="display:flex;gap:6px;flex-shrink:0">'
-      + '<a href="'+f.file_url+'" target="_blank" class="btn btn-sm btn-p">👁️ ดู</a>'
-      + '<a href="'+f.file_url+'" download="'+f.file_name+'" class="btn btn-sm btn-ghost">⬇️</a>'
-      + '<button onclick="deleteFile(''+f.id+'',''+f.file_path+'')" class="btn btn-sm btn-ghost" style="color:var(--danger)">🗑️</button>'
-      + '</div></div>';
-  }).join('');
-}
-
-async function deleteFile(id, path) {
-  if(!confirm('ลบไฟล์นี้?')) return;
-  // Delete from storage
-  await fetch(SB_STORAGE_URL + '/object/' + SB_BUCKET + '/' + path, {
-    method: 'DELETE',
-    headers: {'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY}
-  });
-  // Delete from DB
-  await fetch(SB_URL + '/rest/v1/project_files?id=eq.' + id, {
-    method: 'DELETE',
-    headers: {'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY}
-  });
-  showToast('✅ ลบไฟล์สำเร็จ');
-  loadFiles();
-}
-
-// Init file manager
-function initFileManager() {
-  // Populate project selectors
-  var sels = ['file-proj-sel', 'file-filter-proj'];
-  sels.forEach(function(id) {
-    var sel = document.getElementById(id);
-    if(!sel) return;
-    var first = sel.innerHTML;
-    sel.innerHTML = first;
-    PROJECTS.forEach(function(p) {
-      var opt = document.createElement('option');
-      opt.value = p.id; opt.textContent = p.name;
-      sel.appendChild(opt);
-    });
-  });
-  loadFiles();
-}
-
-// Sidebar file menu now integrated in MENU_CFG above
-
-// File manager init on nav
-document.addEventListener('sp-nav', function(e) {
-  if(e.detail === 'files') setTimeout(initFileManager, 200);
 });
-
 </script>
 
 </body>
