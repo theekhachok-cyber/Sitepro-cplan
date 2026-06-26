@@ -801,6 +801,121 @@ tr:hover td{background:#F8FAFE}
   </div>
 </div>
 
+
+<!-- ══════════════════════════════════════════
+     FILE MANAGER — อัปโหลดเอกสาร
+══════════════════════════════════════════ -->
+<div class="page" id="page-files">
+  <div class="grid2">
+    <!-- LEFT: อัปโหลด -->
+    <div>
+      <div class="card mb16">
+        <div class="card-hd">
+          <div class="card-hd-left">
+            <div class="sec-bar" style="background:var(--blue)"></div>
+            <div><div class="card-title">อัปโหลดเอกสาร</div><div class="card-sub">PDF · รูปภาพ · Excel · Word</div></div>
+          </div>
+        </div>
+
+        <!-- Project Selector -->
+        <div class="fgrp mb12">
+          <label class="flbl">โครงการ</label>
+          <select class="fsel" id="file-proj-sel">
+            <option value="">— เลือกโครงการ —</option>
+          </select>
+        </div>
+
+        <!-- Category -->
+        <div class="fgrp mb12">
+          <label class="flbl">ประเภทเอกสาร</label>
+          <select class="fsel" id="file-category">
+            <option value="contract">📄 สัญญา</option>
+            <option value="boq">📋 BOQ / ถอดปริมาณ</option>
+            <option value="drawing">📐 แบบก่อสร้าง</option>
+            <option value="photo">📸 รูปถ่ายหน้างาน</option>
+            <option value="report">📊 รายงาน</option>
+            <option value="invoice">💰 ใบแจ้งหนี้ / ใบเสร็จ</option>
+            <option value="permit">🏛️ ใบอนุญาต</option>
+            <option value="other">📁 อื่น ๆ</option>
+          </select>
+        </div>
+
+        <!-- Description -->
+        <div class="fgrp mb16">
+          <label class="flbl">คำอธิบาย (ไม่บังคับ)</label>
+          <input class="finp" id="file-desc" placeholder="เช่น สัญญาจ้างก่อสร้างบ้านคุณนิด">
+        </div>
+
+        <!-- Drop Zone -->
+        <div id="file-dropzone"
+          style="border:2px dashed var(--border2);border-radius:var(--r3);padding:36px 20px;text-align:center;cursor:pointer;transition:all .2s;margin-bottom:14px"
+          onclick="document.getElementById('file-input').click()"
+          ondragover="event.preventDefault();this.style.borderColor='var(--blue)';this.style.background='var(--blue3)'"
+          ondragleave="this.style.borderColor='var(--border2)';this.style.background='transparent'"
+          ondrop="handleFileDrop(event)">
+          <div style="font-size:44px;margin-bottom:10px">📁</div>
+          <div style="font-size:15px;font-weight:600;color:var(--text-h);margin-bottom:6px">คลิกหรือลากไฟล์มาวาง</div>
+          <div style="font-size:12px;color:var(--text3)">PDF · PNG · JPG · XLSX · DOCX · สูงสุด 50 MB</div>
+        </div>
+        <input type="file" id="file-input" multiple accept=".pdf,.png,.jpg,.jpeg,.xlsx,.xls,.docx,.doc" style="display:none" onchange="handleFileSelect(this.files)">
+
+        <!-- File Queue -->
+        <div id="file-queue" style="display:none;margin-bottom:14px">
+          <div style="font-size:12px;font-weight:600;color:var(--text2);margin-bottom:8px">ไฟล์ที่เลือก</div>
+          <div id="file-queue-list"></div>
+        </div>
+
+        <!-- Upload Button -->
+        <button id="btn-upload" class="btn btn-p btn-full" onclick="uploadFiles()" style="display:none">
+          📤 อัปโหลดทั้งหมด
+        </button>
+
+        <!-- Progress -->
+        <div id="upload-progress" style="display:none;margin-top:12px">
+          <div class="pbar-row">
+            <div class="pbar" style="height:8px"><div class="pfill" id="upload-prog-fill" style="width:0%;background:var(--blue)"></div></div>
+            <div class="ppct" id="upload-prog-pct">0%</div>
+          </div>
+          <div style="font-size:12px;color:var(--text3);margin-top:4px" id="upload-prog-text">กำลังอัปโหลด...</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT: รายการเอกสาร -->
+    <div>
+      <div class="card">
+        <div class="card-hd">
+          <div class="card-hd-left">
+            <div class="sec-bar" style="background:var(--orange)"></div>
+            <div><div class="card-title">เอกสารทั้งหมด</div></div>
+          </div>
+          <select class="fsel" id="file-filter-cat" onchange="loadFiles()" style="width:auto;font-size:12px;padding:5px 10px">
+            <option value="">ทุกประเภท</option>
+            <option value="contract">📄 สัญญา</option>
+            <option value="boq">📋 BOQ</option>
+            <option value="drawing">📐 แบบ</option>
+            <option value="photo">📸 รูปถ่าย</option>
+            <option value="report">📊 รายงาน</option>
+            <option value="invoice">💰 ใบแจ้งหนี้</option>
+            <option value="permit">🏛️ ใบอนุญาต</option>
+          </select>
+        </div>
+
+        <!-- Filter by project -->
+        <div class="fgrp mb14">
+          <select class="fsel" id="file-filter-proj" onchange="loadFiles()">
+            <option value="">ทุกโครงการ</option>
+          </select>
+        </div>
+
+        <div id="file-list">
+          <div class="empty"><div class="empty-icon">📁</div><div class="empty-title">ยังไม่มีเอกสาร</div><div class="empty-sub">อัปโหลดเอกสารจากด้านซ้าย</div></div>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
 </main>
 
 <!-- BOTTOM NAV (mobile) -->
@@ -2394,6 +2509,234 @@ function nav(id, label) {
     }, 100);
   }
 }
+
+
+// ══════════════════════════════════════════
+// FILE MANAGER — Upload to Supabase Storage
+// ══════════════════════════════════════════
+var SB_STORAGE_URL = 'https://kdfbllrobnfdvelbotwh.supabase.co/storage/v1';
+var SB_BUCKET = 'sitepro-files';
+var pendingFiles = [];
+
+var FILE_ICONS = {
+  contract: '📄', boq: '📋', drawing: '📐',
+  photo: '📸', report: '📊', invoice: '💰',
+  permit: '🏛️', other: '📁'
+};
+var FILE_LABELS = {
+  contract: 'สัญญา', boq: 'BOQ', drawing: 'แบบก่อสร้าง',
+  photo: 'รูปถ่าย', report: 'รายงาน', invoice: 'ใบแจ้งหนี้',
+  permit: 'ใบอนุญาต', other: 'อื่น ๆ'
+};
+
+function handleFileDrop(e) {
+  e.preventDefault();
+  document.getElementById('file-dropzone').style.borderColor = 'var(--border2)';
+  document.getElementById('file-dropzone').style.background = 'transparent';
+  handleFileSelect(e.dataTransfer.files);
+}
+
+function handleFileSelect(files) {
+  if(!files || !files.length) return;
+  pendingFiles = Array.from(files);
+  renderFileQueue();
+}
+
+function renderFileQueue() {
+  if(!pendingFiles.length) {
+    document.getElementById('file-queue').style.display = 'none';
+    document.getElementById('btn-upload').style.display = 'none';
+    return;
+  }
+  document.getElementById('file-queue').style.display = 'block';
+  document.getElementById('btn-upload').style.display = 'flex';
+  document.getElementById('file-queue-list').innerHTML = pendingFiles.map(function(f, i) {
+    var ext = f.name.split('.').pop().toLowerCase();
+    var icon = ['pdf'].includes(ext) ? '📄' : ['png','jpg','jpeg'].includes(ext) ? '🖼️' : ['xlsx','xls'].includes(ext) ? '📊' : ['docx','doc'].includes(ext) ? '📝' : '📁';
+    var size = f.size > 1024*1024 ? (f.size/1024/1024).toFixed(1)+' MB' : (f.size/1024).toFixed(0)+' KB';
+    return '<div style="display:flex;align-items:center;gap:10px;padding:10px;background:var(--bg);border-radius:var(--r2);margin-bottom:6px">'
+      + '<span style="font-size:22px">'+icon+'</span>'
+      + '<div style="flex:1;min-width:0"><div style="font-size:13px;font-weight:500;overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+f.name+'</div>'
+      + '<div style="font-size:11px;color:var(--text3)">'+size+'</div></div>'
+      + '<button onclick="pendingFiles.splice('+i+',1);renderFileQueue()" style="background:none;border:none;color:var(--danger);cursor:pointer;font-size:16px">✕</button>'
+      + '</div>';
+  }).join('');
+}
+
+async function uploadFiles() {
+  var projId = document.getElementById('file-proj-sel').value;
+  if(!projId) { showToast('⚠️ กรุณาเลือกโครงการก่อน','warn'); return; }
+  if(!pendingFiles.length) { showToast('⚠️ กรุณาเลือกไฟล์ก่อน','warn'); return; }
+
+  var category = document.getElementById('file-category').value;
+  var desc = document.getElementById('file-desc').value;
+  var btn = document.getElementById('btn-upload');
+  btn.disabled = true; btn.textContent = '⏳ กำลังอัปโหลด...';
+  document.getElementById('upload-progress').style.display = 'block';
+
+  var successCount = 0;
+  for(var i = 0; i < pendingFiles.length; i++) {
+    var file = pendingFiles[i];
+    var pct = Math.round((i / pendingFiles.length) * 100);
+    document.getElementById('upload-prog-fill').style.width = pct + '%';
+    document.getElementById('upload-prog-pct').textContent = pct + '%';
+    document.getElementById('upload-prog-text').textContent = 'กำลังอัปโหลด: ' + file.name;
+
+    try {
+      // Create unique file path
+      var timestamp = Date.now();
+      var safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, '_');
+      var filePath = projId + '/' + category + '/' + timestamp + '_' + safeName;
+
+      // Upload to Supabase Storage
+      var uploadRes = await fetch(SB_STORAGE_URL + '/object/' + SB_BUCKET + '/' + filePath, {
+        method: 'POST',
+        headers: {
+          'apikey': SB_KEY,
+          'Authorization': 'Bearer ' + SB_KEY,
+          'Content-Type': file.type || 'application/octet-stream',
+          'x-upsert': 'true'
+        },
+        body: file
+      });
+
+      if(uploadRes.ok) {
+        var fileUrl = SB_URL + '/storage/v1/object/public/' + SB_BUCKET + '/' + filePath;
+
+        // Save to database
+        await sbInsert('project_files', {
+          project_id: projId,
+          file_name: file.name,
+          file_path: filePath,
+          file_url: fileUrl,
+          file_type: file.type,
+          file_size: file.size,
+          category: category,
+          description: desc,
+          uploaded_by: currentUser ? currentUser.id : null
+        });
+        successCount++;
+      }
+    } catch(err) {
+      console.error('Upload error:', err);
+    }
+  }
+
+  document.getElementById('upload-prog-fill').style.width = '100%';
+  document.getElementById('upload-prog-pct').textContent = '100%';
+
+  setTimeout(function() {
+    document.getElementById('upload-progress').style.display = 'none';
+    btn.disabled = false;
+    btn.innerHTML = '📤 อัปโหลดทั้งหมด';
+    pendingFiles = [];
+    renderFileQueue();
+    document.getElementById('file-desc').value = '';
+    showToast('✅ อัปโหลดสำเร็จ ' + successCount + '/' + (successCount + (pendingFiles.length - successCount)) + ' ไฟล์');
+    loadFiles();
+  }, 500);
+}
+
+async function loadFiles() {
+  var projId = document.getElementById('file-filter-proj') ? document.getElementById('file-filter-proj').value : '';
+  var cat = document.getElementById('file-filter-cat') ? document.getElementById('file-filter-cat').value : '';
+
+  var filter = '';
+  if(projId) filter += 'project_id=eq.' + projId;
+  if(cat) filter += (filter?'&':'') + 'category=eq.' + cat;
+
+  var files = await sbFetch('project_files', {filter: filter, order: 'created_at.desc', limit: 100});
+  if(!files || !files.length) {
+    document.getElementById('file-list').innerHTML = '<div class="empty"><div class="empty-icon">📁</div><div class="empty-title">ยังไม่มีเอกสาร</div></div>';
+    return;
+  }
+
+  document.getElementById('file-list').innerHTML = files.map(function(f) {
+    var ext = f.file_name.split('.').pop().toLowerCase();
+    var icon = ['pdf'].includes(ext) ? '📄' : ['png','jpg','jpeg'].includes(ext) ? '🖼️' : ['xlsx','xls'].includes(ext) ? '📊' : ['docx','doc'].includes(ext) ? '📝' : '📁';
+    var size = f.file_size > 1024*1024 ? (f.file_size/1024/1024).toFixed(1)+' MB' : f.file_size ? (f.file_size/1024).toFixed(0)+' KB' : '—';
+    var proj = PROJECTS.find(function(p){return p.id===f.project_id;});
+    var catIcon = FILE_ICONS[f.category] || '📁';
+    var catLabel = FILE_LABELS[f.category] || 'อื่น ๆ';
+    var date = f.created_at ? formatDateThai(f.created_at) : '—';
+
+    return '<div style="display:flex;align-items:flex-start;gap:12px;padding:12px;border:1px solid var(--border);border-radius:var(--r);margin-bottom:8px;transition:all .15s" onmouseover="this.style.borderColor='var(--blue)'" onmouseleave="this.style.borderColor='var(--border)'">'
+      + '<div style="font-size:28px;flex-shrink:0">'+icon+'</div>'
+      + '<div style="flex:1;min-width:0">'
+      + '<div style="font-size:13px;font-weight:500;color:var(--text-h);overflow:hidden;text-overflow:ellipsis;white-space:nowrap">'+f.file_name+'</div>'
+      + '<div style="font-size:11px;color:var(--text3);margin-top:3px">'
+      + catIcon+' '+catLabel
+      + (proj?' · '+proj.name:'')
+      + ' · '+size+' · '+date
+      + (f.description?' · <em>'+f.description+'</em>':'')
+      + '</div></div>'
+      + '<div style="display:flex;gap:6px;flex-shrink:0">'
+      + '<a href="'+f.file_url+'" target="_blank" class="btn btn-sm btn-p">👁️ ดู</a>'
+      + '<a href="'+f.file_url+'" download="'+f.file_name+'" class="btn btn-sm btn-ghost">⬇️</a>'
+      + '<button onclick="deleteFile(''+f.id+'',''+f.file_path+'')" class="btn btn-sm btn-ghost" style="color:var(--danger)">🗑️</button>'
+      + '</div></div>';
+  }).join('');
+}
+
+async function deleteFile(id, path) {
+  if(!confirm('ลบไฟล์นี้?')) return;
+  // Delete from storage
+  await fetch(SB_STORAGE_URL + '/object/' + SB_BUCKET + '/' + path, {
+    method: 'DELETE',
+    headers: {'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY}
+  });
+  // Delete from DB
+  await fetch(SB_URL + '/rest/v1/project_files?id=eq.' + id, {
+    method: 'DELETE',
+    headers: {'apikey': SB_KEY, 'Authorization': 'Bearer ' + SB_KEY}
+  });
+  showToast('✅ ลบไฟล์สำเร็จ');
+  loadFiles();
+}
+
+// Init file manager
+function initFileManager() {
+  // Populate project selectors
+  var sels = ['file-proj-sel', 'file-filter-proj'];
+  sels.forEach(function(id) {
+    var sel = document.getElementById(id);
+    if(!sel) return;
+    var first = sel.innerHTML;
+    sel.innerHTML = first;
+    PROJECTS.forEach(function(p) {
+      var opt = document.createElement('option');
+      opt.value = p.id; opt.textContent = p.name;
+      sel.appendChild(opt);
+    });
+  });
+  loadFiles();
+}
+
+// Update sidebar + nav for files
+var _origBuildSidebarFile = buildSidebar;
+buildSidebar = function(role) {
+  _origBuildSidebarFile(role);
+  setTimeout(function() {
+    var scroll = document.getElementById('sb-scroll');
+    if(!scroll) return;
+    // Check if already added
+    if(scroll.querySelector('[data-file-menu]')) return;
+    var addMenu = document.createElement('div');
+    addMenu.setAttribute('data-file-menu', '1');
+    addMenu.innerHTML = '<div class="mn-label">เอกสาร</div>'
+      + '<a class="mn-item" onclick="nav('files','เอกสารโครงการ')"><span class="mn-icon">📁</span><span class="mn-txt">เอกสาร & ไฟล์</span></a>';
+    scroll.appendChild(addMenu);
+  }, 150);
+};
+
+// Override nav for files page
+var _origNavFile = nav;
+nav = function(id, label) {
+  _origNavFile(id, label);
+  if(id === 'files') {
+    setTimeout(initFileManager, 200);
+  }
+};
 
 </script>
 
