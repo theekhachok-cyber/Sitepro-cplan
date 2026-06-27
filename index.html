@@ -641,37 +641,12 @@ var ROLES={
 };
 var currentRole='ceo';
 
-var PROJECTS=[
-  {id:'A',name:'พาร์ค วิลล์ A',loc:'กรุงเทพฯ',pct:87,phase:'P12 ไฟฟ้า Final',days:28,budget:6,used:4.25,st:'active',milestone:3},
-  {id:'B',name:'บ้านสวนทอง B',loc:'เชียงใหม่',pct:55,phase:'P8 พื้น',days:62,budget:4.5,used:2.1,st:'active',milestone:2},
-  {id:'C',name:'วิลล่า ริมน้ำ C',loc:'ภูเก็ต',pct:20,phase:'P3 หลังคา',days:140,budget:8,used:1.2,st:'active',milestone:1}
-];
-var PHASES=[
-  {n:'P1 ฐานราก',pct:100,col:'#1565C0',st:'done'},{n:'P2 โครงสร้าง',pct:100,col:'#1565C0',st:'done'},
-  {n:'P3 หลังคา',pct:100,col:'#1565C0',st:'done'},{n:'P4 ผนัง',pct:100,col:'#1565C0',st:'done'},
-  {n:'P5 MEP',pct:100,col:'#1565C0',st:'done'},{n:'P6 ฉาบ',pct:100,col:'#1565C0',st:'done'},
-  {n:'P7 ฝ้า',pct:100,col:'#1565C0',st:'done'},{n:'P8 พื้น',pct:100,col:'#1565C0',st:'done'},
-  {n:'P9 ประตู',pct:100,col:'#1565C0',st:'done'},{n:'P10 สี',pct:100,col:'#1565C0',st:'done'},
-  {n:'P11 สุขภัณฑ์',pct:100,col:'#1565C0',st:'done'},
-  {n:'P12 ไฟฟ้า Final',pct:80,col:'#FF8A00',st:'active'},
-  {n:'P13 ภายนอก',pct:45,col:'#FF8A00',st:'active'},
-  {n:'P14 เก็บงาน',pct:10,col:'#FF8A00',st:'active'},
-  {n:'P15 ส่งมอบ',pct:0,col:'#90A4AE',st:'wait'}
-];
+var PROJECTS=[];
+var PHASES=[];
 var STOCK=[];
-var MILESTONES=[
-  {n:1,title:'งวด 1 — ฐานราก',amt:'1,250,000',st:'done'},
-  {n:2,title:'งวด 2 — ผนัง MEP',amt:'980,000',st:'done'},
-  {n:3,title:'งวด 3 — ฝ้า พื้น',amt:'750,000',st:'pend'},
-  {n:4,title:'งวด 4 — สี ไฟฟ้า',amt:'620,000',st:'wait'},
-  {n:5,title:'งวด 5 — ส่งมอบ',amt:'400,000',st:'wait'}
-];
+var MILESTONES=[];
 var DEFECTS=[];
-var PRS=[
-  {id:'PR-001',t:'คอนกรีต B25 Phase 2',amt:'฿138,280',st:'approved',src:'BOQ'},
-  {id:'PR-002',t:'เหล็ก DB20 + RB9',amt:'฿108,470',st:'pend',src:'AI'},
-  {id:'PR-003',t:'กระเบื้อง 60×60',amt:'฿43,000',st:'po',src:'BOQ'}
-];
+var PRS=[];
 var QC_ITEMS=['ตรวจ Cover คอนกรีตครบ','ขนาดและระยะตามแบบ','เหล็กปลอกถูกต้อง','ไม่มีสิ่งปนเปื้อน'];
 var dfFilter='all';
 var txnMode='in';
@@ -1133,6 +1108,99 @@ function renderOwner(){
 buildSidebar('ceo');
 renderDash();
 renderReport();
+
+// ══ RENDER DASHBOARD ══
+function renderDash(){
+  // If no data, show loading and trigger DB fetch
+  if(!PROJECTS || !PROJECTS.length){
+    var kpi=document.getElementById('kpi-area');
+    if(kpi) kpi.innerHTML='<div style="grid-column:span 4;text-align:center;padding:30px;color:var(--text3);font-family:IBM Plex Sans Thai,sans-serif"><div style="font-size:28px;margin-bottom:8px">⏳</div>กำลังโหลดข้อมูล...</div>';
+    return;
+  }
+
+  // KPI cards
+  var kpiData=[
+    {n:Math.round(PROJECTS.reduce(function(s,p){return s+p.pct;},0)/Math.max(PROJECTS.length,1))+'%',l:'ความคืบหน้าเฉลี่ย',icon:'📊',col:'var(--blue)'},
+    {n:PROJECTS.length.toString(),l:'โครงการที่ดำเนินการ',icon:'🏗️',col:'var(--orange)'},
+    {n:DEFECTS.filter(function(d){return d.st!=='closed';}).length.toString(),l:'Defect ค้างอยู่',icon:'⚠️',col:'var(--danger)'},
+    {n:STOCK.filter(function(s){return s.st!=='ok';}).length.toString(),l:'Stock ต่ำกว่า Min',icon:'📦',col:STOCK.filter(function(s){return s.st!=='ok';}).length?'var(--warn)':'var(--green)'}
+  ];
+  var kpiEl=document.getElementById('kpi-area');
+  if(kpiEl) kpiEl.innerHTML=kpiData.map(function(k){
+    return '<div class="kpi" style="cursor:default">'
+      +'<div style="font-size:24px;margin-bottom:8px">'+k.icon+'</div>'
+      +'<div class="kpi-num" style="color:'+k.col+'">'+k.n+'</div>'
+      +'<div class="kpi-lbl">'+k.l+'</div>'
+      +'</div>';
+  }).join('');
+
+  // Project cards
+  var pc=document.getElementById('proj-cards');
+  if(pc) pc.innerHTML=PROJECTS.map(function(p){
+    var pctColor=p.pct>70?'var(--blue)':'var(--orange)';
+    return '<div class="proj-card" onclick="nav('projects','โครงการ')" style="cursor:pointer">'
+      +'<div class="proj-card-top">'
+      +'<div class="proj-card-top-title">'+p.name+'</div>'
+      +'<div class="proj-card-top-sub"><div class="proj-status-dot" style="background:#76FF03;width:8px;height:8px;border-radius:50%"></div>📍 '+p.loc+'</div>'
+      +'</div>'
+      +'<div class="proj-card-body">'
+      +'<div class="proj-pbar-wrap" style="display:flex;align-items:center;gap:10px;margin-bottom:12px">'
+      +'<div class="proj-pbar" style="flex:1;height:8px;background:var(--bg2);border-radius:4px;overflow:hidden"><div class="proj-pfill" style="height:100%;width:'+p.pct+'%;background:'+pctColor+'"></div></div>'
+      +'<span style="font-size:13px;font-weight:700;color:'+pctColor+'">'+p.pct+'%</span>'
+      +'</div>'
+      +'<div style="display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:10px">'
+      +'<div style="background:var(--bg);border-radius:var(--r2);padding:8px;text-align:center"><div style="font-size:15px;font-weight:700;color:var(--orange)">'+p.days+'</div><div style="font-size:10px;color:var(--text3)">วันที่เหลือ</div></div>'
+      +'<div style="background:var(--bg);border-radius:var(--r2);padding:8px;text-align:center"><div style="font-size:15px;font-weight:700;color:var(--blue)">'+p.milestone+'/5</div><div style="font-size:10px;color:var(--text3)">งวดงาน</div></div>'
+      +'<div style="background:var(--bg);border-radius:var(--r2);padding:8px;text-align:center"><div style="font-size:15px;font-weight:700;color:var(--green)">฿'+p.budget.toFixed(1)+'M</div><div style="font-size:10px;color:var(--text3)">งบรวม</div></div>'
+      +'</div>'
+      +'<div style="font-size:12px;color:var(--text3)">'+p.phase+'</div>'
+      +'</div></div>';
+  }).join('');
+
+  // Milestones
+  var msEl=document.getElementById('ms-dash');
+  if(msEl){
+    var doneCount=MILESTONES.filter(function(m){return m.st==='done';}).length;
+    var pendMs=MILESTONES.filter(function(m){return m.st==='pend';});
+    msEl.innerHTML='<div style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:12px">'
+      +MILESTONES.map(function(m){
+        var bg=m.st==='done'?'var(--green)':m.st==='pend'?'var(--blue)':'var(--border2)';
+        var fg=m.st==='done'||m.st==='pend'?'#fff':'var(--text3)';
+        return '<div style="width:32px;height:32px;border-radius:50%;background:'+bg+';color:'+fg+';display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;cursor:pointer" title="'+m.title+'">'+(m.st==='done'?'✓':m.n)+'</div>';
+      }).join('')+'</div>'
+      +(pendMs.length?pendMs.map(function(m){
+        return '<div style="background:var(--blue3);border-radius:var(--r);padding:12px 14px;display:flex;align-items:center;gap:10px;margin-bottom:8px">'
+          +'<div style="flex:1"><div style="font-size:13px;font-weight:500;color:var(--text-h)">'+m.title+'</div>'
+          +'<div style="font-size:13px;font-weight:700;color:var(--blue)">'+m.amt+'</div></div>'
+          +'<button class="btn btn-sm btn-p" onclick="approveMSdash()">อนุมัติ</button></div>';
+      }).join(''):'<div style="text-align:center;padding:14px;color:var(--text3);font-size:12px;font-family:IBM Plex Sans Thai,sans-serif">ไม่มีงวดที่รออนุมัติ</div>');
+  }
+
+  // Stock alerts
+  var sa=document.getElementById('stock-alert-area');
+  if(sa){
+    var low=STOCK.filter(function(s){return s.st!=='ok';});
+    sa.innerHTML=low.length?low.map(function(s){
+      var col=s.st==='out'?'var(--danger)':'var(--warn)';
+      var pct=Math.round(s.qty/Math.max(s.max,1)*100);
+      return '<div class="stock-row">'
+        +'<div class="stock-icon-box">'+s.icon+'</div>'
+        +'<div style="flex:1;min-width:0"><div class="stock-name">'+s.n+'</div>'
+        +'<div style="height:5px;background:var(--bg2);border-radius:3px;margin:4px 0;overflow:hidden"><div style="height:100%;width:'+Math.min(pct,100)+'%;background:'+col+'"></div></div>'
+        +'<div style="font-size:11px;color:var(--text3)">Min: '+s.min+' '+s.unit+'</div></div>'
+        +'<div style="text-align:right"><div style="font-size:18px;font-weight:700;color:'+col+'">'+s.qty+'</div>'
+        +'<div style="font-size:10px;color:var(--text3)">'+s.unit+'</div>'
+        +'<span class="badge '+(s.st==='out'?'b-red':'b-orange')+'" style="margin-top:4px">'+(s.st==='out'?'หมด':'ต่ำ')+'</span></div></div>';
+    }).join(''):'<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px;font-family:IBM Plex Sans Thai,sans-serif">✅ ไม่มีวัสดุต่ำกว่าค่า Min</div>';
+  }
+
+  // Activity (static for now)
+  var actEl=document.getElementById('activity-area');
+  if(actEl && actEl.innerHTML===''){
+    actEl.innerHTML='<div style="text-align:center;padding:16px;color:var(--text3);font-size:12px;font-family:IBM Plex Sans Thai,sans-serif">กิจกรรมจะแสดงหลังมีการใช้งาน</div>';
+  }
+}
+
 </script>
 
 </body>
@@ -1727,12 +1795,13 @@ function applyRoleAndLoad(role, name, subRole) {
   if(sel) { sel.value=menuRole; }
   buildSidebar(menuRole);
 
-  // Build owner-specific dashboard
-  if(roleKey==='owner') buildOwnerDashboard();
-
-  // Load DB
-  setTimeout(loadFromDB, 300);
-  nav('dashboard','Dashboard');
+  // Load DB then render
+  setTimeout(function(){
+    if(typeof loadFromDB==='function'){
+      loadFromDB();
+    }
+    nav('dashboard','Dashboard');
+  }, 200);
 }
 
 // ── OWNER RESTRICTED VIEW ────────────────
@@ -1746,7 +1815,6 @@ function buildOwnerDashboard() {
 
 // ── INIT AUTH ────────────────────────────
 document.addEventListener('DOMContentLoaded', function() {
-  // Add columns to users table if needed
   setTimeout(function() {
     try {
       var saved = localStorage.getItem('sp_user');
