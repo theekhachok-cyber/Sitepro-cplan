@@ -230,21 +230,16 @@ tr:hover td{background:#F8FAFE}
 
 <!-- DASHBOARD -->
 <div class="page act" id="page-dashboard">
-  <div class="g4 mb20" id="kpi-area">
-    <div class="kpi"><div class="kpi-icon">📊</div><div class="kpi-num" style="color:var(--blue)">—</div><div class="kpi-lbl">ความคืบหน้า</div></div>
-    <div class="kpi"><div class="kpi-icon">🏗️</div><div class="kpi-num" style="color:var(--orange)">—</div><div class="kpi-lbl">โครงการ</div></div>
-    <div class="kpi"><div class="kpi-icon">⚠️</div><div class="kpi-num" style="color:var(--danger)">—</div><div class="kpi-lbl">Defect</div></div>
-    <div class="kpi"><div class="kpi-icon">📦</div><div class="kpi-num" style="color:var(--green)">—</div><div class="kpi-lbl">Stock ต่ำ</div></div>
-  </div>
+  <div class="g4 mb20" id="kpi-area"></div>
   <div class="g73">
     <div>
       <div class="card mb16">
         <div class="card-title"><div class="sec-bar"></div>โครงการทั้งหมด <button class="btn btn-sm btn-o" onclick="showPage('projects')" style="margin-left:auto">ดูทั้งหมด</button></div>
-        <div class="g2" id="proj-cards"><div class="empty"><div class="empty-icon">⏳</div>กำลังโหลด...</div></div>
+        <div class="g2" id="proj-cards"></div>
       </div>
       <div class="card">
         <div class="card-title"><div class="sec-bar" style="background:var(--orange)"></div>วัสดุคงคลัง — ต้องเติม <button class="btn btn-sm btn-o" onclick="showPage('stock')" style="margin-left:auto;border-color:var(--orange);color:var(--orange)">จัดการ</button></div>
-        <div id="stock-alert-area"><div class="empty" style="padding:16px"><div class="empty-icon">⏳</div>กำลังโหลด...</div></div>
+        <div id="stock-alert-area"></div>
       </div>
     </div>
     <div>
@@ -644,6 +639,7 @@ async function loadDB(retry){
     renderDash();
     // Update user UI again after load in case it wasn't ready
     if(currentUser) updateUserUI(currentUser.role, currentUser.name||'CEO', currentUser.sub_role||'');
+    renderDash(); // Re-render with real data
     toast('✅ โหลดข้อมูลสำเร็จ');
   }catch(e){
     console.error('loadDB error:',e);
@@ -668,21 +664,9 @@ function renderDash(){
   var defects=DB.defects||[];
   var milestones=DB.milestones||[];
   
-  // If still loading, show proper empty states (not loading spinner)
+  // If no data yet, show skeleton
   if(!projects.length && !phases.length){
-    // Show empty project state
-    var pc=document.getElementById('proj-cards');
-    if(pc) pc.innerHTML='<div class="empty" style="grid-column:span 2"><div class="empty-icon">🏗️</div><div style="font-size:14px;color:var(--text2)">ยังไม่มีโครงการ</div></div>';
-    var kpi=document.getElementById('kpi-area');
-    if(kpi) kpi.innerHTML='<div class="kpi"><div class="kpi-icon">📊</div><div class="kpi-num" style="color:var(--blue)">0%</div><div class="kpi-lbl">ความคืบหน้า</div></div>'
-      +'<div class="kpi"><div class="kpi-icon">🏗️</div><div class="kpi-num" style="color:var(--orange)">0</div><div class="kpi-lbl">โครงการ</div></div>'
-      +'<div class="kpi"><div class="kpi-icon">⚠️</div><div class="kpi-num" style="color:var(--danger)">0</div><div class="kpi-lbl">Defect</div></div>'
-      +'<div class="kpi"><div class="kpi-icon">📦</div><div class="kpi-num" style="color:var(--green)">0</div><div class="kpi-lbl">Stock ต่ำ</div></div>';
-    var ms=document.getElementById('ms-dash');
-    if(ms) ms.innerHTML='<div class="empty" style="padding:12px"><div class="empty-icon">💰</div>ยังไม่มีงวดงาน</div>';
-    var sa=document.getElementById('stock-alert-area');
-    if(sa) sa.innerHTML='<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px;font-family:IBM Plex Sans Thai,sans-serif">✅ ไม่มีวัสดุต่ำกว่าค่า Min</div>';
-    return;
+    return; // Wait for loadDB to call renderDash again with real data
   }
 
   // KPI
