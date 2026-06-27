@@ -620,18 +620,13 @@ function buildMenu(role){
 async function loadDB(retry){
   loading(true);
   try{
-    var res=await Promise.all([
-      sbQ('projects',{o:'name'}),
-      sbQ('phases',{o:'phase_number'}),
-      sbQ('stock_items',{o:'name'}),
-      sbQ('defects',{o:'created_at.desc'}),
-      sbQ('milestones',{o:'milestone_number'})
-    ]);
-    DB.projects=res[0]||[];
-    DB.phases=res[1]||[];
-    DB.stock=res[2]||[];
-    DB.defects=res[3]||[];
-    DB.milestones=res[4]||[];
+    // Load one at a time for reliability
+    DB.projects  = await sbQ('projects',  {o:'name'})          || [];
+    DB.phases    = await sbQ('phases',    {o:'phase_number'})   || [];
+    DB.stock     = await sbQ('stock_items',{o:'name'})          || [];
+    DB.defects   = await sbQ('defects',   {o:'created_at.desc'})|| [];
+    DB.milestones= await sbQ('milestones',{o:'milestone_number'})|| [];
+    var res = [DB.projects, DB.phases, DB.stock, DB.defects, DB.milestones];
 
     // Populate stock selector
     var sel=document.getElementById('tx-mat');
@@ -1222,15 +1217,14 @@ function enterApp(){
   hideAuth();
   updateUserUI(currentUser.role,currentUser.name,currentUser.sub_role||'');
   buildMenu(currentUser.role);
-  // Load DB and render
-  loadDB().then(function(){
-    showPage('dashboard');
-    // CEO: show upload screen only on fresh OTP login
-    if(currentUser.role==='ceo' && currentUser._fresh){
-      currentUser._fresh=false;
-      setTimeout(showCEOUploadScreen,600);
-    }
-  });
+  showPage('dashboard');
+  // Load DB independently
+  loadDB();
+  // CEO upload on fresh login
+  if(currentUser.role==='ceo' && currentUser._fresh){
+    currentUser._fresh=false;
+    setTimeout(showCEOUploadScreen,1500);
+  }
 }
 
 function showCEOUploadScreen(){
@@ -1275,10 +1269,9 @@ document.addEventListener('DOMContentLoaded',function(){
         currentUser=JSON.parse(saved);
         updateUserUI(currentUser.role,currentUser.name,currentUser.sub_role||'');
         buildMenu(currentUser.role);
-        loadDB().then(function(){
-          showPage('dashboard');
-          // CEO upload only shows on fresh login, not on page reload
-        });
+        // Show page FIRST, then load DB
+        showPage('dashboard');
+        loadDB();
       } else {
         showAuth();showAuthStep(1);
       }
