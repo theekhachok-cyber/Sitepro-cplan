@@ -376,6 +376,9 @@ tr:hover td{background:#F8FAFE}
         <button onclick="quickOTP('procurement@angjing365.com')" style="padding:8px;background:#F3E5F5;border:1.5px solid #CE93D8;border-radius:8px;font-size:12px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#6A1B9A;font-weight:600;transition:all .15s" onmouseover="this.style.background='#CE93D8'" onmouseout="this.style.background='#F3E5F5'">🛒 จัดซื้อ</button>
         <button onclick="quickOTP('owner@angjing365.com')" style="padding:8px;background:#E8F5E9;border:1.5px solid #A5D6A7;border-radius:8px;font-size:12px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#1B5E20;font-weight:600;transition:all .15s;grid-column:span 2" onmouseover="this.style.background='#A5D6A7'" onmouseout="this.style.background='#E8F5E9'">🏠 Owner</button>
       </div>
+      <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:10px;font-family:IBM Plex Sans Thai,sans-serif">
+        💡 ปุ่มด้านบนสำหรับทดสอบ · สมาชิกใหม่ให้กรอก Email/เบอร์โทรด้านบน
+      </div>
     </div>
     <div id="s1-otp-wrap" style="display:none">
       <div style="background:#E3F2FD;border-radius:10px;padding:14px;text-align:center;margin-bottom:16px">
@@ -966,7 +969,10 @@ function showAuthStep(n){
 }
 
 function quickOTP(email){
+  // Just fill the field — user still needs to go through OTP
   document.getElementById('s1-contact').value=email;
+  document.getElementById('s1-contact').focus();
+  // Auto-request OTP for convenience
   authSendOTP();
 }
 
