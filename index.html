@@ -995,7 +995,7 @@ async function authVerifyOTP(){
   loading(false);
   if(users&&users.length){
     var u=users[0];
-    currentUser={id:u.id,name:u.name,email:u.email,phone:u.phone,role:u.role,sub_role:u.sub_role};
+    currentUser={id:u.id,name:u.name,email:u.email,phone:u.phone,role:u.role,sub_role:u.sub_role,_fresh:true};
     try{localStorage.setItem('sp_user',JSON.stringify(currentUser));}catch(e){}
     enterApp();
   } else {
@@ -1099,9 +1099,10 @@ function enterApp(){
   // Load DB and render
   loadDB().then(function(){
     showPage('dashboard');
-    // CEO: show upload screen
-    if(currentUser.role==='ceo'){
-      setTimeout(function(){showCEOUploadScreen();},600);
+    // CEO: show upload screen only on fresh OTP login
+    if(currentUser.role==='ceo' && currentUser._fresh){
+      currentUser._fresh=false;
+      setTimeout(showCEOUploadScreen,600);
     }
   });
 }
@@ -1150,7 +1151,7 @@ document.addEventListener('DOMContentLoaded',function(){
         buildMenu(currentUser.role);
         loadDB().then(function(){
           showPage('dashboard');
-          if(currentUser.role==='ceo') setTimeout(showCEOUploadScreen,800);
+          // CEO upload only shows on fresh login, not on page reload
         });
       } else {
         showAuth();showAuthStep(1);
