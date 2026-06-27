@@ -350,7 +350,7 @@ tr:hover td{background:#F8FAFE}
       </select>
     </div>
     <button class="hdr-btn" onclick="alert('แจ้งเตือน 5 รายการ')">🔔<span class="hdr-dot"></span></button>
-    <button class="hdr-btn">👤</button>
+    <button class="hdr-btn" onclick="doLogout()" title="ออกจากระบบ / เปลี่ยน Login">🔓</button>
   </div>
 </header>
 
@@ -1366,5 +1366,405 @@ renderReport();
   </div>
 
 </div>
+<script>
+var SB_URL='https://kdfbllrobnfdvelbotwh.supabase.co';
+var SB_KEY='eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImtkZmJsbHJvYm5mZHZlbGJvdHdoIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODI0MzI3NjgsImV4cCI6MjA5ODAwODc2OH0.j70WO4TVFqOibQs5y6tfiZN5ZJoipoeiSJt0ZDVnE-4';
+var currentUser=null;
 
+async function sbFetch(t,o){o=o||{};var u=SB_URL+'/rest/v1/'+t+'?select='+(o.select||'*');if(o.filter)u+='&'+o.filter;if(o.order)u+='&order='+o.order;u+='&limit='+(o.limit||200);try{var r=await fetch(u,{headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY}});return r.ok?await r.json():null;}catch(e){return null;}}
+async function sbInsert(t,d){try{var r=await fetch(SB_URL+'/rest/v1/'+t,{method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify(d)});var x=await r.text();return x?JSON.parse(x):null;}catch(e){return null;}}
+async function sbPatch(t,id,d){try{var r=await fetch(SB_URL+'/rest/v1/'+t+'?id=eq.'+id,{method:'PATCH',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':'application/json','Prefer':'return=representation'},body:JSON.stringify(d)});var x=await r.text();return x?JSON.parse(x):null;}catch(e){return null;}}
+
+function showToast(msg,type){var t=document.getElementById('sp-toast');if(!t){t=document.createElement('div');t.id='sp-toast';t.style.cssText='position:fixed;bottom:80px;left:50%;transform:translateX(-50%);padding:10px 20px;border-radius:10px;font-size:13px;font-weight:500;z-index:99999;font-family:IBM Plex Sans Thai,sans-serif;box-shadow:0 4px 16px rgba(0,0,0,.2);transition:opacity .4s;white-space:nowrap';document.body.appendChild(t);}t.style.background=type==='error'?'#C62828':type==='warn'?'#E65100':'#2E7D32';t.style.color='#fff';t.style.opacity='1';t.textContent=msg;setTimeout(function(){t.style.opacity='0';},3500);}
+function showLoading(show){var el=document.getElementById('sp-load');if(show&&!el){el=document.createElement('div');el.id='sp-load';el.innerHTML='<div style="width:36px;height:36px;border:3px solid #E3F2FD;border-top-color:#1565C0;border-radius:50%;animation:spspin .7s linear infinite;margin:0 auto 10px"></div><div style="font-size:13px;color:#1565C0;font-family:IBM Plex Sans Thai,sans-serif">กำลังโหลด...</div>';el.style.cssText='position:fixed;top:50%;left:50%;transform:translate(-50%,-50%);background:#fff;border-radius:14px;padding:28px 36px;text-align:center;z-index:9998;box-shadow:0 8px 32px rgba(0,0,0,.15)';var st=document.createElement('style');st.textContent='@keyframes spspin{to{transform:rotate(360deg)}}';document.head.appendChild(st);document.body.appendChild(el);}else if(!show&&el)el.remove();}
+function formatDateThai(d){if(!d)return '—';var dt=new Date(d);if(isNaN(dt))return '—';var m=['ม.ค.','ก.พ.','มี.ค.','เม.ย.','พ.ค.','มิ.ย.','ก.ค.','ส.ค.','ก.ย.','ต.ค.','พ.ย.','ธ.ค.'];return dt.getDate()+' '+m[dt.getMonth()]+' '+(dt.getFullYear()+543);}
+function daysLeft(d){if(!d)return 0;return Math.max(0,Math.ceil((new Date(d)-new Date())/86400000));}
+
+async function loadFromDB(){
+  showLoading(true);
+  try{
+    var res=await Promise.all([sbFetch('projects',{order:'name'}),sbFetch('phases',{order:'phase_number'}),sbFetch('stock_items',{order:'name'}),sbFetch('defects',{order:'created_at.desc'}),sbFetch('milestones',{order:'milestone_number'})]);
+    var projects=res[0],phases=res[1],stock=res[2],defects=res[3],milestones=res[4];
+    if(projects&&projects.length){PROJECTS=projects.map(function(p){var pp=(phases||[]).filter(function(ph){return ph.project_id===p.id;});var pct=pp.length?Math.round(pp.reduce(function(s,ph){return s+(ph.progress_pct||0);},0)/pp.length):0;var aph=pp.find(function(ph){return ph.status==='active';});var msd=(milestones||[]).filter(function(m){return m.project_id===p.id&&m.status==='approved';}).length;return{id:p.id,name:p.name,loc:p.address||'—',pct:pct,phase:aph?aph.name:'—',days:daysLeft(p.end_date_planned),endDate:formatDateThai(p.end_date_planned),startDate:formatDateThai(p.start_date),budget:Number(p.budget_total||0)/1000000,used:Number(p.budget_used||0)/1000000,budgetTotal:Number(p.budget_total||0),budgetRemain:Number(p.budget_total||0)-Number(p.budget_used||0),workPct:pct,remainPct:100-pct,st:p.status,milestone:msd};});}
+    if(phases&&phases.length){PHASES=phases.map(function(p){return{id:p.id,n:p.name,pct:p.progress_pct||0,col:p.color_hex||'#1565C0',st:p.status==='done'?'done':p.status==='active'?'active':'wait',project_id:p.project_id};});}
+    if(stock&&stock.length){STOCK=stock.map(function(s){return{id:s.id,icon:s.icon||'📦',n:s.name,unit:s.unit,qty:Number(s.qty_current||0),min:Number(s.qty_min||0),max:Number(s.qty_max||100),lot:s.lot_number||'—',st:s.status||'ok'};});}else{STOCK=[];}
+    if(defects&&defects.length){DEFECTS=defects.map(function(d){return{id:d.id,t:d.title,loc:d.location||'—',sev:d.severity==='high'?'high':d.severity==='medium'?'med':'low',st:d.status==='open'?'open':d.status==='fixing'?'fix':d.status==='closed'?'closed':'fix',by:'—'};});}else{DEFECTS=[];}
+    if(milestones&&milestones.length){MILESTONES=milestones.map(function(m){return{id:m.id,n:m.milestone_number,title:m.title,amt:'฿'+Number(m.amount||0).toLocaleString('th-TH'),st:m.status==='approved'?'done':m.status==='pending'?'pend':'wait'};});}
+    renderDash();
+    var el=document.getElementById('stock-update-time');if(el)el.textContent='คลังกลาง · อัปเดต '+new Date().toLocaleTimeString('th-TH',{hour:'2-digit',minute:'2-digit'})+' น.';
+    showToast('✅ โหลดข้อมูลสำเร็จ');
+  }catch(e){console.error(e);showToast('⚠️ โหลดไม่สำเร็จ','warn');}
+  showLoading(false);
+}
+
+function addDF(){var t=document.getElementById('ndt');if(!t||!t.value.trim()){alert('กรุณาระบุรายละเอียด');return;}var proj=PROJECTS[0];sbInsert('defects',{title:t.value.trim(),location:document.getElementById('ndl')?document.getElementById('ndl').value:'—',severity:document.getElementById('nds')?(document.getElementById('nds').value==='high'?'high':document.getElementById('nds').value==='med'?'medium':'low'):'medium',status:'open',project_id:proj?proj.id:null}).then(function(r){if(r){showToast('✅ บันทึก Defect สำเร็จ');t.value='';loadFromDB();}else showToast('❌ บันทึกไม่สำเร็จ','error');});}
+function doTxn(){var qty=parseFloat(document.getElementById('tx-qty').value)||0;if(!qty){alert('กรุณากรอกจำนวน');return;}var mat=document.getElementById('tx-mat').value;var item=STOCK.find(function(s){return s.n.includes(mat.split(' ')[0]);});if(!item){showToast('ไม่พบวัสดุ','error');return;}var newQty=item.qty;if(txnMode==='in')newQty+=qty;else{if(item.qty<qty){showToast('❌ จำนวนไม่เพียงพอ','error');return;}newQty-=qty;}var newSt=newQty===0?'out':newQty<item.min?'low':'ok';sbPatch('stock_items',item.id,{qty_current:newQty,status:newSt}).then(function(r){if(r){showToast('✅ บันทึกสำเร็จ');document.getElementById('tx-qty').value='';loadFromDB();}else showToast('❌ ไม่สำเร็จ','error');});}
+function ownerApprove(i){if(!confirm('ยืนยันอนุมัติ '+MILESTONES[i].title+'?'))return;var ms=MILESTONES[i];if(ms.id){sbPatch('milestones',ms.id,{status:'approved',owner_approved_at:new Date().toISOString()}).then(function(r){if(r){showToast('✅ อนุมัติสำเร็จ');loadFromDB();}else showToast('❌ ไม่สำเร็จ','error');});}}
+function doLogout(){if(!confirm('ออกจากระบบ?'))return;try{localStorage.removeItem('sp_user');}catch(e){}currentUser=null;showAuth();showAuthStep(1);}
+
+</script>
+<script>
+// ══════════════════════════════════════════
+// AUTH SYSTEM JS — 3 Step Login
+// ══════════════════════════════════════════
+var authContact = '';
+var authOTP = '';
+var otpTimer = null;
+var regIDCardFile = null;
+var ceoUploadFiles = [];
+var ceoDocType = 'contract';
+
+// ── SHOW AUTH ────────────────────────────
+function showAuth() {
+  var el = document.getElementById('auth-overlay');
+  if(el) { el.style.display = 'flex'; }
+}
+function hideAuth() {
+  var el = document.getElementById('auth-overlay');
+  if(el) { el.style.display = 'none'; }
+}
+function showAuthStep(n) {
+  ['auth-step1','auth-step2','auth-step3'].forEach(function(id,i) {
+    var el = document.getElementById(id);
+    if(el) el.style.display = (i===n-1) ? 'block' : 'none';
+  });
+}
+
+// ── STEP 1: OTP ─────────────────────────
+function sendOTP() {
+  var contact = document.getElementById('s1-contact').value.trim();
+  if(!contact) { showS1Err('กรุณากรอก Email หรือเบอร์โทร'); return; }
+
+  // Validate
+  var isEmail = contact.includes('@');
+  var isPhone = /^0[0-9]{8,9}$/.test(contact.replace(/-/g,''));
+  if(!isEmail && !isPhone) { showS1Err('รูปแบบ Email หรือเบอร์โทรไม่ถูกต้อง'); return; }
+
+  authContact = contact;
+  // Generate 6-digit OTP
+  authOTP = Math.floor(100000 + Math.random() * 900000).toString();
+
+  // Show OTP display
+  document.getElementById('s1-input-step').style.display = 'none';
+  document.getElementById('s1-otp-step').style.display = 'block';
+  document.getElementById('otp-display').textContent = authOTP;
+  document.getElementById('s1-err').style.display = 'none';
+
+  // Countdown
+  var sec = 120;
+  document.getElementById('otp-countdown').textContent = sec;
+  if(otpTimer) clearInterval(otpTimer);
+  otpTimer = setInterval(function() {
+    sec--;
+    var el = document.getElementById('otp-countdown');
+    if(el) el.textContent = sec;
+    if(sec <= 0) { clearInterval(otpTimer); }
+  }, 1000);
+}
+
+function verifyOTP() {
+  var input = document.getElementById('otp-in').value.trim();
+  if(input !== authOTP) { showS1Err('รหัส OTP ไม่ถูกต้อง กรุณาลองใหม่'); return; }
+  if(otpTimer) clearInterval(otpTimer);
+
+  // Check if user exists in DB
+  checkUserExists(authContact);
+}
+
+async function checkUserExists(contact) {
+  document.getElementById('s1-err').style.display = 'none';
+  showLoading(true);
+  try {
+    var filter = contact.includes('@') ? 'email=eq.'+encodeURIComponent(contact) : 'phone=eq.'+encodeURIComponent(contact);
+    var users = await sbFetch('users', {filter: filter, limit: 1});
+    showLoading(false);
+    if(users && users.length > 0) {
+      // User exists — login
+      var u = users[0];
+      currentUser = {id: u.id, email: u.email, name: u.name, role: u.role, sub_role: u.sub_role};
+      try { localStorage.setItem('sp_user', JSON.stringify(currentUser)); } catch(e) {}
+      hideAuth();
+      applyRoleAndLoad(u.role, u.name, u.sub_role);
+      // CEO → Step 3
+      if(u.role === 'ceo') {
+        setTimeout(function() { showCEOUpload(); }, 500);
+      }
+    } else {
+      // New user → Register
+      showLoading(false);
+      showAuthStep(2);
+    }
+  } catch(e) {
+    showLoading(false);
+    showAuthStep(2);
+  }
+}
+
+function showS1Err(msg) {
+  var el = document.getElementById('s1-err');
+  el.style.display = 'block'; el.textContent = msg;
+}
+function resetStep1() {
+  document.getElementById('s1-input-step').style.display = 'block';
+  document.getElementById('s1-otp-step').style.display = 'none';
+  document.getElementById('s1-err').style.display = 'none';
+  document.getElementById('otp-in').value = '';
+  if(otpTimer) clearInterval(otpTimer);
+}
+
+// ── STEP 2: REGISTER ─────────────────────
+function toggleFormanSub() {
+  var role = document.getElementById('reg-role').value;
+  var sub = document.getElementById('foreman-sub');
+  if(sub) sub.style.display = role === 'foreman' ? 'block' : 'none';
+}
+function selectForeman(el, val) {
+  document.querySelectorAll('[name="foreman-type"]').forEach(function(r) {
+    r.parentElement.style.borderColor = '#DDE3EA';
+    r.parentElement.style.background = '#fff';
+  });
+  el.style.borderColor = '#1565C0';
+  el.style.background = '#E3F2FD';
+}
+function handleIDCardDrop(e) {
+  e.preventDefault();
+  var f = e.dataTransfer.files[0];
+  if(f) handleIDCardFile(f);
+  document.getElementById('id-card-zone').style.borderColor = '#DDE3EA';
+  document.getElementById('id-card-zone').style.background = '#FAFAFA';
+}
+function handleIDCardFile(f) {
+  if(!f) return;
+  if(f.size > 5*1024*1024) { alert('ไฟล์ใหญ่เกิน 5 MB'); return; }
+  regIDCardFile = f;
+  var prev = document.getElementById('id-card-preview');
+  prev.style.display = 'flex';
+  document.getElementById('id-card-name').textContent = f.name + ' (' + (f.size/1024).toFixed(0) + ' KB)';
+  document.getElementById('id-card-zone').style.display = 'none';
+}
+function clearIDCard() {
+  regIDCardFile = null;
+  document.getElementById('id-card-preview').style.display = 'none';
+  document.getElementById('id-card-zone').style.display = 'block';
+}
+
+async function submitRegister() {
+  var fname = document.getElementById('reg-fname').value.trim();
+  var lname = document.getElementById('reg-lname').value.trim();
+  var role  = document.getElementById('reg-role').value;
+  if(!fname||!lname) { showS2Err('กรุณากรอกชื่อและนามสกุล'); return; }
+  if(!role) { showS2Err('กรุณาเลือกระดับผู้ใช้งาน'); return; }
+  if(!regIDCardFile) { showS2Err('กรุณาแนบบัตรประชาชน'); return; }
+
+  var subRole = '';
+  if(role === 'foreman') {
+    var sel = document.querySelector('[name="foreman-type"]:checked');
+    if(!sel) { showS2Err('กรุณาเลือกประเภทช่าง'); return; }
+    subRole = sel.value;
+  }
+
+  var btn = document.getElementById('reg-btn');
+  btn.disabled = true; btn.textContent = '⏳ กำลังบันทึก...';
+
+  try {
+    // Upload ID card
+    var idCardUrl = '';
+    if(regIDCardFile) {
+      var ts = Date.now();
+      var safeName = regIDCardFile.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+      var path = 'id-cards/' + ts + '_' + safeName;
+      var uploadRes = await fetch(SB_URL+'/storage/v1/object/sitepro-files/'+path, {
+        method:'POST',
+        headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':regIDCardFile.type,'x-upsert':'true'},
+        body:regIDCardFile
+      });
+      if(uploadRes.ok) idCardUrl = SB_URL+'/storage/v1/object/public/sitepro-files/'+path;
+    }
+
+    // Get company
+    var companies = await sbFetch('companies', {limit:1});
+    var companyId = companies && companies.length ? companies[0].id : null;
+
+    // Save user
+    var isEmail = authContact.includes('@');
+    var userData = {
+      email: isEmail ? authContact : (authContact+'@sitepro.app'),
+      phone: isEmail ? null : authContact,
+      name: fname+' '+lname,
+      role: role,
+      sub_role: subRole || null,
+      id_card_url: idCardUrl || null,
+      company_id: companyId,
+      is_active: true
+    };
+
+    var result = await sbInsert('users', userData);
+    if(!result || !result[0]) { showS2Err('บันทึกไม่สำเร็จ กรุณาลองใหม่'); btn.disabled=false; btn.textContent='✅ ลงทะเบียนและเข้าใช้งาน'; return; }
+
+    var newUser = result[0];
+    currentUser = {id:newUser.id, email:newUser.email, name:newUser.name, role:newUser.role, sub_role:newUser.sub_role};
+    try { localStorage.setItem('sp_user', JSON.stringify(currentUser)); } catch(e) {}
+
+    hideAuth();
+    applyRoleAndLoad(role, fname+' '+lname, subRole);
+    showToast('✅ ลงทะเบียนสำเร็จ ยินดีต้อนรับ '+fname);
+
+    if(role === 'ceo') setTimeout(showCEOUpload, 600);
+
+  } catch(err) {
+    console.error(err);
+    showS2Err('เกิดข้อผิดพลาด กรุณาลองใหม่');
+    btn.disabled=false; btn.textContent='✅ ลงทะเบียนและเข้าใช้งาน';
+  }
+}
+
+function showS2Err(msg) {
+  var el = document.getElementById('s2-err');
+  el.style.display='block'; el.textContent=msg;
+}
+
+// ── STEP 3: CEO UPLOAD ───────────────────
+function showCEOUpload() {
+  // Populate project selector
+  var sel = document.getElementById('ceo-proj-sel');
+  if(sel) {
+    sel.innerHTML = '<option value="">— เลือกโครงการ —</option>';
+    PROJECTS.forEach(function(p) {
+      var opt = document.createElement('option');
+      opt.value=p.id; opt.textContent=p.name; sel.appendChild(opt);
+    });
+  }
+  showAuth();
+  showAuthStep(3);
+}
+
+function selectCEOType(type) {
+  ceoDocType = type;
+  ['contract','boq','drawing','other'].forEach(function(t) {
+    var el = document.getElementById('ceo-type-'+t);
+    if(el) { el.style.borderColor = t===type?'#1565C0':'#DDE3EA'; el.style.background = t===type?'#E3F2FD':'#fff'; }
+  });
+}
+
+function handleCEODrop(e) {
+  e.preventDefault();
+  var files = e.dataTransfer.files;
+  handleCEOFiles(files);
+  document.getElementById('ceo-dropzone').style.borderColor='#DDE3EA';
+  document.getElementById('ceo-dropzone').style.background='transparent';
+}
+
+function handleCEOFiles(files) {
+  ceoUploadFiles = Array.from(files);
+  var list = document.getElementById('ceo-file-list');
+  list.innerHTML = ceoUploadFiles.map(function(f,i) {
+    var size = f.size>1024*1024?(f.size/1024/1024).toFixed(1)+' MB':(f.size/1024).toFixed(0)+' KB';
+    return '<div style="display:flex;align-items:center;gap:8px;padding:8px 10px;background:#E3F2FD;border-radius:8px;margin-bottom:6px">'
+      +'<span style="font-size:18px">📄</span>'
+      +'<div style="flex:1;font-size:12px;color:#1565C0;font-family:IBM Plex Sans Thai,sans-serif">'+f.name+' ('+size+')</div>'
+      +'<button onclick="ceoUploadFiles.splice('+i+',1);handleCEOFiles([])" style="background:none;border:none;color:#C62828;cursor:pointer">✕</button>'
+      +'</div>';
+  }).join('');
+}
+
+async function uploadCEODocs() {
+  if(!ceoUploadFiles.length) { skipCEOUpload(); return; }
+  var projId = document.getElementById('ceo-proj-sel').value;
+  var btn = document.getElementById('ceo-upload-btn');
+  btn.disabled=true; btn.textContent='⏳ กำลังอัปโหลด...';
+  document.getElementById('ceo-upload-prog').style.display='block';
+
+  var ok=0;
+  for(var i=0; i<ceoUploadFiles.length; i++) {
+    var f = ceoUploadFiles[i];
+    var pct = Math.round(i/ceoUploadFiles.length*100);
+    document.getElementById('ceo-prog-fill').style.width=pct+'%';
+    document.getElementById('ceo-prog-pct').textContent=pct+'%';
+    document.getElementById('ceo-prog-text').textContent='กำลังอัปโหลด: '+f.name;
+    try {
+      var ts=Date.now();
+      var safe=f.name.replace(/[^a-zA-Z0-9._-]/g,'_');
+      var path=(projId||'general')+'/'+ceoDocType+'/'+ts+'_'+safe;
+      var r=await fetch(SB_URL+'/storage/v1/object/sitepro-files/'+path,{
+        method:'POST',headers:{'apikey':SB_KEY,'Authorization':'Bearer '+SB_KEY,'Content-Type':f.type||'application/octet-stream','x-upsert':'true'},body:f});
+      if(r.ok) {
+        var url=SB_URL+'/storage/v1/object/public/sitepro-files/'+path;
+        await sbInsert('project_files',{project_id:projId||null,file_name:f.name,file_path:path,file_url:url,file_type:f.type,file_size:f.size,category:ceoDocType,uploaded_by:currentUser?currentUser.id:null});
+        ok++;
+      }
+    } catch(e) { console.error(e); }
+  }
+
+  document.getElementById('ceo-prog-fill').style.width='100%';
+  document.getElementById('ceo-prog-pct').textContent='100%';
+  setTimeout(function() {
+    hideAuth();
+    showToast('✅ อัปโหลด '+ok+' ไฟล์สำเร็จ');
+    nav('dashboard','Dashboard');
+  }, 600);
+}
+
+function skipCEOUpload() {
+  hideAuth();
+  nav('dashboard','Dashboard');
+}
+
+// ── APPLY ROLE + LOAD ────────────────────
+function applyRoleAndLoad(role, name, subRole) {
+  // Update sidebar user info
+  var av=document.getElementById('sb-av'),nm=document.getElementById('sb-name'),rl=document.getElementById('sb-role');
+  var rn={ceo:'CEO',engineer:'วิศวกร',eng:'วิศวกร',foreman:'หัวหน้าช่าง',procurement:'จัดซื้อ',proc:'จัดซื้อ',owner:'Owner'};
+  var roleKey = role;
+  if(av) av.textContent=rn[roleKey]||roleKey.toUpperCase();
+  if(nm) nm.textContent=name;
+  var roleLabel = rn[roleKey]||roleKey;
+  if(subRole) roleLabel += ' ('+subRole+')';
+  if(rl) rl.textContent=roleLabel+' · Angjing 365';
+
+  // Map role to menu key
+  var menuRole = {ceo:'ceo',engineer:'eng',eng:'eng',foreman:'foreman',procurement:'proc',proc:'proc',owner:'owner'}[roleKey]||'foreman';
+  var sel=document.querySelector('.role-pick select');
+  if(sel) { sel.value=menuRole; }
+  buildSidebar(menuRole);
+
+  // Build owner-specific dashboard
+  if(roleKey==='owner') buildOwnerDashboard();
+
+  // Load DB
+  setTimeout(loadFromDB, 300);
+  nav('dashboard','Dashboard');
+}
+
+// ── OWNER RESTRICTED VIEW ────────────────
+function buildOwnerDashboard() {
+  // Override renderDash for owner
+  var kpiArea = document.getElementById('kpi-area');
+  if(kpiArea && currentUser && currentUser.role==='owner') {
+    // Will be handled in renderDash with role check
+  }
+}
+
+// ── INIT AUTH ────────────────────────────
+document.addEventListener('DOMContentLoaded', function() {
+  // Add columns to users table if needed
+  setTimeout(function() {
+    try {
+      var saved = localStorage.getItem('sp_user');
+      if(saved) {
+        currentUser = JSON.parse(saved);
+        applyRoleAndLoad(currentUser.role, currentUser.name, currentUser.sub_role||'');
+        if(currentUser.role==='ceo') setTimeout(showCEOUpload, 800);
+      } else {
+        showAuth();
+        showAuthStep(1);
+      }
+    } catch(e) {
+      showAuth();
+      showAuthStep(1);
+    }
+  }, 400);
+});
+
+</script>
 </body>
+</html>
