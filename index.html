@@ -367,7 +367,15 @@ tr:hover td{background:#F8FAFE}
     <div id="s1-contact-wrap">
       <div class="fgrp"><label class="flbl">Email หรือ เบอร์โทรศัพท์</label>
         <input id="s1-contact" type="text" placeholder="email@example.com หรือ 08XXXXXXXX" class="finp" onkeydown="if(event.key==='Enter')authSendOTP()"></div>
-      <button class="btn btn-p btn-full" onclick="authSendOTP()">ขอรหัส OTP →</button>
+      <button class="btn btn-p btn-full" onclick="authSendOTP()" style="margin-bottom:14px">ขอรหัส OTP →</button>
+      <div style="border-top:1px solid var(--border);margin:4px 0 14px;position:relative"><span style="position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:#fff;padding:0 10px;font-size:11px;color:var(--text3);font-family:IBM Plex Sans Thai,sans-serif">หรือเข้าเร็วด้วย</span></div>
+      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
+        <button onclick="quickOTP('ceo@angjing365.com')" style="padding:8px;background:#E3F2FD;border:1.5px solid #BBDEFB;border-radius:8px;font-size:12px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#1565C0;font-weight:600;transition:all .15s" onmouseover="this.style.background='#BBDEFB'" onmouseout="this.style.background='#E3F2FD'">👑 CEO</button>
+        <button onclick="quickOTP('engineer@angjing365.com')" style="padding:8px;background:#E8F5E9;border:1.5px solid #A5D6A7;border-radius:8px;font-size:12px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#2E7D32;font-weight:600;transition:all .15s" onmouseover="this.style.background='#A5D6A7'" onmouseout="this.style.background='#E8F5E9'">👷 วิศวกร</button>
+        <button onclick="quickOTP('foreman@angjing365.com')" style="padding:8px;background:#FFF3E0;border:1.5px solid #FFCC80;border-radius:8px;font-size:12px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#E65100;font-weight:600;transition:all .15s" onmouseover="this.style.background='#FFCC80'" onmouseout="this.style.background='#FFF3E0'">🔨 หัวหน้าช่าง</button>
+        <button onclick="quickOTP('procurement@angjing365.com')" style="padding:8px;background:#F3E5F5;border:1.5px solid #CE93D8;border-radius:8px;font-size:12px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#6A1B9A;font-weight:600;transition:all .15s" onmouseover="this.style.background='#CE93D8'" onmouseout="this.style.background='#F3E5F5'">🛒 จัดซื้อ</button>
+        <button onclick="quickOTP('owner@angjing365.com')" style="padding:8px;background:#E8F5E9;border:1.5px solid #A5D6A7;border-radius:8px;font-size:12px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#1B5E20;font-weight:600;transition:all .15s;grid-column:span 2" onmouseover="this.style.background='#A5D6A7'" onmouseout="this.style.background='#E8F5E9'">🏠 Owner</button>
+      </div>
     </div>
     <div id="s1-otp-wrap" style="display:none">
       <div style="background:#E3F2FD;border-radius:10px;padding:14px;text-align:center;margin-bottom:16px">
@@ -955,6 +963,11 @@ function showAuth(){document.getElementById('auth-overlay').style.display='flex'
 function hideAuth(){document.getElementById('auth-overlay').style.display='none';}
 function showAuthStep(n){
   ['auth-s1','auth-s2','auth-s3'].forEach(function(id,i){document.getElementById(id).style.display=i===n-1?'block':'none';});
+}
+
+function quickOTP(email){
+  document.getElementById('s1-contact').value=email;
+  authSendOTP();
 }
 
 function authSendOTP(){
