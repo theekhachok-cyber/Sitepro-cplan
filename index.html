@@ -231,7 +231,10 @@ tr:hover td{background:#F8FAFE}
 <!-- DASHBOARD -->
 <div class="page act" id="page-dashboard">
   <div class="g4 mb20" id="kpi-area">
-    <div class="empty" style="grid-column:span 4"><div class="empty-icon">⏳</div>กำลังโหลดข้อมูล...</div>
+    <div class="kpi"><div class="kpi-icon">📊</div><div class="kpi-num" style="color:var(--blue)">—</div><div class="kpi-lbl">ความคืบหน้า</div></div>
+    <div class="kpi"><div class="kpi-icon">🏗️</div><div class="kpi-num" style="color:var(--orange)">—</div><div class="kpi-lbl">โครงการ</div></div>
+    <div class="kpi"><div class="kpi-icon">⚠️</div><div class="kpi-num" style="color:var(--danger)">—</div><div class="kpi-lbl">Defect</div></div>
+    <div class="kpi"><div class="kpi-icon">📦</div><div class="kpi-num" style="color:var(--green)">—</div><div class="kpi-lbl">Stock ต่ำ</div></div>
   </div>
   <div class="g73">
     <div>
@@ -614,7 +617,7 @@ function buildMenu(role){
 // ══════════════════════════════════════════
 // LOAD FROM DB
 // ══════════════════════════════════════════
-async function loadDB(){
+async function loadDB(retry){
   loading(true);
   try{
     var res=await Promise.all([
@@ -644,10 +647,17 @@ async function loadDB(){
     }
 
     renderDash();
+    // Update user UI again after load in case it wasn't ready
+    if(currentUser) updateUserUI(currentUser.role, currentUser.name||'CEO', currentUser.sub_role||'');
     toast('✅ โหลดข้อมูลสำเร็จ');
   }catch(e){
     console.error('loadDB error:',e);
     toast('⚠️ โหลดข้อมูลไม่สำเร็จ','warn');
+    // Retry once after 2 seconds
+    if(!retry){
+      setTimeout(function(){ loadDB(true); }, 2000);
+    }
+    renderDash();
   }
   loading(false);
 }
@@ -656,11 +666,29 @@ async function loadDB(){
 // RENDER DASHBOARD
 // ══════════════════════════════════════════
 function renderDash(){
+  // Use whatever data is available - don't block on loading
   var projects=DB.projects||[];
   var phases=DB.phases||[];
   var stock=DB.stock||[];
   var defects=DB.defects||[];
   var milestones=DB.milestones||[];
+  
+  // If still loading, show proper empty states (not loading spinner)
+  if(!projects.length && !phases.length){
+    // Show empty project state
+    var pc=document.getElementById('proj-cards');
+    if(pc) pc.innerHTML='<div class="empty" style="grid-column:span 2"><div class="empty-icon">🏗️</div><div style="font-size:14px;color:var(--text2)">ยังไม่มีโครงการ</div></div>';
+    var kpi=document.getElementById('kpi-area');
+    if(kpi) kpi.innerHTML='<div class="kpi"><div class="kpi-icon">📊</div><div class="kpi-num" style="color:var(--blue)">0%</div><div class="kpi-lbl">ความคืบหน้า</div></div>'
+      +'<div class="kpi"><div class="kpi-icon">🏗️</div><div class="kpi-num" style="color:var(--orange)">0</div><div class="kpi-lbl">โครงการ</div></div>'
+      +'<div class="kpi"><div class="kpi-icon">⚠️</div><div class="kpi-num" style="color:var(--danger)">0</div><div class="kpi-lbl">Defect</div></div>'
+      +'<div class="kpi"><div class="kpi-icon">📦</div><div class="kpi-num" style="color:var(--green)">0</div><div class="kpi-lbl">Stock ต่ำ</div></div>';
+    var ms=document.getElementById('ms-dash');
+    if(ms) ms.innerHTML='<div class="empty" style="padding:12px"><div class="empty-icon">💰</div>ยังไม่มีงวดงาน</div>';
+    var sa=document.getElementById('stock-alert-area');
+    if(sa) sa.innerHTML='<div style="text-align:center;padding:16px;color:var(--text3);font-size:13px;font-family:IBM Plex Sans Thai,sans-serif">✅ ไม่มีวัสดุต่ำกว่าค่า Min</div>';
+    return;
+  }
 
   // KPI
   var totalPct=projects.length?Math.round(projects.reduce(function(s,p){
