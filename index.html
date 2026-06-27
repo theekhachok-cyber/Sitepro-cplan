@@ -368,16 +368,8 @@ tr:hover td{background:#F8FAFE}
       <div class="fgrp"><label class="flbl">Email หรือ เบอร์โทรศัพท์</label>
         <input id="s1-contact" type="text" placeholder="email@example.com หรือ 08XXXXXXXX" class="finp" onkeydown="if(event.key==='Enter')authSendOTP()"></div>
       <button class="btn btn-p btn-full" onclick="authSendOTP()" style="margin-bottom:14px">ขอรหัส OTP →</button>
-      <div style="border-top:1px solid var(--border);margin:4px 0 14px;position:relative"><span style="position:absolute;top:-9px;left:50%;transform:translateX(-50%);background:#fff;padding:0 10px;font-size:11px;color:var(--text3);font-family:IBM Plex Sans Thai,sans-serif">หรือเข้าเร็วด้วย</span></div>
-      <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">
-        <button onclick="quickOTP('ceo@angjing365.com')" style="padding:8px;background:#E3F2FD;border:1.5px solid #BBDEFB;border-radius:8px;font-size:12px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#1565C0;font-weight:600;transition:all .15s" onmouseover="this.style.background='#BBDEFB'" onmouseout="this.style.background='#E3F2FD'">👑 CEO</button>
-        <button onclick="quickOTP('engineer@angjing365.com')" style="padding:8px;background:#E8F5E9;border:1.5px solid #A5D6A7;border-radius:8px;font-size:12px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#2E7D32;font-weight:600;transition:all .15s" onmouseover="this.style.background='#A5D6A7'" onmouseout="this.style.background='#E8F5E9'">👷 วิศวกร</button>
-        <button onclick="quickOTP('foreman@angjing365.com')" style="padding:8px;background:#FFF3E0;border:1.5px solid #FFCC80;border-radius:8px;font-size:12px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#E65100;font-weight:600;transition:all .15s" onmouseover="this.style.background='#FFCC80'" onmouseout="this.style.background='#FFF3E0'">🔨 หัวหน้าช่าง</button>
-        <button onclick="quickOTP('procurement@angjing365.com')" style="padding:8px;background:#F3E5F5;border:1.5px solid #CE93D8;border-radius:8px;font-size:12px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#6A1B9A;font-weight:600;transition:all .15s" onmouseover="this.style.background='#CE93D8'" onmouseout="this.style.background='#F3E5F5'">🛒 จัดซื้อ</button>
-        <button onclick="quickOTP('owner@angjing365.com')" style="padding:8px;background:#E8F5E9;border:1.5px solid #A5D6A7;border-radius:8px;font-size:12px;cursor:pointer;font-family:IBM Plex Sans Thai,sans-serif;color:#1B5E20;font-weight:600;transition:all .15s;grid-column:span 2" onmouseover="this.style.background='#A5D6A7'" onmouseout="this.style.background='#E8F5E9'">🏠 Owner</button>
-      </div>
-      <div style="font-size:10px;color:var(--text3);text-align:center;margin-top:10px;font-family:IBM Plex Sans Thai,sans-serif">
-        💡 ปุ่มด้านบนสำหรับทดสอบ · สมาชิกใหม่ให้กรอก Email/เบอร์โทรด้านบน
+      <div style="font-size:12px;color:var(--text3);text-align:center;margin-top:10px;font-family:IBM Plex Sans Thai,sans-serif">
+        🔐 สมาชิกใหม่จะลงทะเบียนในขั้นถัดไป
       </div>
     </div>
     <div id="s1-otp-wrap" style="display:none">
@@ -1022,13 +1014,87 @@ async function authVerifyOTP(){
   }
 }
 
-function toggleForemanSub(){
+var FOREMAN_SLOTS = [
+  {v:'A', l:'A ช่างโครงสร้าง'},
+  {v:'B', l:'B ช่างเหล็ก'},
+  {v:'C', l:'C ช่างก่อ/ฉาบ'},
+  {v:'D', l:'D ช่างฝ้า'},
+  {v:'E', l:'E ช่างไฟฟ้า'},
+  {v:'F', l:'F ช่างสี'},
+  {v:'G', l:'G ช่างกระเบื้อง'},
+  {v:'H', l:'H ช่างประตู-หน้าต่าง'},
+  {v:'I', l:'I ช่างสุขาภิบาล'},
+  {v:'J', l:'J ช่างตกแต่งภายใน'}
+];
+
+async function toggleForemanSub(){
   var r=document.getElementById('reg-role').value;
-  document.getElementById('foreman-sub').style.display=r==='foreman'?'block':'none';
+  var sub=document.getElementById('foreman-sub');
+  sub.style.display=r==='foreman'?'block':'none';
+  if(r==='foreman') await loadForemanSlots();
+}
+
+async function loadForemanSlots(){
+  var grid=document.getElementById('foreman-grid');
+  var note=document.getElementById('foreman-note');
+  if(!grid)return;
+  note.textContent='⏳ กำลังตรวจสอบทีมที่ว่าง...';
+  // โหลด foreman users ที่มีอยู่แล้ว
+  var used=await sbQ('users',{f:'role=eq.foreman',s:'sub_role'});
+  var usedSlots=(used||[]).map(function(u){return u.sub_role;}).filter(Boolean);
+  note.textContent='ทีมที่ว่าง: '+(10-usedSlots.length)+'/10 ทีม';
+  grid.innerHTML=FOREMAN_SLOTS.map(function(slot){
+    var taken=usedSlots.indexOf(slot.v)>-1;
+    var baseStyle='display:flex;align-items:center;gap:8px;padding:8px 10px;border:1.5px solid;border-radius:8px;font-size:12px;font-family:IBM Plex Sans Thai,sans-serif;transition:all .15s;';
+    if(taken){
+      return '<label style="'+baseStyle+'border-color:#FFCDD2;background:#FFEBEE;cursor:not-allowed;opacity:.6">'
+        +'<input type="radio" name="ft" value="'+slot.v+'" disabled style="accent-color:#1565C0"> '
+        +'<span style="color:#C62828">'+slot.l+'</span>'
+        +'<span style="margin-left:auto;font-size:10px;color:#C62828;font-weight:600">เต็ม</span></label>';
+    } else {
+      return '<label style="'+baseStyle+'border-color:#DDE3EA;background:#fff;cursor:pointer" '
+        +'onclick="selForeman(this,''+slot.v+'')">'
+        +'<input type="radio" name="ft" value="'+slot.v+'" style="accent-color:#1565C0"> '
+        +slot.l
+        +'<span style="margin-left:auto;font-size:10px;color:#2E7D32;font-weight:600">ว่าง</span></label>';
+    }
+  }).join('');
 }
 function selForeman(el,val){
-  document.querySelectorAll('[name="ft"]').forEach(function(r){r.parentElement.style.borderColor='#DDE3EA';r.parentElement.style.background='#fff';});
+  document.querySelectorAll('[name="ft"]').forEach(function(r){
+    if(!r.parentElement.dataset.taken){
+      r.parentElement.style.borderColor='#DDE3EA';r.parentElement.style.background='#fff';
+    }
+  });
+  if(el.dataset.taken){return;} // Can't select taken team
   el.style.borderColor='#1565C0';el.style.background='#E3F2FD';
+}
+
+async function checkForemanTeams(){
+  // Check which teams are taken
+  var taken=await sbQ('users',{f:'role=eq.foreman&is_active=eq.true',l:20});
+  if(!taken||!taken.length)return;
+  taken.forEach(function(u){
+    if(!u.sub_role)return;
+    var label=document.querySelector('[name="ft"][value="'+u.sub_role+'"]');
+    if(label){
+      var parent=label.parentElement;
+      parent.dataset.taken='1';
+      parent.style.borderColor='#C62828';
+      parent.style.background='#FFEBEE';
+      parent.style.opacity='0.6';
+      parent.style.cursor='not-allowed';
+      parent.title='ทีมนี้มีหัวหน้าช่างแล้ว';
+      // Add taken badge
+      if(!parent.querySelector('.taken-badge')){
+        var badge=document.createElement('span');
+        badge.className='taken-badge';
+        badge.style.cssText='font-size:9px;background:#C62828;color:#fff;padding:1px 5px;border-radius:3px;margin-left:4px';
+        badge.textContent='เต็ม';
+        parent.appendChild(badge);
+      }
+    }
+  });
 }
 function setIDCard(f){
   if(!f||f.size>5*1024*1024){alert('ไฟล์ใหญ่เกิน 5 MB');return;}
@@ -1052,7 +1118,20 @@ async function authRegister(){
   if(!role){err.style.display='block';err.textContent='กรุณาเลือกระดับ';return;}
   if(!idCardFile){err.style.display='block';err.textContent='กรุณาแนบบัตรประชาชน';return;}
   var sub='';
-  if(role==='foreman'){var sr=document.querySelector('[name="ft"]:checked');if(!sr){err.style.display='block';err.textContent='กรุณาเลือกประเภทช่าง';return;}sub=sr.value;}
+  if(role==='foreman'){
+    var sr=document.querySelector('[name="ft"]:checked');
+    if(!sr){err.style.display='block';err.textContent='กรุณาเลือกประเภทช่าง';return;}
+    sub=sr.value;
+    // Check if this foreman team slot is already taken
+    var taken=await sbQ('users',{f:'role=eq.foreman&sub_role=eq.'+sub+'&is_active=eq.true',l:1});
+    if(taken&&taken.length>0){
+      err.style.display='block';
+      var teamNames={A:'ช่างโครงสร้าง',B:'ช่างเหล็ก',C:'ช่างก่อ/ฉาบ',D:'ช่างฝ้า',E:'ช่างไฟฟ้า',F:'ช่างสี',G:'ช่างกระเบื้อง',H:'ช่างประตู-หน้าต่าง',I:'ช่างสุขาภิบาล',J:'ช่างตกแต่งภายใน'};
+      err.textContent='ทีม '+sub+' ('+teamNames[sub]+') มีหัวหน้าช่างแล้ว กรุณาเลือกทีมอื่น';
+      btn.disabled=false;btn.textContent='✅ ลงทะเบียนเข้าใช้งาน';
+      return;
+    }
+  }
   err.style.display='none';
   var btn=document.getElementById('reg-btn');
   btn.disabled=true;btn.textContent='⏳ กำลังบันทึก...';
